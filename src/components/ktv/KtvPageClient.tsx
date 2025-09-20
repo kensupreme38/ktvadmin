@@ -25,18 +25,13 @@ import {
   CreditCard,
   DoorOpen,
   Info,
-  Loader,
   MapPin,
   Music,
-  PartyPopper,
   Sparkles,
   Star,
   Utensils,
   Wallet,
 } from 'lucide-react';
-import { useState } from 'react';
-import { summarizeKtvReviews } from '@/ai/flows/summarize-ktv-reviews';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import type { Ktv } from '@/types';
 
 type KtvPageClientProps = {
@@ -44,25 +39,6 @@ type KtvPageClientProps = {
 };
 
 export default function KtvPageClient({ ktv }: KtvPageClientProps) {
-  const [isSummarizing, setIsSummarizing] = useState(false);
-  const [summary, setSummary] = useState('');
-  const [error, setError] = useState('');
-
-  const handleSummarize = async () => {
-    setIsSummarizing(true);
-    setError('');
-    setSummary('');
-    try {
-      const reviewsText = ktv.reviews.map(r => r.comment).join('\n');
-      const result = await summarizeKtvReviews({ reviews: reviewsText });
-      setSummary(result.summary);
-    } catch (e) {
-      setError('Failed to generate summary. Please try again.');
-    } finally {
-      setIsSummarizing(false);
-    }
-  };
-
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -212,21 +188,6 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
               <CardTitle className="text-2xl">Reviews</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 p-4 bg-background rounded-lg border">
-                <div>
-                    <h3 className="font-semibold">AI Review Summary</h3>
-                    <p className="text-sm text-muted-foreground">Get the highlights from customer feedback.</p>
-                </div>
-                <Button onClick={handleSummarize} disabled={isSummarizing}>
-                  {isSummarizing ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                  {isSummarizing ? 'Generating...' : 'Summarize Reviews'}
-                </Button>
-              </div>
-
-              {error && <Alert variant="destructive" className="mb-4"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
-              
-              {summary && <Alert className="mb-6 bg-primary/10 border-primary/20"><Sparkles className="h-4 w-4 text-primary" /><AlertTitle className="text-primary">AI Summary</AlertTitle><AlertDescription>{summary}</AlertDescription></Alert>}
-
               <div className="space-y-6">
                 {ktv.reviews.map((review, index) => (
                   <div key={index}>
