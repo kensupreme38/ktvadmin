@@ -25,7 +25,7 @@ export function FilterControls({ onFilterChange }: FilterControlsProps) {
   };
 
   const handleSelectChange = (name: string) => (value: string) => {
-    onFilterChange((prev) => ({ ...prev, [name]: value }));
+    onFilterChange((prev) => ({ ...prev, [name]: value === 'all' ? '' : value }));
   };
 
   return (

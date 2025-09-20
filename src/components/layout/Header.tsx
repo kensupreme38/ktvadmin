@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { Logo } from '../Logo';
 
 const navLinks = [
-  { href: '/', label: 'Directory' },
+  { href: '/directory', label: 'Directory' },
   { href: '/articles', label: 'Articles' },
   { href: '/contact', label: 'For Owners' },
 ];
