@@ -1,3 +1,89 @@
+
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "ktv-hero-1",
+      "description": "A vibrant, modern KTV room with neon lights.",
+      "imageUrl": "https://picsum.photos/seed/101/1200/600",
+      "imageHint": "neon karaoke"
+    },
+    {
+      "id": "ktv-gallery-1-1",
+      "description": "Luxurious KTV lounge area with plush seating.",
+      "imageUrl": "https://picsum.photos/seed/102/600/400",
+      "imageHint": "lounge seating"
+    },
+    {
+      "id": "ktv-gallery-1-2",
+      "description": "Close-up of a high-tech karaoke machine.",
+      "imageUrl": "https://picsum.photos/seed/103/600/400",
+      "imageHint": "karaoke machine"
+    },
+    {
+      "id": "ktv-gallery-1-3",
+      "description": "A private KTV room with a large screen.",
+      "imageUrl": "https://picsum.photos/seed/104/600/400",
+      "imageHint": "private room"
+    },
+    {
+      "id": "ktv-gallery-1-4",
+      "description": "Bar area of a KTV.",
+      "imageUrl": "https://picsum.photos/seed/105/600/400",
+      "imageHint": "ktv bar"
+    },
+    {
+      "id": "ktv-card-1",
+      "description": "Exterior of Kingdom KTV.",
+      "imageUrl": "https://picsum.photos/seed/1/600/400",
+      "imageHint": "nightclub exterior"
+    },
+    {
+      "id": "ktv-card-2",
+      "description": "Interior of Nnice KTV.",
+      "imageUrl": "https://picsum.photos/seed/2/600/400",
+      "imageHint": "karaoke room"
+    },
+    {
+      "id": "ktv-card-3",
+      "description": "Facade of ICOOL KTV.",
+      "imageUrl": "https://picsum.photos/seed/3/600/400",
+      "imageHint": "modern building"
+    },
+    {
+      "id": "ktv-card-4",
+      "description": "A room at Catwalk KTV.",
+      "imageUrl": "https://picsum.photos/seed/4/600/400",
+      "imageHint": "luxury interior"
+    },
+    {
+      "id": "ktv-card-5",
+      "description": "A room at KTV 204.",
+      "imageUrl": "https://picsum.photos/seed/5/600/400",
+      "imageHint": "party room"
+    },
+    {
+      "id": "ktv-card-6",
+      "description": "A room at Fyou KTV.",
+      "imageUrl": "https://picsum.photos/seed/6/600/400",
+      "imageHint": "dark interior"
+    },
+    {
+      "id": "article-1",
+      "description": "A person singing into a microphone.",
+      "imageUrl": "https://picsum.photos/seed/201/600/400",
+      "imageHint": "singing microphone"
+    },
+    {
+      "id": "article-2",
+      "description": "A group of friends having fun at a KTV.",
+      "imageUrl": "https://picsum.photos/seed/202/600/400",
+      "imageHint": "friends party"
+    },
+    {
+      "id": "article-3",
+      "description": "Ho Chi Minh City skyline at night.",
+      "imageUrl": "https://picsum.photos/seed/203/600/400",
+      "imageHint": "city skyline"
+    }
+  ]
 }
