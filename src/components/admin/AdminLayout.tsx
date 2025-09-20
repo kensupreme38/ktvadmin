@@ -22,6 +22,7 @@ import {
   Users,
   Settings,
   LogOut,
+  CalendarCheck,
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,6 +38,11 @@ const menuItems = [
     href: '/admin/ktvs',
     label: 'KTVs',
     icon: Building2,
+  },
+  {
+    href: '/admin/bookings',
+    label: 'Bookings',
+    icon: CalendarCheck,
   },
   {
     href: '/admin/articles',
