@@ -8,8 +8,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
 import { SocialShareButtons } from '@/components/SocialShareButtons';
@@ -23,7 +21,6 @@ import {
   Clock,
   Contact,
   CreditCard,
-  DoorOpen,
   Info,
   MapPin,
   Music,
@@ -70,6 +67,35 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">{ktv.description}</p>
+            </CardContent>
+          </Card>
+          
+          {/* Gallery Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Gallery</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {ktv.gallery.map((img, index) => (
+                    <CarouselItem key={index} className="md:basis-1/2">
+                      <div className="p-1">
+                        <div className="relative aspect-video">
+                           <Image src={img.imageUrl} alt={`${ktv.name} gallery image ${index + 1}`} fill className="rounded-md object-cover" data-ai-hint={img.imageHint} />
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+              <div className="text-center mt-4">
+                 <Button variant="outline">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Optimize with AI
+                 </Button>
+                 <p className="text-xs text-muted-foreground mt-2">KTV owner tool to improve gallery images</p>
+              </div>
             </CardContent>
           </Card>
 
@@ -151,35 +177,6 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
             </AccordionItem>
           </Accordion>
 
-          {/* Gallery Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Gallery</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Carousel className="w-full">
-                <CarouselContent>
-                  {ktv.gallery.map((img, index) => (
-                    <CarouselItem key={index} className="md:basis-1/2">
-                      <div className="p-1">
-                        <div className="relative aspect-video">
-                           <Image src={img.imageUrl} alt={`${ktv.name} gallery image ${index + 1}`} fill className="rounded-md object-cover" data-ai-hint={img.imageHint} />
-                        </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-              </Carousel>
-              <div className="text-center mt-4">
-                 <Button variant="outline">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Optimize with AI
-                 </Button>
-                 <p className="text-xs text-muted-foreground mt-2">KTV owner tool to improve gallery images</p>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Reviews Section */}
           <Card>
             <CardHeader>
@@ -212,7 +209,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
               <CardTitle className="text-2xl">Quick Info</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
-              <div className="flex"><DoorOpen className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.numberOfRooms} rooms</span></div>
+              <div className="flex"><Music className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.numberOfRooms} rooms</span></div>
               <div className="flex"><Clock className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.hours}</span></div>
               <div className="flex"><Wallet className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.priceRange}</span></div>
               <div className="flex"><Contact className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.contact}</span></div>
