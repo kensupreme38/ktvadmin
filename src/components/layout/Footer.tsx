@@ -35,13 +35,12 @@ const WeChatIcon = ({ className }: { className?: string }) => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <path d="M10.1 12.1a2.5 2.5 0 1 0-2.2 0" />
-    <path d="M16.3 12.1a2.5 2.5 0 1 0-2.2 0" />
-    <path d="M4 6.8V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.8a2.59 2.59 0 0 0-2.1-2.6 11.4 11.4 0 0 0-15.8 0A2.59 2.59 0 0 0 4 6.8Z" />
-    <path d="m9.4 17.5 1.8-1.4 1.3 1.4" />
-    <path d="M16 16.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Z" />
+    <path d="M21.5 10.5c0 5.25-4.25 9.5-9.5 9.5s-9.5-4.25-9.5-9.5S6.75 1 12 1s9.5 4.25 9.5 9.5z" />
+    <path d="M8 10.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5S10.33 9 9.5 9s-1.5.67-1.5 1.5z" />
+    <path d="M14.5 10.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5S16.83 9 16 9s-1.5.67-1.5 1.5z" />
   </svg>
 );
+
 
 export function Footer() {
   const [currentYear, setCurrentYear] = useState<number | null>(null);
