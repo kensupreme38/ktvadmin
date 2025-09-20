@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Building, FileText, Star } from 'lucide-react';
 import { allKtvs } from '@/data/ktvs';
@@ -48,7 +49,7 @@ export default function AdminDashboardPage() {
             <div className="text-2xl font-bold">1,254</div>
             <p className="text-xs text-muted-foreground">+50 in the last hour</p>
           </CardContent>
-        Card>
+        </Card>
       </div>
       <div className="mt-8">
         <Card>
