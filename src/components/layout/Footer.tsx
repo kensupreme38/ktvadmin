@@ -1,8 +1,17 @@
+'use client';
+
 import Link from 'next/link';
 import { Logo } from '../Logo';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export function Footer() {
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="border-t border-border/40 bg-background/95">
       <div className="container mx-auto px-4 py-8">
@@ -27,7 +36,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Aura KTV. All rights reserved.</p>
+          {currentYear && <p>&copy; {currentYear} Aura KTV. All rights reserved.</p>}
         </div>
       </div>
     </footer>
