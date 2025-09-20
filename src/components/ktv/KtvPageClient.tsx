@@ -12,12 +12,15 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { SocialShareButtons } from '@/components/SocialShareButtons';
 import {
+  Calendar,
+  CheckCircle,
   Clock,
   Contact,
   CreditCard,
   Info,
   MapPin,
   Music,
+  Phone,
   Sparkles,
   Star,
   Utensils,
@@ -25,9 +28,55 @@ import {
 } from 'lucide-react';
 import type { Ktv } from '@/types';
 
+// Custom SVG components for WhatsApp and WeChat
+const WhatsAppIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+  </svg>
+);
+
+const WeChatIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M14.5 10.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5S16.83 9 16 9s-1.5.67-1.5 1.5z" />
+    <path d="M21.5 10.5c0 5.25-4.25 9.5-9.5 9.5S2.5 15.75 2.5 10.5 6.75 1 12 1s9.5 4.25 9.5 9.5z" />
+    <path d="M8 10.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5S10.33 9 9.5 9s-1.5.67-1.5 1.5z" />
+  </svg>
+);
+
+
 type KtvPageClientProps = {
   ktv: Ktv;
 };
+
+// A map for simplified payment method names
+const paymentMethodTranslations: Record<string, string> = {
+  'Credit Card': '信用卡',
+  'WeChat Pay': '微信支付',
+  'Alipay': '支付宝',
+};
+
 
 export default function KtvPageClient({ ktv }: KtvPageClientProps) {
 
@@ -70,7 +119,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
               <CardTitle className="text-2xl">Gallery</CardTitle>
             </CardHeader>
             <CardContent>
-              <Carousel className="w-full">
+              <Carousel className="w-full" opts={{ loop: true }}>
                 <CarouselContent>
                   {ktv.gallery.map((img, index) => (
                     <CarouselItem key={index} className="md:basis-1/2">
@@ -145,26 +194,48 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl flex items-center">
-                <CreditCard className="mr-3 text-primary" /> Payment & Contact
+                <CreditCard className="mr-3 text-primary" /> 支付方式 | Payment Methods
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div>
-                  <h4 className="font-bold text-lg mb-2 text-primary/80">Payment Methods</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {ktv.paymentMethods.map(method => <Badge key={method} variant="secondary">{method}</Badge>)}
-                  </div>
+                  <ul className="space-y-3">
+                    {ktv.paymentMethods.map(p => (
+                       <li key={p.method} className="flex items-center">
+                          <CheckCircle className="h-5 w-5 mr-3 text-green-500" />
+                          <span>{paymentMethodTranslations[p.method] || p.method} {p.method} {p.details && `(${p.details})`}</span>
+                       </li>
+                    ))}
+                  </ul>
                 </div>
                 <Separator />
                 <div>
-                  <h4 className="font-bold text-lg mb-2 text-primary/80">Contact Information</h4>
-                  <p className="text-muted-foreground">{ktv.contact}</p>
+                  <h3 className="text-xl font-semibold flex items-center mb-4">
+                     <Calendar className="mr-3 text-primary" /> 预约 | Reservations
+                  </h3>
+                   <ul className="space-y-3">
+                    {ktv.contact.whatsapp && (
+                      <li className="flex items-center">
+                         <WhatsAppIcon className="h-5 w-5 mr-3 text-green-500" />
+                         <span>WhatsApp: {ktv.contact.whatsapp}</span>
+                      </li>
+                    )}
+                    {ktv.contact.wechat && (
+                       <li className="flex items-center">
+                         <WeChatIcon className="h-5 w-5 mr-3 text-green-500" />
+                         <span>WeChat 微信: {ktv.contact.wechat}</span>
+                       </li>
+                    )}
+                     <li className="flex items-center">
+                         <Phone className="h-5 w-5 mr-3 text-primary" />
+                         <span>Phone: {ktv.contact.phone}</span>
+                      </li>
+                   </ul>
                 </div>
               </div>
             </CardContent>
           </Card>
-
 
           {/* Reviews Section */}
           <Card>
@@ -201,7 +272,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
               <div className="flex"><Music className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.numberOfRooms} rooms</span></div>
               <div className="flex"><Clock className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.hours}</span></div>
               <div className="flex"><Wallet className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.priceRange}</span></div>
-              <div className="flex"><Contact className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.contact}</span></div>
+              <div className="flex"><Contact className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.contact.phone}</span></div>
               <Separator />
                <h4 className="font-semibold pt-2">Main Services</h4>
               <div className="flex flex-wrap gap-2">

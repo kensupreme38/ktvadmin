@@ -15,7 +15,11 @@ export const allKtvs: Ktv[] = [
     priceRange: 'VND 1,000,000 - 3,000,000 / hour',
     hours: '2:00 PM - 2:00 AM',
     numberOfRooms: 30,
-    contact: '028 3840 8333',
+    contact: {
+      phone: '028 3840 8333',
+      whatsapp: '+84 79 491 5205',
+      wechat: 'TTking789',
+    },
     mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.319243350993!2d106.704153314749!3d10.78683599231454!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f491b29a039%3A0x6d93a6f1de0a5a5c!2sKingdom%20KTV!5e0!3m2!1sen!2sus!4v1678886666666',
     cardImage: getImage('ktv-card-1'),
     gallery: [
@@ -40,7 +44,11 @@ export const allKtvs: Ktv[] = [
         { category: 'Spirits', items: [{name: 'Chivas 18', price: 'VND 3,500,000 / bottle'}, {name: 'Macallan 12', price: 'VND 4,000,000 / bottle'}] },
         { category: 'Snacks', items: [{name: 'French Fries', price: 'VND 150,000'}, {name: 'Fruit Platter', price: 'VND 500,000'}] }
     ],
-    paymentMethods: ['Cash', 'Credit Card (Visa, Mastercard)', 'Bank Transfer']
+    paymentMethods: [
+      { method: 'Credit Card', details: '附加费 3%' },
+      { method: 'WeChat Pay' },
+      { method: 'Alipay' },
+    ]
   },
   {
     id: 'nnice-ktv',
@@ -53,7 +61,11 @@ export const allKtvs: Ktv[] = [
     priceRange: 'VND 300,000 - 600,000 / hour',
     hours: '10:00 AM - 12:00 AM',
     numberOfRooms: 50,
-    contact: '028 3991 7579',
+    contact: {
+      phone: '028 3991 7579',
+      whatsapp: '+84 79 491 5205',
+      wechat: 'TTking789',
+    },
     mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.106526154562!2d106.6791993147492!3d10.8031389923026!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752936a75f2849%3A0x8e8b2b737ef854e4!2sNnice%20Karaoke!5e0!3m2!1sen!2sus!4v1678886777777',
     cardImage: getImage('ktv-card-2'),
     gallery: [getImage('ktv-card-2'), getImage('ktv-gallery-1-1'), getImage('ktv-gallery-1-2')],
@@ -70,7 +82,11 @@ export const allKtvs: Ktv[] = [
         { category: 'Soft Drinks', items: [{name: 'Coke', price: 'VND 40,000'}, {name: 'Sprite', price: 'VND 40,000'}] },
         { category: 'Snacks', items: [{name: 'Popcorn', price: 'VND 100,000'}, {name: 'Mixed Nuts', price: 'VND 120,000'}] }
     ],
-    paymentMethods: ['Cash', 'Credit Card']
+    paymentMethods: [
+      { method: 'Credit Card', details: '附加费 3%' },
+      { method: 'WeChat Pay' },
+      { method: 'Alipay' },
+    ]
   },
   {
     id: 'icool-ktv',
@@ -83,7 +99,11 @@ export const allKtvs: Ktv[] = [
     priceRange: 'VND 400,000 - 800,000 / hour',
     hours: '11:00 AM - 1:00 AM',
     numberOfRooms: 40,
-    contact: '1900 779 936',
+    contact: {
+      phone: '1900 779 936',
+      whatsapp: '+84 79 491 5205',
+      wechat: 'TTking789',
+    },
     mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.420658422009!2d106.6852443147489!3d10.7792619923196!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f28b7759d5b%3A0x5d5d85d7b5b5d5d5!2sICOOL%20Karaoke!5e0!3m2!1sen!2sus!4v1678886888888',
     cardImage: getImage('ktv-card-3'),
     gallery: [getImage('ktv-card-3'), getImage('ktv-gallery-1-1'), getImage('ktv-gallery-1-2')],
@@ -100,7 +120,11 @@ export const allKtvs: Ktv[] = [
         { category: 'Buffet', items: [{name: 'Weekday Buffet', price: 'VND 199,000 / person'}, {name: 'Weekend Buffet', price: 'VND 249,000 / person'}] },
         { category: 'Cocktails', items: [{name: 'Mojito', price: 'VND 120,000'}, {name: 'Long Island', price: 'VND 150,000'}] }
     ],
-    paymentMethods: ['Cash', 'Credit Card', 'Momo E-Wallet']
+    paymentMethods: [
+      { method: 'Credit Card', details: '附加费 3%' },
+      { method: 'WeChat Pay' },
+      { method: 'Alipay' },
+    ]
   },
   {
     id: 'catwalk-ktv',
@@ -113,7 +137,11 @@ export const allKtvs: Ktv[] = [
     priceRange: 'VND 1,500,000 - 4,000,000 / hour',
     hours: '6:00 PM - 3:00 AM',
     numberOfRooms: 20,
-    contact: '028 3822 8888',
+    contact: {
+      phone: '028 3822 8888',
+      whatsapp: '+84 79 491 5205',
+      wechat: 'TTking789',
+    },
     mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.493399427027!2d106.6943013147488!3d10.7714159923245!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3d7a7b3d3d%3A0x1d4a3d4a3d4a3d4d!2sCatwalk%20Club!5e0!3m2!1sen!2sus!4v1678886999999',
     cardImage: getImage('ktv-card-4'),
     gallery: [getImage('ktv-card-4'), getImage('ktv-gallery-1-1'), getImage('ktv-gallery-1-2')],
@@ -129,7 +157,11 @@ export const allKtvs: Ktv[] = [
         { category: 'Champagne', items: [{name: 'Moët & Chandon', price: 'VND 5,000,000 / bottle'}]},
         { category: 'Premium Snacks', items: [{name: 'Cheese Platter', price: 'VND 750,000'}]}
     ],
-    paymentMethods: ['Cash', 'All major Credit Cards', 'Hotel Room Charge']
+    paymentMethods: [
+      { method: 'Credit Card', details: '附加费 3%' },
+      { method: 'WeChat Pay' },
+      { method: 'Alipay' },
+    ]
   },
   {
     id: 'fyou-ktv',
@@ -142,7 +174,11 @@ export const allKtvs: Ktv[] = [
     priceRange: 'VND 150,000 - 300,000 / hour',
     hours: '1:00 PM - 1:00 AM',
     numberOfRooms: 25,
-    contact: '090 888 9999',
+    contact: {
+      phone: '090 888 9999',
+      whatsapp: '+84 79 491 5205',
+      wechat: 'TTking789',
+    },
     mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.420658422009!2d106.6852443147489!3d10.7792619923196!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f28b7759d5b%3A0x5d5d85d7b5b5d5d5!2sF.YOU%20KTV!5e0!3m2!1sen!2sus!4v1678886888888',
     cardImage: getImage('ktv-card-6'),
     gallery: [getImage('ktv-card-6'), getImage('ktv-gallery-1-1'), getImage('ktv-gallery-1-2')],
@@ -159,6 +195,10 @@ export const allKtvs: Ktv[] = [
         { category: 'Local Beer', items: [{name: 'Saigon Special', price: 'VND 30,000'}, {name: '333', price: 'VND 25,000'}] },
         { category: 'Instant Noodles', items: [{name: 'Hao Hao', price: 'VND 50,000'}]}
     ],
-    paymentMethods: ['Cash']
+    paymentMethods: [
+      { method: 'Credit Card', details: '附加费 3%' },
+      { method: 'WeChat Pay' },
+      { method: 'Alipay' },
+    ]
   }
 ];

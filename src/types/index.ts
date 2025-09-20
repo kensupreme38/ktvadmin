@@ -10,11 +10,18 @@ export interface Ktv {
   services: string[];
   rooms: { type: string; capacity: string; price: string; }[];
   menu: { category: string; items: { name: string; price: string; }[]; }[];
-  paymentMethods: string[];
+  paymentMethods: {
+    method: string;
+    details?: string;
+  }[];
+  contact: {
+    phone: string;
+    whatsapp?: string;
+    wechat?: string;
+  };
   priceRange: string;
   hours: string;
   numberOfRooms: number;
-  contact: string;
   mapUrl: string;
   cardImage: ImagePlaceholder;
   gallery: ImagePlaceholder[];
