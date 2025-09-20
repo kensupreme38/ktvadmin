@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, MicVocal } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Logo } from '../Logo';
 
@@ -14,10 +14,9 @@ const navLinks = [
   { href: '/contact', label: 'Contact' },
 ];
 
-export function Header() {
+const NavLinks = ({ className }: { className?: string }) => {
   const pathname = usePathname();
-
-  const NavLinks = ({ className }: { className?: string }) => (
+  return (
     <nav className={cn('flex items-center gap-4 lg:gap-6', className)}>
       {navLinks.map(({ href, label }) => (
         <Link
@@ -33,7 +32,29 @@ export function Header() {
       ))}
     </nav>
   );
+};
 
+const MobileNavLinks = () => {
+    const pathname = usePathname();
+    return (
+        <div className="flex flex-col space-y-3">
+            {navLinks.map(({ href, label }) => (
+            <Link
+                key={href}
+                href={href}
+                className={cn(
+                'text-base font-medium transition-colors hover:text-primary',
+                pathname === href ? 'text-primary' : 'text-foreground'
+                )}
+            >
+                {label}
+            </Link>
+            ))}
+        </div>
+    );
+};
+
+export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
@@ -54,20 +75,7 @@ export function Header() {
                 <Logo />
               </Link>
               <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-                <div className="flex flex-col space-y-3">
-                   {navLinks.map(({ href, label }) => (
-                    <Link
-                      key={href}
-                      href={href}
-                      className={cn(
-                        'text-base font-medium transition-colors hover:text-primary',
-                        pathname === href ? 'text-primary' : 'text-foreground'
-                      )}
-                    >
-                      {label}
-                    </Link>
-                  ))}
-                </div>
+                <MobileNavLinks />
               </div>
             </SheetContent>
           </Sheet>
