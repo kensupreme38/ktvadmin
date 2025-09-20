@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Logo } from '../Logo';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 // Custom SVG components for WhatsApp and WeChat
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -44,10 +45,15 @@ const WeChatIcon = ({ className }: { className?: string }) => (
 
 export function Footer() {
   const [currentYear, setCurrentYear] = useState<number | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
   }, []);
+
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <footer className="border-t border-border/40 bg-background/95">

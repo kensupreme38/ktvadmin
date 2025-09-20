@@ -11,11 +11,16 @@ import { Logo } from '../Logo';
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/directory', label: 'Karaoke List' },
+  { href: '/articles', label: 'Aura Insights'},
   { href: '/contact', label: 'Contact' },
 ];
 
 const NavLinks = ({ className }: { className?: string }) => {
   const pathname = usePathname();
+  // Hide nav links on admin pages
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
   return (
     <nav className={cn('flex items-center gap-4 lg:gap-6', className)}>
       {navLinks.map(({ href, label }) => (
@@ -55,6 +60,10 @@ const MobileNavLinks = () => {
 };
 
 export function Header() {
+  const pathname = usePathname();
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
