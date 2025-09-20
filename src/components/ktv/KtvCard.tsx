@@ -57,7 +57,7 @@ export function KtvCard({ ktv }: KtvCardProps) {
           ))}
         </div>
         <Button asChild variant="outline" className="mt-auto w-full">
-            <Link href={`/ktv/${ktv.id}`}>View Details</Link>
+            <Link href={`/ktv/${ktv.id}`}>Book Now</Link>
         </Button>
       </CardFooter>
     </Card>
