@@ -101,7 +101,12 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
           <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
              {/* Rooms & Pricing */}
             <AccordionItem value="item-1">
-              <AccordionTrigger className="text-xl font-semibold"><Music className="mr-3 text-primary" />Rooms & Pricing</AccordionTrigger>
+              <AccordionTrigger className="text-xl font-semibold">
+                <div className="flex items-center">
+                  <Music className="mr-3 text-primary" />
+                  Rooms & Pricing
+                </div>
+              </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 pt-2">
                   {ktv.rooms.map((room, index) => (
@@ -119,7 +124,12 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
             
             {/* Food & Drinks */}
             <AccordionItem value="item-2">
-              <AccordionTrigger className="text-xl font-semibold"><Utensils className="mr-3 text-primary" />Food & Drinks</AccordionTrigger>
+              <AccordionTrigger className="text-xl font-semibold">
+                <div className="flex items-center">
+                  <Utensils className="mr-3 text-primary" />
+                  Food & Drinks
+                </div>
+              </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 pt-2">
                 {ktv.menu.map((category, index) => (
@@ -141,7 +151,12 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
 
             {/* Payment & Contact */}
             <AccordionItem value="item-3">
-              <AccordionTrigger className="text-xl font-semibold"><CreditCard className="mr-3 text-primary" />Payment & Contact</AccordionTrigger>
+              <AccordionTrigger className="text-xl font-semibold">
+                <div className="flex items-center">
+                  <CreditCard className="mr-3 text-primary" />
+                  Payment & Contact
+                </div>
+              </AccordionTrigger>
               <AccordionContent>
                  <div className="space-y-4 pt-2">
                     <div>
