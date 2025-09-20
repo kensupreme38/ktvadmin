@@ -169,8 +169,6 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
               </Carousel>
               <div className="text-center mt-4">
                  <Button variant="outline">
