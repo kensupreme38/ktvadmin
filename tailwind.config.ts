@@ -16,11 +16,6 @@ export default {
       },
     },
     extend: {
-      fontFamily: {
-        body: ['Montserrat', 'sans-serif'],
-        headline: ['Bebas Neue', 'sans-serif'],
-        code: ['monospace'],
-      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

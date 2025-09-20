@@ -78,7 +78,7 @@ export default function KtvPage({ params }: KtvPageProps) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="absolute bottom-0 left-0 p-8">
-          <h1 className="text-5xl font-headline font-bold text-white mb-2">{ktv.name}</h1>
+          <h1 className="text-5xl font-bold text-white mb-2">{ktv.name}</h1>
           <div className="flex items-center text-lg text-gray-200">
             <MapPin className="h-5 w-5 mr-2" />
             <span>{ktv.address}</span>
@@ -91,7 +91,7 @@ export default function KtvPage({ params }: KtvPageProps) {
           {/* Gallery Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline text-2xl">Gallery</CardTitle>
+              <CardTitle className="text-2xl">Gallery</CardTitle>
             </CardHeader>
             <CardContent>
               <Carousel className="w-full">
@@ -122,7 +122,7 @@ export default function KtvPage({ params }: KtvPageProps) {
           {/* Reviews Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline text-2xl">Reviews</CardTitle>
+              <CardTitle className="text-2xl">Reviews</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 p-4 bg-background rounded-lg border">
@@ -163,7 +163,7 @@ export default function KtvPage({ params }: KtvPageProps) {
         <div className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline text-2xl">Details</CardTitle>
+              <CardTitle className="text-2xl">Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div className="flex"><DoorOpen className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.numberOfRooms} rooms</span></div>
@@ -180,7 +180,7 @@ export default function KtvPage({ params }: KtvPageProps) {
 
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline text-2xl">Location</CardTitle>
+              <CardTitle className="text-2xl">Location</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="aspect-video w-full overflow-hidden rounded-md">
@@ -191,7 +191,7 @@ export default function KtvPage({ params }: KtvPageProps) {
 
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline text-2xl">Share</CardTitle>
+              <CardTitle className="text-2xl">Share</CardTitle>
             </CardHeader>
             <CardContent>
               <SocialShareButtons url={`/ktv/${ktv.id}`} title={ktv.name} />

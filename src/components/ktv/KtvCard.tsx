@@ -33,7 +33,7 @@ export function KtvCard({ ktv }: KtvCardProps) {
       </CardHeader>
       <CardContent className="flex-grow p-4">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-xl font-headline mb-2">{ktv.name}</CardTitle>
+          <CardTitle className="text-xl mb-2">{ktv.name}</CardTitle>
           {averageRating > 0 && (
               <div className="flex items-center gap-1 text-amber-400">
                   <Star className="w-4 h-4 fill-current" />

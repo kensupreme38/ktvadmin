@@ -27,7 +27,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
     <div className="container mx-auto max-w-4xl px-4 py-8">
       <article>
         <header className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-headline font-bold mb-4 text-center leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center leading-tight">
             {article.title}
           </h1>
           <p className="text-center text-muted-foreground">
@@ -48,7 +48,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
 
         <div
           className="prose prose-invert prose-lg max-w-none mx-auto
-                     prose-headings:font-headline prose-headings:text-foreground prose-p:text-muted-foreground 
+                     prose-headings:font-bold prose-headings:text-foreground prose-p:text-muted-foreground 
                      prose-a:text-primary hover:prose-a:text-primary/80"
           dangerouslySetInnerHTML={{ __html: article.content }}
         />

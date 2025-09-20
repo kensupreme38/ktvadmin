@@ -53,14 +53,14 @@ export default function ContactPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <header className="text-center mb-12">
-        <h1 className="text-5xl font-headline font-bold mb-2">List Your Venue</h1>
+        <h1 className="text-5xl font-bold mb-2">List Your Venue</h1>
         <p className="text-lg text-muted-foreground">
           Join the largest KTV directory in Ho Chi Minh City.
         </p>
       </header>
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Owner Submission Form</CardTitle>
+          <CardTitle className="text-2xl">Owner Submission Form</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>

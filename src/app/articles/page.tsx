@@ -8,7 +8,7 @@ export default function ArticlesPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="text-center mb-12">
-        <h1 className="text-5xl font-headline font-bold mb-2">Aura Insights</h1>
+        <h1 className="text-5xl font-bold mb-2">Aura Insights</h1>
         <p className="text-lg text-muted-foreground">
           Your guide to KTV culture, reviews, and insider tips.
         </p>
@@ -32,7 +32,7 @@ export default function ArticlesPage() {
               </CardHeader>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <p className="text-sm text-muted-foreground mb-2">{article.publishedDate}</p>
-                <h2 className="text-xl font-headline font-semibold mb-3">{article.title}</h2>
+                <h2 className="text-xl font-semibold mb-3">{article.title}</h2>
                 <p className="text-muted-foreground flex-grow mb-4">{article.excerpt}</p>
                  <div className="flex items-center text-sm font-semibold text-primary">
                     Read more

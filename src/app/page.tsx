@@ -47,7 +47,7 @@ export default function Home() {
           priority
         />
         <div className="relative z-10 p-4">
-          <h1 className="text-5xl md:text-7xl font-headline font-bold text-shadow-glow">
+          <h1 className="text-5xl md:text-7xl font-bold text-shadow-glow">
             Tìm Sân Khấu Của Bạn
           </h1>
           <p className="mt-4 text-lg md:text-2xl text-gray-200 text-shadow-glow-subtle">
@@ -62,7 +62,7 @@ export default function Home() {
       {/* Featured Venues Section */}
       <section id="featured" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-headline font-bold text-center mb-12">
+          <h2 className="text-4xl font-bold text-center mb-12">
             Địa Điểm Nổi Bật
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -77,7 +77,7 @@ export default function Home() {
       <section className="bg-card/30 py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-headline font-bold">
+            <h2 className="text-4xl font-bold">
               Tại sao chọn Aura?
             </h2>
              <p className="text-lg text-muted-foreground mt-2">Nền tảng đáng tin cậy của bạn cho cuộc sống về đêm tại Sài Gòn.</p>
@@ -88,7 +88,7 @@ export default function Home() {
                   <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-4 shadow-lg shadow-primary/20">
                     <highlight.icon className="w-10 h-10 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold font-headline mb-2">{highlight.title}</h3>
+                  <h3 className="text-xl font-semibold mb-2">{highlight.title}</h3>
                   <p className="text-muted-foreground flex-grow">{highlight.description}</p>
               </Card>
             ))}
@@ -99,7 +99,7 @@ export default function Home() {
        {/* Call to Action Section */}
        <section className="py-20 text-center bg-gradient-to-t from-background to-card/30">
          <div className="container mx-auto px-4">
-             <h2 className="text-3xl md:text-4xl font-headline font-bold mb-4">Sẵn Sàng Tỏa Sáng?</h2>
+             <h2 className="text-3xl md:text-4xl font-bold mb-4">Sẵn Sàng Tỏa Sáng?</h2>
              <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">Duyệt qua danh bạ đầy đủ của chúng tôi để khám phá KTV yêu thích tiếp theo của bạn. Cuộc phiêu lưu đang chờ đón.</p>
              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20">
                 <Link href="/directory">Khám Phá Tất Cả KTV</Link>
