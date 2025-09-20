@@ -19,12 +19,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const formSchema = z.object({
-  ktvName: z.string().min(2, { message: 'KTV name must be at least 2 characters.' }),
-  address: z.string().min(10, { message: 'Please enter a full address.' }),
-  contactPerson: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
-  phone: z.string().min(10, { message: 'Please enter a valid phone number.' }),
-  message: z.string().optional(),
+  subject: z.string().min(5, { message: 'Subject must be at least 5 characters.' }),
+  message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
 });
 
 export default function ContactPage() {
@@ -32,11 +30,9 @@ export default function ContactPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ktvName: '',
-      address: '',
-      contactPerson: '',
+      name: '',
       email: '',
-      phone: '',
+      subject: '',
       message: '',
     },
   });
@@ -44,8 +40,8 @@ export default function ContactPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     toast({
-      title: 'Submission Received!',
-      description: 'Thank you! We will review your submission and get back to you soon.',
+      title: 'Message Sent!',
+      description: 'Thank you for contacting us. We will get back to you shortly.',
     });
     form.reset();
   }
@@ -53,14 +49,14 @@ export default function ContactPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <header className="text-center mb-12">
-        <h1 className="text-5xl font-bold mb-2">List Your Venue</h1>
+        <h1 className="text-5xl font-bold mb-2">Contact Us</h1>
         <p className="text-lg text-muted-foreground">
-          Join the largest KTV directory in Ho Chi Minh City.
+          Have a question or feedback? Drop us a line!
         </p>
       </header>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Owner Submission Form</CardTitle>
+          <CardTitle className="text-2xl">Send a Message</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -68,12 +64,12 @@ export default function ContactPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
-                  name="ktvName"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>KTV Name</FormLabel>
+                      <FormLabel>Your Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Kingdom KTV" {...field} />
+                        <Input placeholder="John Doe" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -81,80 +77,50 @@ export default function ContactPage() {
                 />
                 <FormField
                   control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>KTV Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="67-69 Pham Viet Chanh" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                 <FormField
-                  control={form.control}
-                  name="contactPerson"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Your Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Anh Tuan" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Your Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="manager@kingdom.com" {...field} />
+                        <Input placeholder="your.email@example.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-               <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Your Phone Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="090 123 4567" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="subject"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subject</FormLabel>
+                    <FormControl>
+                      <Input placeholder="General Inquiry" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="message"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Additional Information</FormLabel>
+                    <FormLabel>Message</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Tell us about your services, pricing, number of rooms, etc."
+                        placeholder="Hi, I would like to ask about..."
                         className="resize-none"
+                        rows={6}
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      This will help us build your profile faster.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">Submit for Review</Button>
+              <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">Submit</Button>
             </form>
           </Form>
         </CardContent>

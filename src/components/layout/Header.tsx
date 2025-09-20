@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils';
 import { Logo } from '../Logo';
 
 const navLinks = [
-  { href: '/directory', label: 'Directory' },
-  { href: '/articles', label: 'Articles' },
-  { href: '/contact', label: 'For Owners' },
+  { href: '/', label: 'Home' },
+  { href: '/directory', label: 'Karaoke List' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 export function Header() {
