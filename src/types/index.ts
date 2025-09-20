@@ -6,7 +6,11 @@ export interface Ktv {
   address: string;
   district: 'District 1' | 'District 3' | 'District 5' | 'District 7' | 'Phu Nhuan';
   type: 'High-end' | 'Budget' | 'Mid-range';
+  description: string;
   services: string[];
+  rooms: { type: string; capacity: string; price: string; }[];
+  menu: { category: string; items: { name: string; price: string; }[]; }[];
+  paymentMethods: string[];
   priceRange: string;
   hours: string;
   numberOfRooms: number;

@@ -10,6 +10,7 @@ export const allKtvs: Ktv[] = [
     address: '67-69 Pham Viet Chanh, Ward 19, Binh Thanh',
     district: 'District 1',
     type: 'High-end',
+    description: 'Kingdom KTV offers a luxurious and royal karaoke experience. With state-of-the-art sound systems and opulent decor, it\'s the perfect venue for special celebrations and corporate events. Our attentive staff ensures a memorable night for all guests.',
     services: ['Private Rooms', 'VIP Service', 'Full Bar', 'Modern Sound System'],
     priceRange: 'VND 1,000,000 - 3,000,000 / hour',
     hours: '2:00 PM - 2:00 AM',
@@ -29,6 +30,17 @@ export const allKtvs: Ktv[] = [
       { author: 'Linh Pham', comment: 'Service was top-notch. The staff were very attentive. Great song selection!', rating: 5 },
       { author: 'Minh Le', comment: 'Good place for business meetings. The VIP rooms are very private and well-equipped.', rating: 4 },
     ],
+    rooms: [
+        { type: 'Standard Room', capacity: 'Up to 10 people', price: 'VND 1,000,000 / hour' },
+        { type: 'VIP Room', capacity: 'Up to 20 people', price: 'VND 2,000,000 / hour' },
+        { type: 'Royal Suite', capacity: 'Up to 30 people', price: 'VND 3,000,000 / hour' }
+    ],
+    menu: [
+        { category: 'Beers', items: [{name: 'Heineken', price: 'VND 80,000'}, {name: 'Tiger', price: 'VND 70,000'}] },
+        { category: 'Spirits', items: [{name: 'Chivas 18', price: 'VND 3,500,000 / bottle'}, {name: 'Macallan 12', price: 'VND 4,000,000 / bottle'}] },
+        { category: 'Snacks', items: [{name: 'French Fries', price: 'VND 150,000'}, {name: 'Fruit Platter', price: 'VND 500,000'}] }
+    ],
+    paymentMethods: ['Cash', 'Credit Card (Visa, Mastercard)', 'Bank Transfer']
   },
   {
     id: 'nnice-ktv',
@@ -36,6 +48,7 @@ export const allKtvs: Ktv[] = [
     address: '231 Le Van Sy, Ward 13, Phu Nhuan',
     district: 'Phu Nhuan',
     type: 'Mid-range',
+    description: 'Nnice KTV is a popular chain known for its clean facilities and reasonable prices. It\'s a reliable choice for casual gatherings with friends and family, offering a wide selection of songs in a comfortable environment.',
     services: ['Private Rooms', 'Snacks & Drinks', 'Family Friendly'],
     priceRange: 'VND 300,000 - 600,000 / hour',
     hours: '10:00 AM - 12:00 AM',
@@ -48,6 +61,16 @@ export const allKtvs: Ktv[] = [
       { author: 'Bao Tran', comment: 'A reliable choice for a casual night out. The prices are reasonable and the rooms are clean.', rating: 4 },
       { author: 'Thuy Nguyen', comment: 'Good for large groups and families. They have a decent selection of new songs.', rating: 4 },
     ],
+    rooms: [
+        { type: 'Small Room', capacity: 'Up to 8 people', price: 'VND 300,000 / hour' },
+        { type: 'Medium Room', capacity: 'Up to 15 people', price: 'VND 450,000 / hour' },
+        { type: 'Large Room', capacity: 'Up to 25 people', price: 'VND 600,000 / hour' }
+    ],
+    menu: [
+        { category: 'Soft Drinks', items: [{name: 'Coke', price: 'VND 40,000'}, {name: 'Sprite', price: 'VND 40,000'}] },
+        { category: 'Snacks', items: [{name: 'Popcorn', price: 'VND 100,000'}, {name: 'Mixed Nuts', price: 'VND 120,000'}] }
+    ],
+    paymentMethods: ['Cash', 'Credit Card']
   },
   {
     id: 'icool-ktv',
@@ -55,6 +78,7 @@ export const allKtvs: Ktv[] = [
     address: '128 Cach Mang Thang Tam, Ward 10, District 3',
     district: 'District 3',
     type: 'Mid-range',
+    description: 'ICOOL stands out with its fun, themed rooms and optional buffet service. It\'s a great place for birthday parties and young crowds looking for a unique and energetic karaoke experience with good food.',
     services: ['Themed Rooms', 'Snacks & Drinks', 'Buffet Option'],
     priceRange: 'VND 400,000 - 800,000 / hour',
     hours: '11:00 AM - 1:00 AM',
@@ -67,6 +91,16 @@ export const allKtvs: Ktv[] = [
       { author: 'Hoang Vu', comment: 'Love the themed rooms! Makes the experience much more fun. The buffet is a great deal.', rating: 5 },
       { author: 'Mai Anh', comment: 'The sound quality is good, but it can get very crowded on weekends. Book in advance!', rating: 4 },
     ],
+    rooms: [
+        { type: 'Galaxy Room', capacity: 'Up to 12 people', price: 'VND 450,000 / hour' },
+        { type: 'Anime Room', capacity: 'Up to 12 people', price: 'VND 450,000 / hour' },
+        { type: 'Party Room', capacity: 'Up to 30 people', price: 'VND 800,000 / hour' }
+    ],
+    menu: [
+        { category: 'Buffet', items: [{name: 'Weekday Buffet', price: 'VND 199,000 / person'}, {name: 'Weekend Buffet', price: 'VND 249,000 / person'}] },
+        { category: 'Cocktails', items: [{name: 'Mojito', price: 'VND 120,000'}, {name: 'Long Island', price: 'VND 150,000'}] }
+    ],
+    paymentMethods: ['Cash', 'Credit Card', 'Momo E-Wallet']
   },
   {
     id: 'catwalk-ktv',
@@ -74,6 +108,7 @@ export const allKtvs: Ktv[] = [
     address: 'New World Saigon Hotel, 76 Le Lai, Ben Thanh, District 1',
     district: 'District 1',
     type: 'High-end',
+    description: 'Located within the prestigious New World Saigon Hotel, Catwalk offers a sophisticated KTV and nightclub experience. It\'s the ideal spot for those looking to sing, dance, and socialize in a high-energy, upscale environment.',
     services: ['VIP Service', 'Full Bar', 'Live DJs', 'In-Hotel Location'],
     priceRange: 'VND 1,500,000 - 4,000,000 / hour',
     hours: '6:00 PM - 3:00 AM',
@@ -86,6 +121,15 @@ export const allKtvs: Ktv[] = [
       { author: 'David Chen', comment: 'The place to see and be seen. Very high-end, attracts a certain crowd. Professional setup.', rating: 5 },
       { author: 'Jessica Tran', comment: 'More of a club vibe than a traditional KTV. Great if you want to party.', rating: 4 },
     ],
+    rooms: [
+        { type: 'Deluxe Room', capacity: 'Up to 15 people', price: 'VND 1,500,000 / hour' },
+        { type: 'Presidential Suite', capacity: 'Up to 40 people', price: 'VND 4,000,000 / hour' }
+    ],
+    menu: [
+        { category: 'Champagne', items: [{name: 'Moët & Chandon', price: 'VND 5,000,000 / bottle'}]},
+        { category: 'Premium Snacks', items: [{name: 'Cheese Platter', price: 'VND 750,000'}]}
+    ],
+    paymentMethods: ['Cash', 'All major Credit Cards', 'Hotel Room Charge']
   },
   {
     id: 'fyou-ktv',
@@ -93,6 +137,7 @@ export const allKtvs: Ktv[] = [
     address: '239-241 Hai Ba Trung, Ward 6, District 3',
     district: 'District 3',
     type: 'Budget',
+    description: 'F.YOU KTV is the go-to spot for students and anyone looking for a fun night out without breaking the bank. While the facilities are basic, the song list is surprisingly current and the atmosphere is always lively.',
     services: ['Private Rooms', 'Cheap Beer', 'Student Deals'],
     priceRange: 'VND 150,000 - 300,000 / hour',
     hours: '1:00 PM - 1:00 AM',
@@ -105,5 +150,15 @@ export const allKtvs: Ktv[] = [
       { author: 'StudentLife', comment: 'Our go-to place for cheap fun. Don\'t expect luxury, but it gets the job done.', rating: 4 },
       { author: 'Uyen My', comment: 'It\'s alright for the price. The rooms are a bit old but the song list is surprisingly updated.', rating: 3 },
     ],
+    rooms: [
+        { type: 'Small Group', capacity: 'Up to 6 people', price: 'VND 150,000 / hour' },
+        { type: 'Medium Group', capacity: 'Up to 12 people', price: 'VND 220,000 / hour' },
+        { type: 'Large Group', capacity: 'Up to 20 people', price: 'VND 300,000 / hour' }
+    ],
+    menu: [
+        { category: 'Local Beer', items: [{name: 'Saigon Special', price: 'VND 30,000'}, {name: '333', price: 'VND 25,000'}] },
+        { category: 'Instant Noodles', items: [{name: 'Hao Hao', price: 'VND 50,000'}]}
+    ],
+    paymentMethods: ['Cash']
   }
 ];

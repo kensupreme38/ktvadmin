@@ -14,13 +14,24 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { SocialShareButtons } from '@/components/SocialShareButtons';
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import {
   Clock,
   Contact,
+  CreditCard,
   DoorOpen,
+  Info,
   Loader,
   MapPin,
+  Music,
+  PartyPopper,
   Sparkles,
   Star,
+  Utensils,
   Wallet,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -76,6 +87,79 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
+          {/* About Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center"><Info className="mr-3 text-primary" /> About {ktv.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">{ktv.description}</p>
+            </CardContent>
+          </Card>
+
+          {/* Details Accordion */}
+          <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+             {/* Rooms & Pricing */}
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-xl font-semibold"><Music className="mr-3 text-primary" />Rooms & Pricing</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4 pt-2">
+                  {ktv.rooms.map((room, index) => (
+                    <div key={index} className="flex justify-between items-center p-3 bg-card/50 rounded-lg">
+                      <div>
+                        <p className="font-semibold">{room.type}</p>
+                        <p className="text-sm text-muted-foreground">Capacity: {room.capacity}</p>
+                      </div>
+                      <p className="font-semibold text-primary">{room.price}</p>
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            
+            {/* Food & Drinks */}
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-xl font-semibold"><Utensils className="mr-3 text-primary" />Food & Drinks</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4 pt-2">
+                {ktv.menu.map((category, index) => (
+                  <div key={index}>
+                    <h4 className="font-bold text-lg mb-2 text-primary/80">{category.category}</h4>
+                    <ul className="space-y-2">
+                      {category.items.map((item, itemIndex) => (
+                        <li key={itemIndex} className="flex justify-between items-center p-3 bg-card/50 rounded-lg">
+                          <span>{item.name}</span>
+                          <span className="font-mono text-muted-foreground">{item.price}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Payment & Contact */}
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-xl font-semibold"><CreditCard className="mr-3 text-primary" />Payment & Contact</AccordionTrigger>
+              <AccordionContent>
+                 <div className="space-y-4 pt-2">
+                    <div>
+                      <h4 className="font-bold text-lg mb-2 text-primary/80">Payment Methods</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {ktv.paymentMethods.map(method => <Badge key={method} variant="secondary">{method}</Badge>)}
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h4 className="font-bold text-lg mb-2 text-primary/80">Contact Information</h4>
+                      <p className="text-muted-foreground">{ktv.contact}</p>
+                    </div>
+                 </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
           {/* Gallery Section */}
           <Card>
             <CardHeader>
@@ -151,7 +235,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
         <div className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Details</CardTitle>
+              <CardTitle className="text-2xl">Quick Info</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div className="flex"><DoorOpen className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.numberOfRooms} rooms</span></div>
@@ -159,6 +243,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
               <div className="flex"><Wallet className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.priceRange}</span></div>
               <div className="flex"><Contact className="h-4 w-4 mr-3 mt-1 flex-shrink-0" /><span>{ktv.contact}</span></div>
               <Separator />
+               <h4 className="font-semibold pt-2">Main Services</h4>
               <div className="flex flex-wrap gap-2">
                 <Badge>{ktv.type}</Badge>
                 {ktv.services.map(service => <Badge key={service} variant="secondary">{service}</Badge>)}
