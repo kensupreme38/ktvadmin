@@ -91,18 +91,6 @@ export default function Home() {
             
             <RetroMicrophoneIcon className="w-24 h-24 md:w-32 md:h-32 opacity-50" />
             
-            <div className="absolute bottom-8 grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-8 w-full max-w-6xl px-4 text-xs md:text-sm">
-                <div className="text-left">
-                    <p>地址 ADDRESS: 57 PHẠM VIẾT CHÁNH, PHƯỜNG NGUYỄN CƯ TRINH, QUẬN 1, HỒ CHÍ MINH CITY</p>
-                </div>
-                <div className="text-center">
-                    <p>营业时间 OPENING HOURS: 6:00 PM – 3:00 AM 每晚</p>
-                </div>
-                <div className="text-right">
-                    <p>WHATSAPP: +84877218317 (妈咪 SUZY)</p>
-                    <p>WECHAT: MAY333SEA (妈咪 SUZY)</p>
-                </div>
-            </div>
         </div>
       </section>
 
