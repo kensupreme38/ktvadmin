@@ -74,7 +74,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-screen w-full flex items-center justify-center text-center text-white overflow-hidden -mt-14 pt-14">
         <Image
-          src="https://picsum.photos/seed/ktv-dark/1800/1200"
+          src="https://hcmc-ktv.com/wp-content/uploads/2025/06/57-Tulip-KTV-1024x512.png"
           alt="Dàn karaoke với ánh đèn neon"
           fill
           className="object-cover brightness-[0.3]"
