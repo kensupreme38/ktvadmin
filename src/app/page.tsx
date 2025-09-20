@@ -83,10 +83,6 @@ export default function Home() {
         />
         <div className="relative z-10 p-4 flex flex-col items-center justify-center h-full">
             <div className="absolute top-1/4">
-                <p className="text-lg md:text-xl font-semibold text-shadow-glow-subtle mb-4">SAIGON'S PREMIER LUXURY KARAOKE EXPERIENCE!</p>
-                <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-wider text-shadow-glow">
-                    57 TULIP KTV
-                </h1>
             </div>
             
             <RetroMicrophoneIcon className="w-24 h-24 md:w-32 md:h-32 opacity-50" />
