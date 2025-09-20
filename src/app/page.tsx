@@ -37,7 +37,7 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-[70vh] md:h-[90vh] w-full flex items-center justify-center text-center text-white overflow-hidden">
+      <section className="relative h-screen w-full flex items-center justify-center text-center text-white overflow-hidden">
         <Image
           src="https://picsum.photos/seed/301/1800/1200"
           alt="Dàn karaoke với ánh đèn neon"
