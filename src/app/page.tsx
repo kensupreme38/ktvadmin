@@ -57,29 +57,52 @@ const highlights = [
     },
 ];
 
+const RetroMicrophoneIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 15C14.2091 15 16 13.2091 16 11V6C16 3.79086 14.2091 2 12 2C9.79086 2 8 3.79086 8 6V11C8 13.2091 9.79086 15 12 15Z" stroke="white" strokeWidth="1.5"/>
+      <path d="M5 11H8" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M16 11H19" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M10 22H14" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M12 22V19" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M9 19H15C16.1046 19 17 18.1046 17 17V16C17 14.8954 16.1046 14 15 14H9C7.89543 14 7 14.8954 7 16V17C7 18.1046 7.89543 19 9 19Z" stroke="white" strokeWidth="1.5"/>
+    </svg>
+  );
+
 export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-screen w-full flex items-center justify-center text-center text-white overflow-hidden">
+      <section className="relative h-screen w-full flex items-center justify-center text-center text-white overflow-hidden -mt-14 pt-14">
         <Image
-          src="https://picsum.photos/seed/301/1800/1200"
+          src="https://picsum.photos/seed/ktv-dark/1800/1200"
           alt="Dàn karaoke với ánh đèn neon"
           fill
-          className="object-cover brightness-50"
-          data-ai-hint="neon karaoke"
+          className="object-cover brightness-[0.3]"
+          data-ai-hint="dark karaoke room"
           priority
         />
-        <div className="relative z-10 p-4">
-          <h1 className="text-5xl md:text-7xl font-bold text-shadow-glow">
-            Tìm Sân Khấu Của Bạn
-          </h1>
-          <p className="mt-4 text-lg md:text-2xl text-gray-200 text-shadow-glow-subtle">
-            Khám phá những địa điểm KTV tốt nhất tại Thành phố Hồ Chí Minh.
-          </p>
-          <Button asChild size="lg" className="mt-8 bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20">
-             <Link href="#featured">Tìm KTV Cho Tối Nay</Link>
-          </Button>
+        <div className="relative z-10 p-4 flex flex-col items-center justify-center h-full">
+            <div className="absolute top-1/4">
+                <p className="text-lg md:text-xl font-semibold text-shadow-glow-subtle mb-4">SAIGON'S PREMIER LUXURY KARAOKE EXPERIENCE!</p>
+                <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-wider text-shadow-glow">
+                    57 TULIP KTV
+                </h1>
+            </div>
+            
+            <RetroMicrophoneIcon className="w-24 h-24 md:w-32 md:h-32 opacity-50" />
+            
+            <div className="absolute bottom-8 grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-8 w-full max-w-6xl px-4 text-xs md:text-sm">
+                <div className="text-left">
+                    <p>地址 ADDRESS: 57 PHẠM VIẾT CHÁNH, PHƯỜNG NGUYỄN CƯ TRINH, QUẬN 1, HỒ CHÍ MINH CITY</p>
+                </div>
+                <div className="text-center">
+                    <p>营业时间 OPENING HOURS: 6:00 PM – 3:00 AM 每晚</p>
+                </div>
+                <div className="text-right">
+                    <p>WHATSAPP: +84877218317 (妈咪 SUZY)</p>
+                    <p>WECHAT: MAY333SEA (妈咪 SUZY)</p>
+                </div>
+            </div>
         </div>
       </section>
 
