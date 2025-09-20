@@ -5,10 +5,34 @@ import { allKtvs } from '@/data/ktvs';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Music4, ShieldCheck, Utensils, Award } from 'lucide-react';
+import { Music4, ShieldCheck, Utensils, Award, Waves, Wifi, CalendarClock, Armchair } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const featuredKtvs = allKtvs.slice(0, 3);
+
+const newHighlights = [
+    {
+        icon: Waves,
+        title: 'Dịch vụ chuyên nghiệp',
+        description: 'Đội ngũ nhân viên tận tâm tại KARAOKE 57 TULIP KTV sẽ khiến bạn đến và không muốn rời đi.',
+    },
+    {
+        icon: Wifi,
+        title: 'Wi-Fi miễn phí',
+        description: 'Wi-Fi miễn phí phủ sóng toàn bộ hệ thống, mang lại sự tiện lợi cho bạn!',
+    },
+    {
+        icon: Armchair,
+        title: 'Phòng ốc tiện nghi',
+        description: 'Hệ thống phòng lớn và tiện lợi nhất với đầy đủ dịch vụ, có WC riêng trong phòng.',
+    },
+    {
+        icon: CalendarClock,
+        title: 'Đặt phòng miễn phí',
+        description: 'Hỗ trợ khách hàng đặt bàn trước thuận tiện, chủ động trong mọi cuộc vui.',
+    },
+];
+
 
 const highlights = [
     {
@@ -70,6 +94,35 @@ export default function Home() {
               <KtvCard key={ktv.id} ktv={ktv} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* New Highlights Section from image */}
+      <section className="bg-background py-16 md:py-24">
+        <div className="container mx-auto px-4 text-center">
+            <Button asChild variant="outline" className="mb-8">
+                <Link href="/directory">Xem tất cả các quán Karaoke</Link>
+            </Button>
+            <h2 className="text-3xl md:text-4xl font-bold uppercase">
+                Karaoke 57 Tulip The Best KTV in Ho Chi Minh City
+            </h2>
+            <div className="flex justify-center my-4">
+                <div className="w-24 h-1 bg-yellow-400" />
+            </div>
+            <p className="text-muted-foreground max-w-3xl mx-auto mb-12">
+                Trang bị hệ thống phòng cháy chữa cháy tự động là giải pháp tối ưu cho sự an toàn của người và tài sản khi vui chơi tại KARAOKE 57 TULIP KTV. Chúng tôi sẵn sàng chi hơn 1 tỷ đồng để mang lại sự an toàn và niềm vui cho quý khách.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {newHighlights.map((highlight) => (
+                <Card key={highlight.title} className="bg-card text-card-foreground p-6 flex items-center gap-6 text-left rounded-lg">
+                    <highlight.icon className="w-12 h-12 text-yellow-400 flex-shrink-0" />
+                    <div>
+                        <h3 className="text-lg font-semibold text-yellow-400">{highlight.title}</h3>
+                        <p className="text-muted-foreground">{highlight.description}</p>
+                    </div>
+                </Card>
+                ))}
+            </div>
         </div>
       </section>
 
