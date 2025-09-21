@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -67,13 +68,15 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
+        {/* Desktop Logo */}
         <div className="mr-4 hidden md:flex">
           <Link href="/">
             <Logo />
           </Link>
         </div>
         
-        <div className="md:hidden">
+        {/* Mobile Menu & Logo */}
+        <div className="flex w-full items-center justify-between md:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -90,15 +93,21 @@ export function Header() {
               </div>
             </SheetContent>
           </Sheet>
+          <div className="flex justify-center">
+             <Link href="/">
+                <Logo />
+             </Link>
+          </div>
+           {/* Empty div to balance the flexbox */}
+          <div className="w-10"></div>
         </div>
 
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+        {/* Desktop Nav */}
+        <div className="hidden flex-1 items-center justify-end space-x-2 md:flex">
           <div className="w-full flex-1 md:w-auto md:flex-none">
             {/* Can add search here if needed */}
           </div>
-          <div className="hidden md:flex">
-             <NavLinks />
-          </div>
+          <NavLinks />
         </div>
       </div>
     </header>
