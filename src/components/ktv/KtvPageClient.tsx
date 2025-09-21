@@ -124,8 +124,8 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
                   {ktv.gallery.map((img, index) => (
                     <CarouselItem key={index} className="md:basis-1/2">
                       <div className="p-1">
-                        <div className="relative aspect-video">
-                           <Image src={img.imageUrl} alt={`${ktv.name} gallery image ${index + 1}`} fill className="rounded-md object-cover" data-ai-hint={img.imageHint} />
+                        <div className="relative">
+                           <Image src={img.imageUrl} alt={`${ktv.name} gallery image ${index + 1}`} width={600} height={400} className="rounded-md object-cover w-full h-auto" data-ai-hint={img.imageHint} />
                         </div>
                       </div>
                     </CarouselItem>
