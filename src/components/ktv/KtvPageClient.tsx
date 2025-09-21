@@ -1,11 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { SocialShareButtons } from '@/components/SocialShareButtons';
+import {
+  Dialog,
+  DialogContent,
+} from '@/components/ui/dialog';
 import {
   Calendar,
   CheckCircle,
@@ -21,7 +26,7 @@ import {
   Utensils,
   Wallet,
 } from 'lucide-react';
-import type { Ktv } from '@/types';
+import type { Ktv, ImagePlaceholder } from '@/types';
 import Masonry from 'react-masonry-css';
 
 // Custom SVG components for WhatsApp and WeChat
@@ -75,6 +80,14 @@ const paymentMethodTranslations: Record<string, string> = {
 
 
 export default function KtvPageClient({ ktv }: KtvPageClientProps) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<ImagePlaceholder | null>(null);
+
+  const openLightbox = (image: ImagePlaceholder) => {
+    setSelectedImage(image);
+    setLightboxOpen(true);
+  };
+  
   const breakpointColumnsObj = {
     default: 3,
     1100: 2,
@@ -126,13 +139,13 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
                 columnClassName="my-masonry-grid_column"
               >
                 {ktv.gallery.map((img, index) => (
-                  <div key={index}>
+                  <div key={index} className="overflow-hidden rounded-md cursor-pointer" onClick={() => openLightbox(img)}>
                     <Image
                       src={img.imageUrl}
                       alt={`${ktv.name} gallery image ${index + 1}`}
                       width={600}
                       height={400}
-                      className="rounded-md object-cover w-full h-auto"
+                      className="rounded-md object-cover w-full h-auto transform hover:scale-105 transition-transform duration-300"
                       data-ai-hint={img.imageHint}
                     />
                   </div>
@@ -302,6 +315,20 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
           </Card>
         </div>
       </div>
+      
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent className="max-w-4xl p-2 bg-transparent border-none">
+          {selectedImage && (
+            <Image
+              src={selectedImage.imageUrl}
+              alt={selectedImage.description}
+              width={1200}
+              height={800}
+              className="rounded-lg object-contain w-full h-auto max-h-[80vh]"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
