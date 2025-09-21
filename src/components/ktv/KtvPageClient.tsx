@@ -22,6 +22,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import type { Ktv } from '@/types';
+import Masonry from 'react-masonry-css';
 
 // Custom SVG components for WhatsApp and WeChat
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -74,6 +75,11 @@ const paymentMethodTranslations: Record<string, string> = {
 
 
 export default function KtvPageClient({ ktv }: KtvPageClientProps) {
+  const breakpointColumnsObj = {
+    default: 3,
+    1100: 2,
+    700: 1,
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -114,20 +120,24 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
               <CardTitle className="text-2xl">Gallery</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+               <Masonry
+                breakpointCols={breakpointColumnsObj}
+                className="my-masonry-grid"
+                columnClassName="my-masonry-grid_column"
+              >
                 {ktv.gallery.map((img, index) => (
-                  <div key={index} className="break-inside-avoid">
-                     <Image
-                        src={img.imageUrl}
-                        alt={`${ktv.name} gallery image ${index + 1}`}
-                        width={600}
-                        height={400}
-                        className="rounded-md object-cover w-full h-auto"
-                        data-ai-hint={img.imageHint}
-                      />
+                  <div key={index}>
+                    <Image
+                      src={img.imageUrl}
+                      alt={`${ktv.name} gallery image ${index + 1}`}
+                      width={600}
+                      height={400}
+                      className="rounded-md object-cover w-full h-auto"
+                      data-ai-hint={img.imageHint}
+                    />
                   </div>
                 ))}
-              </div>
+              </Masonry>
               <div className="text-center mt-8">
                  <Button variant="outline">
                     <Sparkles className="mr-2 h-4 w-4" />
