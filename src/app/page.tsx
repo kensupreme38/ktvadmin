@@ -57,22 +57,11 @@ const highlights = [
     },
 ];
 
-const RetroMicrophoneIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 15C14.2091 15 16 13.2091 16 11V6C16 3.79086 14.2091 2 12 2C9.79086 2 8 3.79086 8 6V11C8 13.2091 9.79086 15 12 15Z" stroke="white" strokeWidth="1.5"/>
-      <path d="M5 11H8" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M16 11H19" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M10 22H14" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M12 22V19" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M9 19H15C16.1046 19 17 18.1046 17 17V16C17 14.8954 16.1046 14 15 14H9C7.89543 14 7 14.8954 7 16V17C7 18.1046 7.89543 19 9 19Z" stroke="white" strokeWidth="1.5"/>
-    </svg>
-  );
-
 export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-[70vh] md:h-screen w-full flex items-center justify-center text-center text-white overflow-hidden -mt-14 pt-14">
+      <section className="relative h-[60vh] md:h-[80vh] lg:h-screen w-full flex items-center justify-center text-center text-white overflow-hidden -mt-14 pt-14">
         <Image
           src="https://hcmc-ktv.com/wp-content/uploads/2025/06/57-Tulip-KTV-1024x512.png"
           alt="Dàn karaoke với ánh đèn neon"
@@ -81,15 +70,16 @@ export default function Home() {
           data-ai-hint="dark karaoke room"
           priority
         />
+        <div className="absolute inset-0 bg-black/30" />
         <div className="relative z-10 p-4 flex flex-col items-center justify-center h-full">
-            
+            {/* Content for Hero can go here if needed in the future */}
         </div>
       </section>
 
       {/* Featured Venues Section */}
       <section id="featured" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
             Địa Điểm Nổi Bật
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -115,7 +105,7 @@ export default function Home() {
             <p className="text-muted-foreground max-w-3xl mx-auto mb-12">
                 Trang bị hệ thống phòng cháy chữa cháy tự động là giải pháp tối ưu cho sự an toàn của người và tài sản khi vui chơi tại KARAOKE 57 TULIP KTV. Chúng tôi sẵn sàng chi hơn 1 tỷ đồng để mang lại sự an toàn và niềm vui cho quý khách.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {newHighlights.map((highlight) => (
                 <Card key={highlight.title} className="bg-card text-card-foreground p-6 flex items-center gap-6 text-left rounded-lg">
                     <highlight.icon className="w-12 h-12 text-yellow-400 flex-shrink-0" />
@@ -133,7 +123,7 @@ export default function Home() {
       <section className="bg-card/30 py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold">
+            <h2 className="text-3xl md:text-4xl font-bold">
               Tại sao chọn Aura?
             </h2>
              <p className="text-lg text-muted-foreground mt-2">Nền tảng đáng tin cậy của bạn cho cuộc sống về đêm tại Sài Gòn.</p>
