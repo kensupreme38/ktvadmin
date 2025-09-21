@@ -138,13 +138,6 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
                   </div>
                 ))}
               </Masonry>
-              <div className="text-center mt-8">
-                 <Button variant="outline">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Optimize with AI
-                 </Button>
-                 <p className="text-xs text-muted-foreground mt-2">KTV owner tool to improve gallery images</p>
-              </div>
             </CardContent>
           </Card>
 
