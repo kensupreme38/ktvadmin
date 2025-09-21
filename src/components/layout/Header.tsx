@@ -70,32 +70,33 @@ export function Header() {
       <div className="container flex h-14 items-center">
         {/* Mobile Menu & Logo */}
         <div className="flex w-full items-center justify-between md:hidden">
+          <div className="flex-1">
             <Sheet>
-                <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="mr-2">
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle Menu</span>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Toggle Menu</span>
                 </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="pr-0">
-                    <SheetHeader>
-                        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                    </SheetHeader>
-                    <Link href="/" className="flex items-center mb-6">
-                        <Logo />
-                    </Link>
-                    <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-                        <MobileNavLinks />
-                    </div>
-                </SheetContent>
+              </SheetTrigger>
+              <SheetContent side="left" className="pr-0">
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                </SheetHeader>
+                <Link href="/" className="flex items-center mb-6">
+                  <Logo />
+                </Link>
+                <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
+                  <MobileNavLinks />
+                </div>
+              </SheetContent>
             </Sheet>
-            <div className="flex-1 flex justify-center">
-             <Link href="/">
-                <Logo />
-             </Link>
-            </div>
-            {/* Empty div to balance the flexbox */}
-            <div className="w-10"></div>
+          </div>
+          <div className="flex flex-1 justify-center">
+            <Link href="/">
+              <Logo />
+            </Link>
+          </div>
+          <div className="flex-1" />
         </div>
         
         {/* Desktop Nav & Logo */}
