@@ -30,6 +30,8 @@ import {
 } from 'lucide-react';
 import type { Ktv, ImagePlaceholder } from '@/types';
 import Masonry from 'react-masonry-css';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 // Custom SVG components for WhatsApp and WeChat
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -79,6 +81,31 @@ const paymentMethodTranslations: Record<string, string> = {
   'WeChat Pay': '微信支付',
   'Alipay': '支付宝',
 };
+
+function GalleryImage({ image, onImageClick }: { image: ImagePlaceholder, onImageClick: (image: ImagePlaceholder) => void }) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  return (
+    <div 
+      className="relative w-full aspect-[4/3] bg-muted rounded-md overflow-hidden"
+      onClick={() => onImageClick(image)}
+    >
+      {isLoading && <Skeleton className="absolute inset-0" />}
+      <Image
+        src={image.imageUrl}
+        alt={image.description}
+        fill
+        className={cn(
+          "cursor-pointer rounded-md object-cover transform hover:scale-105 transition-transform duration-300",
+          isLoading ? 'opacity-0' : 'opacity-100'
+        )}
+        onLoad={() => setIsLoading(false)}
+        data-ai-hint={image.imageHint}
+        sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
+      />
+    </div>
+  );
+}
 
 
 export default function KtvPageClient({ ktv }: KtvPageClientProps) {
@@ -141,16 +168,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
                 columnClassName="my-masonry-grid_column"
               >
                 {ktv.gallery.map((img, index) => (
-                  <div key={index} className="overflow-hidden rounded-md cursor-pointer" onClick={() => openLightbox(img)}>
-                    <Image
-                      src={img.imageUrl}
-                      alt={`${ktv.name} gallery image ${index + 1}`}
-                      width={600}
-                      height={400}
-                      className="rounded-md object-cover w-full h-auto transform hover:scale-105 transition-transform duration-300"
-                      data-ai-hint={img.imageHint}
-                    />
-                  </div>
+                  <GalleryImage key={index} image={img} onImageClick={openLightbox} />
                 ))}
               </Masonry>
             </CardContent>
@@ -328,7 +346,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
           {selectedImage && (
             <Image
               src={selectedImage.imageUrl}
-              alt={selectedImage.description}
+              alt={selectedImage.description || 'Lightbox image'}
               width={1200}
               height={800}
               className="rounded-lg object-contain w-full h-auto max-h-[80vh]"
