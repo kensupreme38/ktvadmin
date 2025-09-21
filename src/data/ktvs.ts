@@ -28,6 +28,10 @@ export const allKtvs: Ktv[] = [
       getImage('ktv-gallery-1-2'),
       getImage('ktv-gallery-1-3'),
       getImage('ktv-gallery-1-4'),
+      getImage('ktv-gallery-new-1'),
+      getImage('ktv-gallery-new-2'),
+      getImage('ktv-gallery-new-3'),
+      getImage('ktv-gallery-new-4'),
     ],
     reviews: [
       { author: 'Anh Tuan', comment: 'Amazing sound system and very luxurious rooms. A bit pricey but worth it for special occasions.', rating: 5 },

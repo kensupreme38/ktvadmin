@@ -90,6 +90,30 @@
       "description": "A person holding a microphone with neon lights in the background.",
       "imageUrl": "https://picsum.photos/seed/301/1800/1200",
       "imageHint": "neon karaoke"
+    },
+    {
+      "id": "ktv-gallery-new-1",
+      "description": "KTV room with modern lighting",
+      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146675642_562af2983ea4cb5c87d74c8686576375.jpg",
+      "imageHint": "modern ktv"
+    },
+    {
+      "id": "ktv-gallery-new-2",
+      "description": "KTV room with stage",
+      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146718424_a823cdbfe87552bd60dfa36fc8b47232.jpg",
+      "imageHint": "ktv stage"
+    },
+    {
+      "id": "ktv-gallery-new-3",
+      "description": "Spacious KTV room with large sofa",
+      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146565213_f474b602d0504524d367bd60a200e936.jpg",
+      "imageHint": "spacious room"
+    },
+    {
+      "id": "ktv-gallery-new-4",
+      "description": "KTV room with intricate ceiling lights",
+      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146447679_f1be80d5b8ea286de5ddbd0470f1332b.jpg",
+      "imageHint": "ceiling lights"
     }
   ]
 }
