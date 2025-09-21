@@ -72,7 +72,7 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-screen w-full flex items-center justify-center text-center text-white overflow-hidden -mt-14 pt-14">
+      <section className="relative h-[70vh] md:h-screen w-full flex items-center justify-center text-center text-white overflow-hidden -mt-14 pt-14">
         <Image
           src="https://hcmc-ktv.com/wp-content/uploads/2025/06/57-Tulip-KTV-1024x512.png"
           alt="Dàn karaoke với ánh đèn neon"
@@ -82,11 +82,7 @@ export default function Home() {
           priority
         />
         <div className="relative z-10 p-4 flex flex-col items-center justify-center h-full">
-            <div className="absolute top-1/4">
-            </div>
-            
             <RetroMicrophoneIcon className="w-24 h-24 md:w-32 md:h-32 opacity-50" />
-            
         </div>
       </section>
 
