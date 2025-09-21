@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Music4, ShieldCheck, Utensils, Award, Waves, Wifi, CalendarClock, Armchair } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 const featuredKtvs = allKtvs.slice(0, 3);
 
@@ -61,19 +61,16 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-[60vh] md:h-[80vh] lg:h-screen w-full flex items-center justify-center text-center text-white overflow-hidden -mt-14 pt-14">
+      <section className="relative w-full h-[60vh] md:h-[80vh] max-h-[800px] flex items-center justify-center overflow-hidden">
         <Image
           src="https://hcmc-ktv.com/wp-content/uploads/2025/06/57-Tulip-KTV-1024x512.png"
           alt="Dàn karaoke với ánh đèn neon"
           fill
-          className="object-cover"
+          className="w-full h-full object-cover"
           data-ai-hint="dark karaoke room"
           priority
         />
         <div className="absolute inset-0 bg-black/30" />
-        <div className="relative z-10 p-4 flex flex-col items-center justify-center h-full">
-            {/* Content for Hero can go here if needed in the future */}
-        </div>
       </section>
 
       {/* Featured Venues Section */}
