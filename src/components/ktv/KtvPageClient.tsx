@@ -323,10 +323,10 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <div className="flex justify-between"><span>Mummy:</span> <span className="font-medium">1,500K VND</span></div>
-              <div className="flex justify-between"><span>Waiter:</span> <span className="font-medium">500K VND</span></div>
-              <div className="flex justify-between"><span>Girl (1-3 hours):</span> <span className="font-medium">1,000K VND</span></div>
-              <div className="flex justify-between"><span>Super Dance:</span> <span className="font-medium">1,000K VND</span></div>
+              <div className="flex justify-between"><span>Mummy</span> <span className="font-medium">1,500K VND</span></div>
+              <div className="flex justify-between"><span>Waiter</span> <span className="font-medium">500K VND</span></div>
+              <div className="flex justify-between"><span>Girl (1-3 hours)</span> <span className="font-medium">1,000K VND</span></div>
+              <div className="flex justify-between"><span>Super Dance</span> <span className="font-medium">1,000K VND</span></div>
             </CardContent>
           </Card>
 
