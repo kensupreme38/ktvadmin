@@ -10,6 +10,8 @@ import { SocialShareButtons } from '@/components/SocialShareButtons';
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import {
   Calendar,
@@ -318,6 +320,11 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
       
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
         <DialogContent className="max-w-4xl p-2 bg-transparent border-none">
+          <DialogHeader>
+            <DialogTitle className="sr-only">
+              {selectedImage?.description || 'Gallery Image'}
+            </DialogTitle>
+          </DialogHeader>
           {selectedImage && (
             <Image
               src={selectedImage.imageUrl}
