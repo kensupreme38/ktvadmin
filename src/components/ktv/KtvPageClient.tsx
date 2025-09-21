@@ -82,7 +82,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="relative w-full h-[400px] rounded-lg overflow-hidden mb-8 shadow-lg">
+      <div className="relative w-full h-[500px] rounded-lg overflow-hidden mb-8 shadow-lg">
         <Image
           src={ktv.gallery[0].imageUrl}
           alt={`Hero image for ${ktv.name}`}
