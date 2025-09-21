@@ -68,7 +68,9 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
-          <Logo />
+          <Link href="/">
+            <Logo />
+          </Link>
         </div>
         
         <div className="md:hidden">
@@ -80,7 +82,7 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
-              <Link href="/" className="mr-6 flex items-center space-x-2">
+              <Link href="/" className="mr-6">
                 <Logo />
               </Link>
               <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
