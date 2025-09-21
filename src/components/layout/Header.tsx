@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -77,22 +77,25 @@ export function Header() {
         
         {/* Mobile Menu & Logo */}
         <div className="flex w-full items-center justify-between md:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="pr-0">
-              <Link href="/" className="mr-6">
-                <Logo />
-              </Link>
-              <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-                <MobileNavLinks />
-              </div>
-            </SheetContent>
-          </Sheet>
+            <Sheet>
+                <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="mr-2">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Toggle Menu</span>
+                </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="pr-0">
+                    <SheetHeader>
+                        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                    </SheetHeader>
+                    <Link href="/" className="flex items-center mb-6">
+                        <Logo />
+                    </Link>
+                    <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
+                        <MobileNavLinks />
+                    </div>
+                </SheetContent>
+            </Sheet>
           <div className="flex justify-center">
              <Link href="/">
                 <Logo />
