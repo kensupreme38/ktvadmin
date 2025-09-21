@@ -46,9 +46,6 @@ export function KtvCard({ ktv }: KtvCardProps) {
             <MapPin className="h-4 w-4 mr-2" />
             <span>{ktv.district}</span>
           </div>
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-              {ktv.reviews[0]?.comment ? `"${ktv.reviews[0].comment}"` : 'A popular spot for music lovers.'}
-          </p>
         </CardContent>
         <CardFooter className="p-4 pt-0 flex flex-col items-stretch gap-4">
           <div className="flex flex-wrap gap-2">
