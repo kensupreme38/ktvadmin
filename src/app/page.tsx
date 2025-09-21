@@ -77,12 +77,12 @@ export default function Home() {
           src="https://hcmc-ktv.com/wp-content/uploads/2025/06/57-Tulip-KTV-1024x512.png"
           alt="Dàn karaoke với ánh đèn neon"
           fill
-          className="object-cover brightness-[0.3]"
+          className="object-cover"
           data-ai-hint="dark karaoke room"
           priority
         />
         <div className="relative z-10 p-4 flex flex-col items-center justify-center h-full">
-            <RetroMicrophoneIcon className="w-24 h-24 md:w-32 md:h-32 opacity-50" />
+            
         </div>
       </section>
 
