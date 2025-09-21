@@ -87,16 +87,17 @@ function GalleryImage({ image, onImageClick }: { image: ImagePlaceholder, onImag
 
   return (
     <div 
-      className="relative w-full aspect-[4/3] bg-muted rounded-md overflow-hidden"
+      className="relative w-full bg-muted rounded-md overflow-hidden cursor-pointer"
       onClick={() => onImageClick(image)}
     >
-      {isLoading && <Skeleton className="absolute inset-0" />}
+      {isLoading && <Skeleton className="w-full aspect-[4/3]" />}
       <Image
         src={image.imageUrl}
         alt={image.description}
-        fill
+        width={600}
+        height={400}
         className={cn(
-          "cursor-pointer rounded-md object-cover transform hover:scale-105 transition-transform duration-300",
+          "w-full h-auto rounded-md object-cover transform hover:scale-105 transition-transform duration-300",
           isLoading ? 'opacity-0' : 'opacity-100'
         )}
         onLoad={() => setIsLoading(false)}
