@@ -272,6 +272,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
           </Card>
 
           {/* Reviews Section */}
+          {/*
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Reviews</CardTitle>
@@ -294,6 +295,7 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
               </div>
             </CardContent>
           </Card>
+          */}
         </div>
         
         {/* Sidebar Info */}
