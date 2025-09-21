@@ -4,11 +4,6 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
 import { SocialShareButtons } from '@/components/SocialShareButtons';
 import {
@@ -114,25 +109,26 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
           </Card>
           
           {/* Gallery Section */}
-          <Card>
+           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Gallery</CardTitle>
             </CardHeader>
             <CardContent>
-              <Carousel className="w-full" opts={{ loop: true }}>
-                <CarouselContent>
-                  {ktv.gallery.map((img, index) => (
-                    <CarouselItem key={index} className="md:basis-1/2">
-                      <div className="p-1">
-                        <div className="relative">
-                           <Image src={img.imageUrl} alt={`${ktv.name} gallery image ${index + 1}`} width={600} height={400} className="rounded-md object-cover w-full h-auto" data-ai-hint={img.imageHint} />
-                        </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-              </Carousel>
-              <div className="text-center mt-4">
+              <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+                {ktv.gallery.map((img, index) => (
+                  <div key={index} className="break-inside-avoid">
+                     <Image
+                        src={img.imageUrl}
+                        alt={`${ktv.name} gallery image ${index + 1}`}
+                        width={600}
+                        height={400}
+                        className="rounded-md object-cover w-full h-auto"
+                        data-ai-hint={img.imageHint}
+                      />
+                  </div>
+                ))}
+              </div>
+              <div className="text-center mt-8">
                  <Button variant="outline">
                     <Sparkles className="mr-2 h-4 w-4" />
                     Optimize with AI
