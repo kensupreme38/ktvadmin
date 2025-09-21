@@ -27,6 +27,7 @@ import {
   Star,
   Utensils,
   Wallet,
+  DollarSign,
 } from 'lucide-react';
 import type { Ktv, ImagePlaceholder } from '@/types';
 import Masonry from 'react-masonry-css';
@@ -312,6 +313,20 @@ export default function KtvPageClient({ ktv }: KtvPageClientProps) {
                 <Badge>{ktv.type}</Badge>
                 {ktv.services.map(service => <Badge key={service} variant="secondary">{service}</Badge>)}
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center">
+                <DollarSign className="mr-3 text-primary" /> Tips
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex justify-between"><span>Mummy:</span> <span className="font-medium">1,500K VND</span></div>
+              <div className="flex justify-between"><span>Waiter:</span> <span className="font-medium">500K VND</span></div>
+              <div className="flex justify-between"><span>Girl (1-3 hours):</span> <span className="font-medium">1,000K VND</span></div>
+              <div className="flex justify-between"><span>Super Dance:</span> <span className="font-medium">1,000K VND</span></div>
             </CardContent>
           </Card>
 
