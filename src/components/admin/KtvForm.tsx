@@ -79,7 +79,8 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
         rooms: [],
         menu: [],
         paymentMethods: [],
-        contact: { phone: '' }
+        contact: { phone: '' },
+        services: [],
       }),
       ...data,
        contact: { // Ensure contact object is fully formed
