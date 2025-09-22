@@ -23,10 +23,13 @@ import {
   Settings,
   LogOut,
   CalendarCheck,
+  Bell,
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '../ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '../ui/separator';
 
 const menuItems = [
   {
@@ -61,9 +64,28 @@ const menuItems = [
   },
 ];
 
+const notifications = [
+    {
+        title: "New booking from Nguyen Van A",
+        description: "Kingdom KTV - VIP Room, 2024-07-20 at 8:00 PM",
+    },
+    {
+        title: "New review for Catwalk KTV",
+        description: "'The place to see and be seen. Very high-end...' - David Chen",
+    },
+     {
+        title: "Booking Canceled",
+        description: "Le Van C canceled their booking for ICOOL KTV.",
+    },
+];
+
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  const [hasUnread, setHasUnread] = React.useState(true);
+
+  const pageTitle = menuItems.find(item => pathname.startsWith(item.href) && (item.href === '/admin' ? pathname === item.href : true))?.label || 'Dashboard';
+
 
   return (
     <SidebarProvider
@@ -116,7 +138,34 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <header className="flex h-14 items-center justify-between border-b bg-background px-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger />
-            <h1 className="text-lg font-semibold">Dashboard</h1>
+            <h1 className="text-lg font-semibold">{pageTitle}</h1>
+          </div>
+          <div>
+            <Popover onOpenChange={() => setHasUnread(false)}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="h-5 w-5" />
+                  {hasUnread && <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary/80"></span>
+                  </span>}
+                  <span className="sr-only">Toggle notifications</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-[380px]">
+                <div className="p-2">
+                  <h3 className="font-medium">Notifications</h3>
+                </div>
+                <div className="space-y-2">
+                  {notifications.map((notification, index) => (
+                    <div key={index} className="p-2 hover:bg-muted rounded-md">
+                        <p className="text-sm font-medium leading-none">{notification.title}</p>
+                        <p className="text-sm text-muted-foreground">{notification.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6">{children}</main>
