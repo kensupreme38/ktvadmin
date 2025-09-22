@@ -37,3 +37,14 @@ export interface Article {
   content: string;
   image: ImagePlaceholder;
 }
+
+export interface Booking {
+  id: string;
+  customerName: string;
+  ktvId: string;
+  ktvName: string;
+  roomType: string;
+  bookingDate: string;
+  bookingTime: string;
+  status: 'Confirmed' | 'Pending' | 'Canceled';
+}
