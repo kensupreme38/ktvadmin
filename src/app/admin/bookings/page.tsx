@@ -126,6 +126,25 @@ export default function AdminBookingsPage() {
     setIsFormOpen(false);
   };
 
+  const handleStatusChange = (bookingId: string, status: Booking['status']) => {
+    setBookings(bookings.map(b => b.id === bookingId ? { ...b, status } : b));
+    toast({
+      title: 'Booking Status Updated',
+      description: `Booking has been set to ${status}.`,
+    });
+  };
+
+  const handleDelete = (bookingId: string) => {
+    if (confirm('Are you sure you want to delete this booking?')) {
+      setBookings(bookings.filter(b => b.id !== bookingId));
+      toast({
+        title: 'Booking Deleted',
+        description: 'The booking has been successfully removed.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <>
       <Card>
@@ -174,9 +193,13 @@ export default function AdminBookingsPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => handleEdit(booking)}>Edit Details</DropdownMenuItem>
-                        <DropdownMenuItem>Confirm Booking</DropdownMenuItem>
-                        <DropdownMenuItem>Cancel Booking</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'Confirmed')} disabled={booking.status === 'Confirmed'}>
+                          Confirm Booking
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'Canceled')} disabled={booking.status === 'Canceled'}>
+                          Cancel Booking
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(booking.id)}>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
