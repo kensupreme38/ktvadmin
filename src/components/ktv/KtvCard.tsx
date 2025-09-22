@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Ktv } from '@/types';
@@ -16,7 +17,7 @@ export function KtvCard({ ktv }: KtvCardProps) {
     <Link href={`/ktv/${ktv.id}`} className="group block h-full">
       <Card className="h-full flex flex-col transition-all duration-300 ease-in-out bg-card/80 backdrop-blur-sm card-glow group-hover:shadow-primary/20">
         <CardHeader className="p-0">
-          <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+          <div className="relative h-52 w-full overflow-hidden rounded-t-lg">
             <Image
               src={ktv.cardImage.imageUrl}
               alt={ktv.name}
