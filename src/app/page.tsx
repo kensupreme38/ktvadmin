@@ -90,8 +90,8 @@ export default function Home() {
         <Carousel className="w-full" opts={{ loop: true }}>
           <CarouselContent>
             {bannerImages.map((image, index) => (
-              <CarouselItem key={index} className="h-[60vh] md:h-[80vh] max-h-[800px]">
-                 <div className="relative w-full h-full">
+              <CarouselItem key={index}>
+                <div className="relative w-full h-[60vh] md:h-[80vh] max-h-[800px]">
                   <Image
                     src={image.src}
                     alt={image.alt}
