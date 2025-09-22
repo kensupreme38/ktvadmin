@@ -86,19 +86,21 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative w-full h-[60vh] md:h-[80vh] max-h-[800px] flex items-center justify-center overflow-hidden">
-        <Carousel className="w-full h-full" opts={{ loop: true }}>
-          <CarouselContent className="h-full">
+      <section className="relative w-full">
+        <Carousel className="w-full h-[60vh] md:h-[80vh] max-h-[800px]" opts={{ loop: true }}>
+          <CarouselContent>
             {bannerImages.map((image, index) => (
-              <CarouselItem key={index} className="h-full">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  className="w-full h-full object-cover"
-                  data-ai-hint={image.hint}
-                  priority={index === 0}
-                />
+              <CarouselItem key={index}>
+                 <div className="relative h-full w-full">
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    className="w-full h-full object-cover"
+                    data-ai-hint={image.hint}
+                    priority={index === 0}
+                  />
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
