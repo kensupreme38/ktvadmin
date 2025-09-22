@@ -1,3 +1,4 @@
+'use client';
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,8 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminSettingsPage() {
+  const { toast } = useToast();
+
+  const handleSave = (section: string) => {
+    toast({
+      title: "Settings Saved",
+      description: `${section} settings have been updated.`,
+    });
+  };
+
   return (
     <div className="grid gap-6">
       <Card>
@@ -25,7 +36,7 @@ export default function AdminSettingsPage() {
           </div>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <Button>Save</Button>
+          <Button onClick={() => handleSave('General')}>Save</Button>
         </CardFooter>
       </Card>
       <Card>
@@ -54,7 +65,7 @@ export default function AdminSettingsPage() {
             </div>
         </CardContent>
          <CardFooter className="border-t px-6 py-4">
-          <Button>Save</Button>
+          <Button onClick={() => handleSave('Notification')}>Save</Button>
         </CardFooter>
       </Card>
     </div>
