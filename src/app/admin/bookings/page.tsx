@@ -72,9 +72,9 @@ const initialBookings: Booking[] = [
 const getStatusVariant = (status: string) => {
   switch (status) {
     case 'Confirmed':
-      return 'default';
+      return 'success';
     case 'Pending':
-      return 'secondary';
+      return 'warning';
     case 'Canceled':
       return 'destructive';
     default:
