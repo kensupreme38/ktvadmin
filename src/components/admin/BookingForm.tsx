@@ -45,7 +45,7 @@ type BookingFormValues = Omit<z.infer<typeof formSchema>, 'bookingDate'> & {
 
 interface BookingFormProps {
   booking: Booking | null;
-  onSave: (data: BookingFormValues) => void;
+  onSave: (data: Omit<BookingFormValues, 'id' | 'ktvName'>) => void;
   onCancel: () => void;
 }
 

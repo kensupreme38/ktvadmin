@@ -98,14 +98,15 @@ export default function AdminBookingsPage() {
     setIsFormOpen(true);
   };
 
-  const handleSave = (bookingData: Omit<Booking, 'id'>) => {
+  const handleSave = (bookingData: Omit<Booking, 'id' | 'ktvName'>) => {
     const ktv = allKtvs.find(k => k.id === bookingData.ktvId);
     
     if (selectedBooking) {
       // Update
+      const updatedBooking = { ...selectedBooking, ...bookingData, ktvName: ktv?.name || '' };
       setBookings(
         bookings.map((b) =>
-          b.id === selectedBooking.id ? { ...selectedBooking, ...bookingData, ktvName: ktv?.name || '' } : b
+          b.id === selectedBooking.id ? updatedBooking : b
         )
       );
       toast({ title: 'Booking updated successfully!' });
