@@ -7,8 +7,33 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Music4, ShieldCheck, Utensils, Award, Waves, Wifi, CalendarClock, Armchair } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 
 const featuredKtvs = allKtvs.slice(0, 3);
+
+const bannerImages = [
+  {
+    src: 'https://hcmc-ktv.com/wp-content/uploads/2025/06/57-Tulip-KTV-1024x512.png',
+    alt: 'Karaoke setup with neon lights',
+    hint: 'dark karaoke room',
+  },
+  {
+    src: 'https://picsum.photos/seed/101/1200/600',
+    alt: 'A vibrant, modern KTV room with neon lights.',
+    hint: 'neon karaoke'
+  },
+    {
+    src: 'https://picsum.photos/seed/202/1200/600',
+    alt: 'A group of friends having fun at a KTV.',
+    hint: 'friends party'
+  }
+];
 
 const newHighlights = [
     {
@@ -62,14 +87,24 @@ export default function Home() {
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] md:h-[80vh] max-h-[800px] flex items-center justify-center overflow-hidden">
-        <Image
-          src="https://hcmc-ktv.com/wp-content/uploads/2025/06/57-Tulip-KTV-1024x512.png"
-          alt="Karaoke setup with neon lights"
-          fill
-          className="w-full h-full object-cover"
-          data-ai-hint="dark karaoke room"
-          priority
-        />
+        <Carousel className="w-full h-full" opts={{ loop: true }}>
+          <CarouselContent className="h-full">
+            {bannerImages.map((image, index) => (
+              <CarouselItem key={index} className="h-full">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className="w-full h-full object-cover"
+                  data-ai-hint={image.hint}
+                  priority={index === 0}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+        </Carousel>
       </section>
 
       {/* Featured Venues Section */}
