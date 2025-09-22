@@ -9,6 +9,7 @@ export const allArticles: Article[] = [
     title: 'KTV Etiquette for Beginners: How to Shine on Your First Night Out',
     author: 'Aura Editorial',
     publishedDate: '2024-05-15',
+    status: 'Published',
     image: getImage('article-1'),
     excerpt: 'Stepping into a KTV for the first time can be daunting. From choosing songs to ordering drinks, we cover the unwritten rules to ensure you have a blast and impress your friends.',
     content: `
@@ -33,6 +34,7 @@ export const allArticles: Article[] = [
     title: 'The Top 5 High-End KTVs for a Night of Luxury in Saigon',
     author: 'Aura Editorial',
     publishedDate: '2024-05-10',
+    status: 'Published',
     image: getImage('article-2'),
     excerpt: 'For those special occasions that call for more than just a microphone and a screen. We explore the most opulent KTV experiences Saigon has to offer.',
     content: `
@@ -56,6 +58,7 @@ export const allArticles: Article[] = [
     title: 'A Brief History of Karaoke in Vietnam',
     author: 'Aura Editorial',
     publishedDate: '2024-05-01',
+    status: 'Published',
     image: getImage('article-3'),
     excerpt: 'From its humble beginnings to becoming a cultural phenomenon, discover how karaoke became an integral part of Vietnamese social life.',
     content: `
@@ -67,6 +70,19 @@ export const allArticles: Article[] = [
 
       <h3>Modern KTV Culture</h3>
       <p>Today, KTV is a multi-generational activity. It's where families celebrate birthdays, friends gather on weekends, and colleagues unwind after work. The technology has evolved, but the core joy of singing together remains the same.</p>
+    `,
+  },
+    {
+    slug: 'saigon-nightlife-guide',
+    title: 'Your Ultimate Saigon Nightlife Guide: Beyond KTV',
+    author: 'Thanh Nguyen',
+    publishedDate: '2024-06-25',
+    status: 'Draft',
+    image: getImage('article-1'),
+    excerpt: 'Explore the vibrant nightlife of Ho Chi Minh City, from rooftop bars to hidden speakeasies. There is more to discover beyond the karaoke rooms.',
+    content: `
+      <h2>Discover the Night</h2>
+      <p>While KTV is a fantastic part of Saigon's nightlife, the city offers so much more after dark. This guide will help you explore other exciting options.</p>
     `,
   },
 ];

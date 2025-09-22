@@ -7,6 +7,17 @@ import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
+const getStatusVariant = (status: string) => {
+  switch (status) {
+    case 'Published':
+      return 'default';
+    case 'Draft':
+      return 'secondary';
+    default:
+      return 'outline';
+  }
+};
+
 export default function AdminArticlesPage() {
   return (
     <Card>
@@ -32,7 +43,7 @@ export default function AdminArticlesPage() {
                 <TableCell>{article.author}</TableCell>
                 <TableCell>{article.publishedDate}</TableCell>
                 <TableCell>
-                  <Badge variant="default">Published</Badge>
+                  <Badge variant={getStatusVariant(article.status)}>{article.status}</Badge>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>

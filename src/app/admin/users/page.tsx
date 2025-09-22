@@ -8,11 +8,37 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const users = [
-  { id: 'usr_1', name: 'John Doe', email: 'john.doe@example.com', role: 'Admin', joined: '2024-01-15' },
-  { id: 'usr_2', name: 'Jane Smith', email: 'jane.smith@example.com', role: 'User', joined: '2024-02-20' },
-  { id: 'usr_3', name: 'Mike Johnson', email: 'mike.j@example.com', role: 'User', joined: '2024-03-10' },
-  { id: 'usr_4', name: 'Emily White', email: 'emily.w@example.com', role: 'User', joined: '2024-04-05' },
+  { id: 'usr_1', name: 'Admin User', email: 'admin@aura.com', role: 'Admin', joined: '2024-01-15', status: 'Active' },
+  { id: 'usr_2', name: 'Thanh Nguyen', email: 'thanh.nguyen@example.com', role: 'Editor', joined: '2024-02-20', status: 'Active' },
+  { id: 'usr_3', name: 'Minh Tran', email: 'minh.tran@example.com', role: 'User', joined: '2024-03-10', status: 'Active' },
+  { id: 'usr_4', name: 'Hoang Pham', email: 'hoang.pham@example.com', role: 'User', joined: '2024-04-05', status: 'Suspended' },
+  { id: 'usr_5', name: 'Linh Bui', email: 'linh.bui@example.com', role: 'User', joined: '2024-05-21', status: 'Active' },
+  { id: 'usr_6', name: 'An Le', email: 'an.le@example.com', role: 'User', joined: '2024-06-18', status: 'Pending' },
 ];
+
+const getRoleVariant = (role: string) => {
+  switch (role) {
+    case 'Admin':
+      return 'destructive';
+    case 'Editor':
+      return 'default';
+    default:
+      return 'secondary';
+  }
+};
+
+const getStatusVariant = (status: string) => {
+  switch (status) {
+    case 'Active':
+      return 'default';
+    case 'Pending':
+      return 'secondary';
+    case 'Suspended':
+      return 'destructive';
+    default:
+      return 'outline';
+  }
+};
 
 export default function AdminUsersPage() {
   return (
@@ -27,6 +53,7 @@ export default function AdminUsersPage() {
             <TableRow>
               <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Joined Date</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -47,7 +74,10 @@ export default function AdminUsersPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={user.role === 'Admin' ? 'destructive' : 'secondary'}>{user.role}</Badge>
+                  <Badge variant={getRoleVariant(user.role)}>{user.role}</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={getStatusVariant(user.status)}>{user.status}</Badge>
                 </TableCell>
                 <TableCell>{user.joined}</TableCell>
                 <TableCell>

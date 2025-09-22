@@ -33,6 +33,7 @@ export interface Article {
   title: string;
   author: string;
   publishedDate: string;
+  status: 'Published' | 'Draft';
   excerpt: string;
   content: string;
   image: ImagePlaceholder;
