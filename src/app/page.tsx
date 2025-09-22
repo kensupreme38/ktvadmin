@@ -39,22 +39,22 @@ const newHighlights = [
     {
         icon: Waves,
         title: 'Professional Service',
-        description: 'The dedicated staff at KARAOKE 57 TULIP KTV will make you want to come and never leave.',
+        description: 'Our dedicated staff will make you want to come and never leave.',
     },
     {
         icon: Wifi,
         title: 'Free Wi-Fi',
-        description: 'Free Wi-Fi covers the entire system, bringing you convenience!',
+        description: 'Free high-speed Wi-Fi covers the entire venue for your convenience.',
     },
     {
         icon: Armchair,
         title: 'Comfortable Rooms',
-        description: 'The largest and most convenient room system with full services, including private restrooms in the room.',
+        description: 'Spacious and cozy rooms with full amenities, including private restrooms.',
     },
     {
         icon: CalendarClock,
         title: 'Free Booking',
-        description: 'We support customers in booking tables in advance, making it convenient and proactive for every party.',
+        description: 'We support advance booking to make your party planning convenient and proactive.',
     },
 ];
 
@@ -91,7 +91,7 @@ export default function Home() {
           <CarouselContent>
             {bannerImages.map((image, index) => (
               <CarouselItem key={index}>
-                <div className="relative w-full h-[60vh] md:h-[80vh] max-h-[800px]">
+                <div className="relative w-full aspect-video">
                   <Image
                     src={image.src}
                     alt={image.alt}
@@ -130,20 +130,20 @@ export default function Home() {
                 <Link href="/directory">View All Karaoke Venues</Link>
             </Button>
             <h2 className="text-3xl md:text-4xl font-bold uppercase">
-                Karaoke 57 Tulip The Best KTV in Ho Chi Minh City
+                The Best KTV in Ho Chi Minh City
             </h2>
             <div className="flex justify-center my-4">
-                <div className="w-24 h-1 bg-yellow-400" />
+                <div className="w-24 h-1 bg-primary" />
             </div>
             <p className="text-muted-foreground max-w-3xl mx-auto mb-12">
-                Equipped with an automatic fire protection system is the optimal solution for the safety of people and property when having fun at KARAOKE 57 TULIP KTV. We are willing to spend more than 1 billion VND to bring safety and joy to our customers.
+                Equipped with an automatic fire protection system, we prioritize your safety and enjoyment. We invest in top-tier safety to ensure your peace of mind.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {newHighlights.map((highlight) => (
                 <Card key={highlight.title} className="bg-card text-card-foreground p-6 flex items-center gap-6 text-left rounded-lg">
-                    <highlight.icon className="w-12 h-12 text-yellow-400 flex-shrink-0" />
+                    <highlight.icon className="w-12 h-12 text-primary flex-shrink-0" />
                     <div>
-                        <h3 className="text-lg font-semibold text-yellow-400">{highlight.title}</h3>
+                        <h3 className="text-lg font-semibold text-primary">{highlight.title}</h3>
                         <p className="text-muted-foreground">{highlight.description}</p>
                     </div>
                 </Card>
