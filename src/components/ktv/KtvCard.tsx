@@ -38,14 +38,8 @@ export function KtvCard({ ktv }: KtvCardProps) {
             <span>{ktv.district}</span>
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex flex-col items-stretch gap-4">
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">{ktv.type}</Badge>
-            {ktv.services.slice(0, 2).map((service) => (
-              <Badge key={service} variant="outline">{service}</Badge>
-            ))}
-          </div>
-          <div className={cn(buttonVariants({ variant: 'outline' }), "mt-auto w-full")}>
+        <CardFooter className="p-4 pt-0">
+          <div className={cn(buttonVariants({ variant: 'outline' }), "w-full")}>
               Book Now
           </div>
         </CardFooter>
