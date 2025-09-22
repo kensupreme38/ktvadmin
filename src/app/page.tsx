@@ -70,7 +70,6 @@ export default function Home() {
           data-ai-hint="dark karaoke room"
           priority
         />
-        <div className="absolute inset-0 bg-black/30" />
       </section>
 
       {/* Featured Venues Section */}
