@@ -127,7 +127,7 @@ export default function Home() {
       <section className="bg-background py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
             <Button asChild variant="outline" className="mb-8">
-                <Link href="/directory">View All Karaoke Venues</Link>
+                <Link href="/directory">View All KTV</Link>
             </Button>
             <h2 className="text-3xl md:text-4xl font-bold uppercase">
                 The Best KTV in Ho Chi Minh City
