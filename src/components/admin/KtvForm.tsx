@@ -93,7 +93,7 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto p-1 pr-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto p-1 pr-4 no-scrollbar">
         <FormField
           control={form.control}
           name="name"

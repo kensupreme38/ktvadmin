@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import type { Article } from '@/types';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
@@ -65,7 +66,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto p-1 pr-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto p-1 pr-4 no-scrollbar">
         <FormField
           control={form.control}
           name="title"
