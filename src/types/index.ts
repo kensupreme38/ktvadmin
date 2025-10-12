@@ -28,6 +28,16 @@ export interface Ktv {
   isActive: boolean;
 }
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  role: 'Admin' | 'User';
+  status: 'Active' | 'Inactive';
+}
+
+
 export interface Booking {
   id: string;
   customerName: string;

@@ -29,7 +29,7 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(8, { message: 'Password must be at least 8 characters.' }),
   confirmPassword: z.string(),
-  role: z.enum(['Admin', 'User', 'Editor', 'Viewer']),
+  role: z.enum(['Admin', 'User']),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
@@ -137,8 +137,6 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
                 <SelectContent>
                   <SelectItem value="Admin">Admin</SelectItem>
                   <SelectItem value="User">User</SelectItem>
-                  <SelectItem value="Editor">Editor</SelectItem>
-                  <SelectItem value="Viewer">Viewer</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

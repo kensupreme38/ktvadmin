@@ -4,7 +4,7 @@ export interface User {
   name: string;
   email: string;
   avatar: string;
-  role: 'Admin' | 'Editor' | 'Viewer';
+  role: 'Admin' | 'User';
   status: 'Active' | 'Inactive';
 }
 
@@ -22,7 +22,7 @@ export const mockUsers: User[] = [
     name: 'John Doe',
     email: 'john.doe@example.com',
     avatar: 'https://i.pravatar.cc/150?u=john.doe@example.com',
-    role: 'Editor',
+    role: 'User',
     status: 'Active',
   },
   {
@@ -30,7 +30,7 @@ export const mockUsers: User[] = [
     name: 'Jane Smith',
     email: 'jane.smith@example.com',
     avatar: 'https://i.pravatar.cc/150?u=jane.smith@example.com',
-    role: 'Viewer',
+    role: 'User',
     status: 'Active',
   },
   {
@@ -38,7 +38,7 @@ export const mockUsers: User[] = [
     name: 'Michael Johnson',
     email: 'michael.j@example.com',
     avatar: 'https://i.pravatar.cc/150?u=michael.j@example.com',
-    role: 'Editor',
+    role: 'User',
     status: 'Inactive',
   },
   {
@@ -46,7 +46,7 @@ export const mockUsers: User[] = [
     name: 'Emily Davis',
     email: 'emily.d@example.com',
     avatar: 'https://i.pravatar.cc/150?u=emily.d@example.com',
-    role: 'Viewer',
+    role: 'User',
     status: 'Active',
   },
 ];
