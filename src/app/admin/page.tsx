@@ -17,7 +17,7 @@ import type { Ktv } from '@/types';
 import Image from 'next/image';
 import { allCategories } from '@/data/categories';
 import { useKtvData } from '@/hooks/use-ktv-data';
-import { useMemo, ChangeEvent, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -129,6 +129,23 @@ export default function AdminKtvsPage() {
      router.push(`${pathname}?${createQueryString({ search: term || null, page: 1 })}`);
   }, 300);
 
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const page = value ? Number(value) : 1;
+    if (page > 0 && page <= totalPages) {
+        handlePageChange(page);
+    }
+  };
+
+  const handlePageInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      const page = Number(e.target.value);
+      if (page < 1) {
+          handlePageChange(1);
+      } else if (page > totalPages) {
+          handlePageChange(totalPages);
+      }
+  };
+
   return (
     <>
       <Card>
@@ -215,19 +232,20 @@ export default function AdminKtvsPage() {
                     </Button>
                     <div className="flex items-center gap-1.5">
                         <Input
+                            key={currentPage} 
                             type="number"
                             min="1"
                             max={totalPages}
-                            value={currentPage}
-                            onChange={(e) => {
-                                const page = e.target.value ? Number(e.target.value) : 1;
-                                handlePageChange(page);
+                            defaultValue={currentPage}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    const page = Number((e.target as HTMLInputElement).value);
+                                    if (page > 0 && page <= totalPages) {
+                                      handlePageChange(page);
+                                    }
+                                }
                             }}
-                            onBlur={(e) => {
-                                const page = Number(e.target.value);
-                                if (page < 1) handlePageChange(1);
-                                if (page > totalPages) handlePageChange(totalPages);
-                            }}
+                            onBlur={handlePageInputBlur}
                             className="h-8 w-12 text-center"
                         />
                         <span className="text-muted-foreground">/ {totalPages}</span>
