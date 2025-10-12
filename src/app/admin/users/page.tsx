@@ -76,7 +76,7 @@ export default function UsersPage() {
   const handleSave = (userData: Partial<User>) => {
      if (editingUser) {
         // Editing existing user
-        setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...userData } : u));
+        setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...userData } as User : u));
         toast({
             title: 'User Updated!',
             description: `${userData.name} has been updated.`,
@@ -188,14 +188,14 @@ export default function UsersPage() {
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>
             <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Bạn có chắc chắn không?</AlertDialogTitle>
             <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the user "{userToDelete?.name}" and remove their data from our servers.
+                Hành động này sẽ xóa vĩnh viễn người dùng <strong>{userToDelete?.name}</strong> và không thể hoàn tác.
             </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm}>Continue</AlertDialogAction>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>Tiếp tục</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
