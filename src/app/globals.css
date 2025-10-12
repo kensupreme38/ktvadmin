@@ -118,3 +118,15 @@
     scrollbar-width: none;  /* Firefox */
   }
 }
+
+@layer base {
+  /* Remove scrollbar */
+    body::-webkit-scrollbar, main::-webkit-scrollbar {
+      display: none;
+    }
+
+    body, main {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+}
