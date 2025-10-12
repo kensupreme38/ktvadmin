@@ -16,9 +16,7 @@ import {
   SidebarInset,
 } from '@/components/ui/sidebar';
 import {
-  Home,
   Building2,
-  FileText,
   Users,
   Settings,
   LogOut,
@@ -30,6 +28,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '../ui/separator';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 const menuItems = [
   {
@@ -82,7 +82,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       defaultOpen={!isMobile}
       collapsible={isMobile ? 'offcanvas' : 'icon'}
     >
-      <Sidebar side="left" variant="sidebar" className="p-0">
+      <Sidebar side="left" className="p-0">
         <SidebarContent className="flex flex-col p-2">
           <SidebarHeader>
             <Logo />
@@ -158,24 +158,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             </Popover>
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-6 bg-muted/30">{children}</main>
+        <main className="flex-1 p-4 md:p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
-}
-
-// Custom hook to detect mobile screen
-function useIsMobile() {
-    const [isMobile, setIsMobile] = React.useState(false);
-
-    React.useEffect(() => {
-        const checkScreenSize = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-        checkScreenSize();
-        window.addEventListener('resize', checkScreenSize);
-        return () => window.removeEventListener('resize', checkScreenSize);
-    }, []);
-
-    return isMobile;
 }
