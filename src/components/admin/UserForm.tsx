@@ -27,43 +27,57 @@ import { useEffect } from 'react';
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }),
-  password: z.string().min(8, { message: 'Password must be at least 8 characters.' }),
-  confirmPassword: z.string(),
+  password: z.string().optional(),
+  confirmPassword: z.string().optional(),
   role: z.enum(['Admin', 'User']),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
+}).refine(data => {
+    if (data.password && data.password.length < 8) return false;
+    return true;
+}, {
+    message: "Password must be at least 8 characters.",
+    path: ["password"],
 });
 
 type UserFormValues = z.infer<typeof formSchema>;
 
 interface UserFormProps {
-  user: Omit<User, 'id' | 'avatar' | 'status'> | null;
-  onSave: (data: Omit<User, 'id' | 'avatar' | 'status'>) => void;
+  user: User | null;
+  onSave: (data: Partial<User>) => void;
   onCancel: () => void;
 }
 
 export function UserForm({ user, onSave, onCancel }: UserFormProps) {
-  const defaultValues: Partial<UserFormValues> = {
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'User',
-    ...user,
-  };
+  const isEditing = !!user;
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues,
+    defaultValues: {
+      name: user?.name ?? '',
+      email: user?.email ?? '',
+      password: '',
+      confirmPassword: '',
+      role: user?.role ?? 'User',
+    },
   });
 
   useEffect(() => {
-    form.reset(defaultValues);
+    form.reset({
+        name: user?.name ?? '',
+        email: user?.email ?? '',
+        password: '',
+        confirmPassword: '',
+        role: user?.role ?? 'User',
+    });
   }, [user, form]);
 
   function onSubmit(data: UserFormValues) {
     const { confirmPassword, ...userData } = data;
+    if (!userData.password) {
+        delete userData.password;
+    }
     onSave(userData);
   }
 
@@ -77,7 +91,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="John Doe" {...field} disabled={isEditing} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -90,7 +104,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="john@example.com" {...field} />
+                <Input type="email" placeholder="john@example.com" {...field} disabled={isEditing} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -103,7 +117,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" placeholder={isEditing ? 'Leave blank to keep current password' : ''} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

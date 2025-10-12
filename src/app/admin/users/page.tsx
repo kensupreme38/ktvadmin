@@ -38,20 +38,35 @@ export default function UsersPage() {
     setIsFormOpen(true);
   };
 
-  const handleSave = (userData: Omit<User, 'id' | 'avatar' | 'status'>) => {
-    // In a real app, you'd handle editing vs. creating
-    const newUser: User = {
-        id: `user_${Date.now()}`,
-        ...userData,
-        email: userData.email,
-        avatar: `https://i.pravatar.cc/150?u=${userData.email}`,
-        status: 'Active',
-    };
-    setUsers([newUser, ...users]);
-    toast({
-        title: 'New User Created!',
-        description: `${newUser.name} has been added.`,
-    });
+  const handleEdit = (user: User) => {
+    setEditingUser(user);
+    setIsFormOpen(true);
+  };
+
+  const handleSave = (userData: Partial<User>) => {
+     if (editingUser) {
+        // Editing existing user
+        setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...userData } : u));
+        toast({
+            title: 'User Updated!',
+            description: `${userData.name} has been updated.`,
+        });
+     } else {
+        // Adding new user
+        const newUser: User = {
+            id: `user_${Date.now()}`,
+            name: userData.name || '',
+            email: userData.email || '',
+            avatar: `https://i.pravatar.cc/150?u=${userData.email}`,
+            role: userData.role || 'User',
+            status: 'Active',
+        };
+        setUsers([newUser, ...users]);
+        toast({
+            title: 'New User Created!',
+            description: `${newUser.name} has been added.`,
+        });
+    }
     
     setIsFormOpen(false);
     setEditingUser(null);
@@ -112,7 +127,7 @@ export default function UsersPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEdit(user)}>Edit</DropdownMenuItem>
                         <DropdownMenuItem>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
