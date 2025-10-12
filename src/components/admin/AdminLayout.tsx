@@ -140,50 +140,52 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       </Sidebar>
 
       <SidebarInset>
-        <header className="flex h-14 items-center justify-between border-b bg-background px-4">
-           <div className="flex items-center gap-2">
-            <SidebarTrigger />
-            <div className="flex items-center gap-2 text-lg font-semibold">
-                {pathname.startsWith('/admin/ktvs/new') ? (
-                  <>
-                    <Link href="/admin" className="text-muted-foreground hover:text-foreground">KTVs</Link>
-                    <ChevronRight className="h-4 w-4" />
-                    <span>{pageTitle}</span>
-                  </>
-                ) : (
-                  <h1>{pageTitle}</h1>
-                )}
+        <div className='flex flex-col h-screen'>
+            <header className="flex h-14 items-center justify-between border-b bg-background px-4 shrink-0">
+            <div className="flex items-center gap-2">
+                <SidebarTrigger />
+                <div className="flex items-center gap-2 text-lg font-semibold">
+                    {pathname.startsWith('/admin/ktvs/new') ? (
+                    <>
+                        <Link href="/admin" className="text-muted-foreground hover:text-foreground">KTVs</Link>
+                        <ChevronRight className="h-4 w-4" />
+                        <span>{pageTitle}</span>
+                    </>
+                    ) : (
+                    <h1>{pageTitle}</h1>
+                    )}
+                </div>
             </div>
-          </div>
-          <div>
-            <Popover onOpenChange={() => setHasUnread(false)}>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="h-5 w-5" />
-                  {hasUnread && <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary/80"></span>
-                  </span>}
-                  <span className="sr-only">Toggle notifications</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-[380px]">
-                <div className="p-2">
-                  <h3 className="font-medium">Notifications</h3>
-                </div>
-                <div className="space-y-2">
-                  {notifications.map((notification, index) => (
-                    <div key={index} className="p-2 hover:bg-muted rounded-md">
-                        <p className="text-sm font-medium leading-none">{notification.title}</p>
-                        <p className="text-sm text-muted-foreground">{notification.description}</p>
+            <div>
+                <Popover onOpenChange={() => setHasUnread(false)}>
+                <PopoverTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="h-5 w-5" />
+                    {hasUnread && <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary/80"></span>
+                    </span>}
+                    <span className="sr-only">Toggle notifications</span>
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-[380px]">
+                    <div className="p-2">
+                    <h3 className="font-medium">Notifications</h3>
                     </div>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </header>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+                    <div className="space-y-2">
+                    {notifications.map((notification, index) => (
+                        <div key={index} className="p-2 hover:bg-muted rounded-md">
+                            <p className="text-sm font-medium leading-none">{notification.title}</p>
+                            <p className="text-sm text-muted-foreground">{notification.description}</p>
+                        </div>
+                    ))}
+                    </div>
+                </PopoverContent>
+                </Popover>
+            </div>
+            </header>
+            <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );
