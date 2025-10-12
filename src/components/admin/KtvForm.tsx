@@ -151,7 +151,7 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
     <>
       <Form {...form}>
         <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="max-h-[65vh] overflow-y-auto p-1">
+          <div className="max-h-[75vh] overflow-y-auto p-1">
             <FormField
                 control={form.control}
                 name="name"
@@ -420,3 +420,5 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
 });
 
 KtvForm.displayName = 'KtvForm';
+
+    
