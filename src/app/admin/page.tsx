@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import {
@@ -17,11 +17,12 @@ import type { Ktv } from '@/types';
 import Image from 'next/image';
 import { allCategories } from '@/data/categories';
 import { useKtvData } from '@/hooks/use-ktv-data';
-import { useState, useMemo, ChangeEvent, KeyboardEvent } from 'react';
+import { useMemo, ChangeEvent, useCallback } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useDebouncedCallback } from 'use-debounce';
 
 const getCategoryName = (categoryIds: string[]) => {
     if (!categoryIds || categoryIds.length === 0) return 'N/A';
@@ -68,11 +69,31 @@ const TableSkeleton = () => (
 export default function AdminKtvsPage() {
   const { ktvs, isLoading } = useKtvData();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  
   const itemsPerPage = 10;
+  
+  const searchTerm = searchParams.get('search') || '';
+  const currentPage = Number(searchParams.get('page')) || 1;
 
+  const createQueryString = useCallback(
+    (params: Record<string, string | number | null>) => {
+      const newSearchParams = new URLSearchParams(searchParams?.toString());
+      for (const [key, value] of Object.entries(params)) {
+        if (value === null) {
+          newSearchParams.delete(key);
+        } else {
+          newSearchParams.set(key, String(value));
+        }
+      }
+
+      return newSearchParams.toString();
+    },
+    [searchParams]
+  );
+  
   const handleRowClick = (ktvId: string) => {
     router.push(`/admin/ktvs/${ktvId}`);
   };
@@ -100,21 +121,13 @@ export default function AdminKtvsPage() {
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-        setCurrentPage(page);
+        router.push(`${pathname}?${createQueryString({ page })}`);
     }
   }
 
-  const handlePageInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === '' || (parseInt(value) > 0 && parseInt(value) <= totalPages)) {
-        setCurrentPage(parseInt(value) || 1);
-    }
-  }
-  
-  // Reset to page 1 when search term changes
-  useState(() => {
-    setCurrentPage(1);
-  });
+  const handleSearchChange = useDebouncedCallback((term: string) => {
+     router.push(`${pathname}?${createQueryString({ search: term || null, page: 1 })}`);
+  }, 300);
 
   return (
     <>
@@ -127,10 +140,9 @@ export default function AdminKtvsPage() {
               type="search"
               placeholder="Search by name..."
               className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-              value={searchTerm}
+              defaultValue={searchTerm}
               onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // Reset to first page on new search
+                handleSearchChange(e.target.value);
               }}
             />
             <Button variant="outline" size="icon" className="h-9 w-9" onClick={handleRefresh}>
@@ -207,9 +219,12 @@ export default function AdminKtvsPage() {
                             min="1"
                             max={totalPages}
                             value={currentPage}
-                            onChange={handlePageInputChange}
+                            onChange={(e) => {
+                                const page = e.target.value ? Number(e.target.value) : 1;
+                                handlePageChange(page);
+                            }}
                             onBlur={(e) => {
-                                const page = parseInt(e.target.value);
+                                const page = Number(e.target.value);
                                 if (page < 1) handlePageChange(1);
                                 if (page > totalPages) handlePageChange(totalPages);
                             }}
