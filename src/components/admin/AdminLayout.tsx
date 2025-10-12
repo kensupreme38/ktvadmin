@@ -25,6 +25,7 @@ import {
   Tags,
   ChevronRight,
   PlusCircle,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -48,6 +49,11 @@ const menuItems = [
     href: '/admin/categories',
     label: 'Categories',
     icon: Tags,
+  },
+  {
+    href: '/admin/media',
+    label: 'Media',
+    icon: ImageIcon,
   },
   {
     href: '/admin/settings',
