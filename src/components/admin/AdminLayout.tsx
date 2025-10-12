@@ -23,6 +23,7 @@ import {
   LogOut,
   Bell,
   Tags,
+  ChevronRight,
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -69,8 +70,15 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const [hasUnread, setHasUnread] = React.useState(true);
 
-  const pageTitle = menuItems.find(item => pathname.startsWith(item.href))?.label || 'Dashboard';
-
+  const getPageTitle = () => {
+    if (pathname.startsWith('/admin/ktvs/new')) {
+      return 'Add New KTV';
+    }
+    const menuItem = menuItems.find(item => pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href)));
+    return menuItem?.label || 'KTVs';
+  };
+  
+  const pageTitle = getPageTitle();
 
   return (
     <SidebarProvider
@@ -87,7 +95,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem key={href}>
                 <Link href={href}>
                   <SidebarMenuButton
-                    isActive={pathname === href}
+                    isActive={pathname === href || (href !== '/admin' && pathname.startsWith(href))}
                     tooltip={{ children: label }}
                     asChild
                   >
@@ -121,9 +129,19 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
       <SidebarInset>
         <header className="flex h-14 items-center justify-between border-b bg-background px-4">
-          <div className="flex items-center gap-2">
+           <div className="flex items-center gap-2">
             <SidebarTrigger />
-            <h1 className="text-lg font-semibold">{pageTitle}</h1>
+            <div className="flex items-center gap-2 text-lg font-semibold">
+                {pathname.startsWith('/admin/ktvs/new') ? (
+                  <>
+                    <Link href="/admin" className="text-muted-foreground hover:text-foreground">KTVs</Link>
+                    <ChevronRight className="h-4 w-4" />
+                    <span>{pageTitle}</span>
+                  </>
+                ) : (
+                  <h1>{pageTitle}</h1>
+                )}
+            </div>
           </div>
           <div>
             <Popover onOpenChange={() => setHasUnread(false)}>

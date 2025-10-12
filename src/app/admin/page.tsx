@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -52,10 +53,10 @@ export default function AdminKtvsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedKtv, setSelectedKtv] = useState<Ktv | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleAdd = () => {
-    setSelectedKtv(null);
-    setIsFormOpen(true);
+    router.push('/admin/ktvs/new');
   };
 
   const handleEdit = (ktv: Ktv) => {
@@ -72,19 +73,8 @@ export default function AdminKtvsPage() {
         )
       );
       toast({ title: 'KTV updated successfully!' });
-    } else {
-      // Add
-      const newKtv: Ktv = {
-        ...ktvData,
-        id: `ktv_${Date.now()}`,
-        slug: ktvData.name.toLowerCase().replace(/\s+/g, '-'),
-      };
-      setKtvs([newKtv, ...ktvs]);
-      toast({
-        title: 'New KTV Created!',
-        description: `${newKtv.name} has been added to the directory.`,
-      });
     }
+    // "Add" case is handled by the new page
     setIsFormOpen(false);
   };
 
@@ -167,7 +157,7 @@ export default function AdminKtvsPage() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>{selectedKtv ? 'Edit KTV' : 'Add New KTV'}</DialogTitle>
+            <DialogTitle>Edit KTV</DialogTitle>
           </DialogHeader>
           <KtvForm
             ktv={selectedKtv}

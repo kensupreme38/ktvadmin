@@ -34,7 +34,7 @@ const formSchema = z.object({
   city: z.string().optional(),
   country: z.string().optional(),
   phone: z.string().optional(),
-  categoryId: z.string({ required_error: 'Please select a category.' }),
+  categoryId: z.string().optional(),
   price: z.string().optional(),
   hours: z.string().optional(),
   description: z.string().optional(),
@@ -44,7 +44,7 @@ const formSchema = z.object({
 type KtvFormValues = z.infer<typeof formSchema>;
 
 interface KtvFormProps {
-  ktv: Ktv | null;
+  ktv?: Ktv | null;
   onSave: (data: Ktv) => void;
   onCancel: () => void;
 }
@@ -93,11 +93,12 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
 
     const fullKtvData: Ktv = {
       ...(ktv || {
-        id: '',
-        slug: '',
+        id: '', // Will be set by parent/handler
+        slug: '', // Will be set by parent/handler
         isActive: true,
       }),
       ...rest,
+      categoryId: data.categoryId || '',
       images: images ? images.split('\n').filter(url => url.trim() !== '') : [],
       description: parsedDescription,
     };
@@ -106,7 +107,7 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto p-1 pr-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto p-1 pr-4">
         <FormField
           control={form.control}
           name="name"
