@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -20,43 +21,33 @@ import { allCategories as initialCategories } from '@/data/categories';
 import { CategoryForm } from '@/components/admin/CategoryForm';
 
 export default function AdminCategoriesPage() {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const { toast } = useToast();
 
   const handleAdd = () => {
-    setSelectedCategory(null);
     setIsFormOpen(true);
   };
 
-  const handleEdit = (category: Category) => {
-    setSelectedCategory(category);
-    setIsFormOpen(true);
+  const handleRowClick = (slug: string) => {
+    if (slug === 'all') return;
+    router.push(`/admin/categories/${slug}`);
   };
-
+  
   const handleSave = (categoryData: Omit<Category, 'id'>) => {
-    if (selectedCategory) {
-      // Update
-      const updatedCategory = { ...selectedCategory, ...categoryData };
-      setCategories(
-        categories.map((c) =>
-          c.id === selectedCategory.id ? updatedCategory : c
-        )
-      );
-      toast({ title: 'Category updated successfully!' });
-    } else {
-      // Add
-      const newCategory: Category = {
-        ...categoryData,
-        id: `cat_${Date.now()}`,
-      };
-      setCategories([newCategory, ...categories]);
-      toast({
-        title: 'New Category Created!',
-        description: `${newCategory.name} has been added.`,
-      });
-    }
+    // For now, we are not really saving to a persistent store.
+    // This just updates the local state.
+    const newCategory: Category = {
+      ...categoryData,
+      id: `cat_${Date.now()}`,
+    };
+    setCategories([newCategory, ...categories]);
+    toast({
+      title: 'New Category Created!',
+      description: `${newCategory.name} has been added.`,
+    });
+    
     setIsFormOpen(false);
   };
 
@@ -80,7 +71,11 @@ export default function AdminCategoriesPage() {
             </TableHeader>
             <TableBody>
               {categories.map((category) => (
-                <TableRow key={category.id} onClick={() => handleEdit(category)} className="cursor-pointer">
+                <TableRow 
+                  key={category.id} 
+                  onClick={() => handleRowClick(category.slug)} 
+                  className={category.slug === 'all' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                >
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell>{category.slug}</TableCell>
                 </TableRow>
@@ -93,10 +88,10 @@ export default function AdminCategoriesPage() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{selectedCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
+            <DialogTitle>Add New Category</DialogTitle>
           </DialogHeader>
           <CategoryForm
-            category={selectedCategory}
+            category={null}
             onSave={handleSave}
             onCancel={() => setIsFormOpen(false)}
           />
