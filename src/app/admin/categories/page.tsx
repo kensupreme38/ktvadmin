@@ -51,6 +51,8 @@ export default function AdminCategoriesPage() {
     setIsFormOpen(false);
   };
 
+  const displayCategories = categories.filter(category => category.slug !== 'all');
+
   return (
     <>
       <Card>
@@ -71,7 +73,7 @@ export default function AdminCategoriesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((category) => (
+              {displayCategories.map((category) => (
                 <TableRow 
                   key={category.id} 
                   onClick={() => handleRowClick(category.slug)} 
