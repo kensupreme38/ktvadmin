@@ -25,7 +25,7 @@ import {
 import type { Ktv } from '@/types';
 import { allCategories } from '@/data/categories';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useImperativeHandle, forwardRef } from 'react';
 import { ImageGallery } from './ImageGallery';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Image from 'next/image';
@@ -51,10 +51,9 @@ type KtvFormValues = z.infer<typeof formSchema>;
 interface KtvFormProps {
   ktv?: Ktv | null;
   onSave: (data: Ktv) => void;
-  onCancel: () => void;
 }
 
-export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
+export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv, onSave }, ref) => {
   const { toast } = useToast();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [galleryTarget, setGalleryTarget] = useState<'main' | 'multi' | null>(null);
@@ -78,6 +77,10 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+
+  useImperativeHandle(ref, () => ({
+    submit: () => form.handleSubmit(onSubmit)(),
+  }));
 
   const handleImageSelect = (urls: string[]) => {
     if (galleryTarget === 'main') {
@@ -126,7 +129,7 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto p-1 pr-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="name"
@@ -333,13 +336,6 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
               </FormItem>
             )}
           />
-
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button type="submit">Save</Button>
-          </div>
         </form>
       </Form>
 
@@ -359,6 +355,7 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
       </Dialog>
     </>
   );
-}
+});
 
+KtvForm.displayName = 'KtvForm';
     

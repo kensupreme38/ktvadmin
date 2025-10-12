@@ -2,16 +2,17 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { KtvForm } from '@/components/admin/KtvForm';
 import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
-// In a real app, you would fetch/mutate data from a database
-// For now, we just show a toast and redirect.
+import { Button } from '@/components/ui/button';
+import { useRef } from 'react';
 
 export default function NewKtvPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const formRef = useRef<{ submit: () => void }>(null);
 
   const handleSave = (ktvData: Ktv) => {
     const newKtv: Ktv = {
@@ -25,8 +26,6 @@ export default function NewKtvPage() {
       description: `${newKtv.name} has been added to the directory.`,
     });
 
-    // In a real app, you would save the data and then redirect.
-    // For this demo, we'll just redirect.
     console.log('New KTV data:', newKtv);
     router.push('/admin');
   };
@@ -35,14 +34,24 @@ export default function NewKtvPage() {
     router.push('/admin');
   };
 
+  const triggerFormSubmit = () => {
+    formRef.current?.submit();
+  }
+
   return (
-    <Card>
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <CardTitle>Add New KTV</CardTitle>
       </CardHeader>
-      <CardContent>
-        <KtvForm onSave={handleSave} onCancel={handleCancel} />
+      <CardContent className="flex-1 overflow-y-auto p-4">
+        <KtvForm ref={formRef} onSave={handleSave} />
       </CardContent>
+      <CardFooter className="flex justify-end gap-2 border-t pt-4">
+        <Button variant="outline" onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button onClick={triggerFormSubmit}>Save</Button>
+      </CardFooter>
     </Card>
   );
 }
