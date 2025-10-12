@@ -14,11 +14,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import type { Category } from '@/types';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   slug: z.string().min(2, { message: 'Slug must be at least 2 characters.' }),
+  description: z.string().optional(),
 });
 
 type CategoryFormValues = z.infer<typeof formSchema>;
@@ -33,6 +35,7 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
   const defaultValues: CategoryFormValues = {
     name: category?.name ?? '',
     slug: category?.slug ?? '',
+    description: category?.description ?? '',
   };
 
   const form = useForm<CategoryFormValues>({
@@ -68,6 +71,19 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
               <FormLabel>Slug</FormLabel>
               <FormControl>
                 <Input placeholder="high-end" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea placeholder="A short description of the category." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

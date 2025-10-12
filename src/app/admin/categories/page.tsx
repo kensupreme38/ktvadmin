@@ -67,6 +67,7 @@ export default function AdminCategoriesPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Slug</TableHead>
+                <TableHead>Description</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -78,6 +79,7 @@ export default function AdminCategoriesPage() {
                 >
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell>{category.slug}</TableCell>
+                   <TableCell className="text-muted-foreground">{category.description}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
