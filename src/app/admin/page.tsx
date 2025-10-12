@@ -20,6 +20,8 @@ import { allCategories } from '@/data/categories';
 import { useKtvData } from '@/hooks/use-ktv-data';
 import { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
 
 const getCategoryName = (categoryId: string) => {
@@ -65,16 +67,31 @@ const TableSkeleton = () => (
 export default function AdminKtvsPage() {
   const { ktvs, isLoading } = useKtvData();
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleRowClick = (ktvId: string) => {
     router.push(`/admin/ktvs/${ktvId}`);
   };
 
+  const filteredKtvs = ktvs.filter(ktv => 
+    ktv.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>KTV Management</CardTitle>
+          <div className="relative ml-auto flex-1 md:grow-0">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search by name..."
+              className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? <TableSkeleton /> : (
@@ -89,7 +106,7 @@ export default function AdminKtvsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {ktvs.map((ktv) => {
+                {filteredKtvs.map((ktv) => {
                   const categoryName = getCategoryName(ktv.categoryId);
                   return (
                       <TableRow key={ktv.id} onClick={() => handleRowClick(ktv.id)} className="cursor-pointer">
@@ -114,6 +131,11 @@ export default function AdminKtvsPage() {
               </TableBody>
             </Table>
           )}
+           { !isLoading && filteredKtvs.length === 0 && (
+                <div className="text-center py-10 text-muted-foreground">
+                    No KTVs found matching your search.
+                </div>
+            )}
         </CardContent>
       </Card>
     </>
