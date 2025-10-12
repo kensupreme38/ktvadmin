@@ -93,49 +93,49 @@
     {
       "id": "ktv-gallery-new-1",
       "description": "KTV room with modern lighting",
-      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146675642_562af2983ea4cb5c87d74c8686576375.jpg",
+      "imageUrl": "https://picsum.photos/seed/401/600/400",
       "imageHint": "modern ktv"
     },
     {
       "id": "ktv-gallery-new-2",
       "description": "KTV room with stage",
-      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146718424_a823cdbfe87552bd60dfa36fc8b47232.jpg",
+      "imageUrl": "https://picsum.photos/seed/402/600/400",
       "imageHint": "ktv stage"
     },
     {
       "id": "ktv-gallery-new-3",
       "description": "Spacious KTV room with large sofa",
-      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146565213_f474b602d0504524d367bd60a200e936.jpg",
+      "imageUrl": "https://picsum.photos/seed/403/600/400",
       "imageHint": "spacious room"
     },
     {
       "id": "ktv-gallery-new-4",
       "description": "KTV room with intricate ceiling lights",
-      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146447679_f1be80d5b8ea286de5ddbd0470f1332b.jpg",
+      "imageUrl": "https://picsum.photos/seed/404/600/400",
       "imageHint": "ceiling lights"
     },
     {
       "id": "ktv-gallery-new-5",
       "description": "KTV room with star lights",
-      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146435306_af2f3575971a812373a6a9b403d16298.jpg",
+      "imageUrl": "https://picsum.photos/seed/405/600/400",
       "imageHint": "star lights"
     },
     {
       "id": "ktv-gallery-new-6",
       "description": "KTV room with galaxy lights",
-      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146435272_0b213b3513a9606835695029a5317765.jpg",
+      "imageUrl": "https://picsum.photos/seed/406/600/400",
       "imageHint": "galaxy lights"
     },
     {
       "id": "ktv-gallery-new-7",
       "description": "KTV room with classic design",
-      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146609971_a7374714f5262e3d360e2270912f7166.jpg",
+      "imageUrl": "https://picsum.photos/seed/407/600/400",
       "imageHint": "classic design"
     },
     {
       "id": "ktv-gallery-new-8",
       "description": "KTV room with neon signs",
-      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146702758_68913988f01c8008a28723b7e7161b40.jpg",
+      "imageUrl": "https://picsum.photos/seed/408/600/400",
       "imageHint": "neon signs"
     }
   ]
