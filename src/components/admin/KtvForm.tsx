@@ -25,9 +25,9 @@ import {
 import type { Ktv } from '@/types';
 import { allCategories } from '@/data/categories';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useImperativeHandle, forwardRef } from 'react';
+import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { ImageGallery } from './ImageGallery';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Image from 'next/image';
 import { ImagePlus, X } from 'lucide-react';
 
@@ -50,7 +50,7 @@ type KtvFormValues = z.infer<typeof formSchema>;
 
 interface KtvFormProps {
   ktv?: Ktv | null;
-  onSave: (data: Ktv) => void;
+  onSave: (data: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv, onSave }, ref) => {
@@ -77,6 +77,10 @@ export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv,
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+  
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [ktv, form]);
 
   useImperativeHandle(ref, () => ({
     submit: () => form.handleSubmit(onSubmit)(),
@@ -114,8 +118,8 @@ export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv,
 
     const fullKtvData: Ktv = {
       ...(ktv || {
-        id: '', // Will be set by parent/handler
-        slug: '', // Will be set by parent/handler
+        id: '', 
+        slug: '', 
         isActive: true,
       }),
       ...rest,

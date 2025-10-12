@@ -8,25 +8,31 @@ import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
+import { useKtvData } from '@/hooks/use-ktv-data';
 
 export default function NewKtvPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { addKtv } = useKtvData();
   const formRef = useRef<{ submit: () => void }>(null);
 
-  const handleSave = (ktvData: Ktv) => {
+  const handleSave = (ktvData: Omit<Ktv, 'id' | 'slug' | 'isActive'>) => {
     const newKtv: Ktv = {
       ...ktvData,
       id: `ktv_${Date.now()}`,
       slug: ktvData.name.toLowerCase().replace(/\s+/g, '-'),
+      isActive: true,
+      images: ktvData.images || [],
+      categoryId: ktvData.categoryId || '',
     };
     
+    addKtv(newKtv);
+
     toast({
       title: 'New KTV Created!',
       description: `${newKtv.name} has been added to the directory.`,
     });
 
-    console.log('New KTV data:', newKtv);
     router.push('/admin');
   };
 

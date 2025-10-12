@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,8 +26,9 @@ import { KtvForm } from '@/components/admin/KtvForm';
 import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
 import Image from 'next/image';
-import { initialKtvs } from '@/data/ktvs';
 import { allCategories } from '@/data/categories';
+import { useKtvData } from '@/hooks/use-ktv-data';
+import { useState } from 'react';
 
 
 const getKtvTypeVariant = (categoryName: string) => {
@@ -49,7 +49,7 @@ const getCategoryName = (categoryId: string) => {
 }
 
 export default function AdminKtvsPage() {
-  const [ktvs, setKtvs] = useState<Ktv[]>(initialKtvs);
+  const { ktvs, deleteKtv, updateKtv } = useKtvData();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedKtv, setSelectedKtv] = useState<Ktv | null>(null);
   const { toast } = useToast();
@@ -62,21 +62,16 @@ export default function AdminKtvsPage() {
 
   const handleSave = (ktvData: Ktv) => {
     if (selectedKtv) {
-      // Update
-      setKtvs(
-        ktvs.map((k) =>
-          k.id === selectedKtv.id ? { ...k, ...ktvData } : k
-        )
-      );
+      updateKtv(ktvData.id, ktvData);
       toast({ title: 'KTV updated successfully!' });
     }
-    // "Add" case is handled by the new page
     setIsFormOpen(false);
+    setSelectedKtv(null);
   };
 
   const handleDelete = (ktvId: string) => {
     if (confirm('Are you sure you want to delete this KTV?')) {
-      setKtvs(ktvs.filter(k => k.id !== ktvId));
+      deleteKtv(ktvId);
       toast({
         title: 'KTV Deleted',
         description: 'The KTV has been successfully removed.',
