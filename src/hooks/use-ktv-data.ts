@@ -1,73 +1,84 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { Ktv } from '@/types';
 import { initialKtvs } from '@/data/ktvs';
 
 const KTV_STORAGE_KEY = 'ktv_data';
 
+// Use BroadcastChannel for more reliable cross-tab communication
+const channel = typeof window !== 'undefined' ? new BroadcastChannel('ktv_data_channel') : null;
+
 export const useKtvData = () => {
   const [ktvs, setKtvs] = useState<Ktv[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Effect to load data from localStorage on client-side mount
-  useEffect(() => {
+  const loadData = useCallback(() => {
     try {
       const item = window.localStorage.getItem(KTV_STORAGE_KEY);
       if (item) {
         setKtvs(JSON.parse(item));
       } else {
-        // If no data, initialize with default and set it in localStorage
-        setKtvs(initialKtvs);
-        window.localStorage.setItem(KTV_STORAGE_KEY, JSON.stringify(initialKtvs));
+        const initialData = initialKtvs;
+        setKtvs(initialData);
+        window.localStorage.setItem(KTV_STORAGE_KEY, JSON.stringify(initialData));
       }
     } catch (error) {
       console.warn(`Error reading localStorage key “${KTV_STORAGE_KEY}”:`, error);
-      setKtvs(initialKtvs); // Fallback to initial data on error
+      setKtvs(initialKtvs);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // Effect to update localStorage whenever `ktvs` state changes, but only after initial load
+  // Effect to load data on initial mount
   useEffect(() => {
-    if (!isLoading) {
-      try {
-        window.localStorage.setItem(KTV_STORAGE_KEY, JSON.stringify(ktvs));
-      } catch (error) {
-        console.warn(`Error setting localStorage key “${KTV_STORAGE_KEY}”:`, error);
-      }
-    }
-  }, [ktvs, isLoading]);
+    loadData();
+  }, [loadData]);
 
-  // Effect to listen for changes from other tabs/windows
+  // Effect to listen for changes from other tabs/windows via BroadcastChannel
   useEffect(() => {
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === KTV_STORAGE_KEY && event.newValue) {
-        setKtvs(JSON.parse(event.newValue));
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data === 'update') {
+        loadData();
       }
     };
-
-    window.addEventListener('storage', handleStorageChange);
+    
+    channel?.addEventListener('message', handleMessage);
+    
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      channel?.removeEventListener('message', handleMessage);
     };
+  }, [loadData]);
+
+  const saveData = useCallback((data: Ktv[]) => {
+    try {
+      const stringifiedData = JSON.stringify(data);
+      window.localStorage.setItem(KTV_STORAGE_KEY, stringifiedData);
+      // Notify other tabs about the update
+      channel?.postMessage('update');
+      // Update current tab's state
+      setKtvs(data);
+    } catch (error) {
+      console.warn(`Error setting localStorage key “${KTV_STORAGE_KEY}”:`, error);
+    }
   }, []);
 
   const addKtv = useCallback((newKtv: Ktv) => {
-    setKtvs((prevKtvs) => [newKtv, ...prevKtvs]);
-  }, []);
+    const newKtvs = [newKtv, ...ktvs];
+    saveData(newKtvs);
+  }, [ktvs, saveData]);
 
-  const updateKtv = useCallback((id: string, updatedKtv: Partial<Ktv>) => {
-    setKtvs((prevKtvs) =>
-      prevKtvs.map((ktv) => (ktv.id === id ? { ...ktv, ...updatedKtv } : ktv))
-    );
-  }, []);
+  const updateKtv = useCallback((id: string, updatedKtvData: Partial<Ktv>) => {
+    const newKtvs = ktvs.map((ktv) => (ktv.id === id ? { ...ktv, ...updatedKtvData } : ktv));
+    saveData(newKtvs);
+  }, [ktvs, saveData]);
 
   const deleteKtv = useCallback((id: string) => {
-    setKtvs((prevKtvs) => prevKtvs.filter((ktv) => ktv.id !== id));
-  }, []);
+    const newKtvs = ktvs.filter((ktv) => ktv.id !== id);
+    saveData(newKtvs);
+  }, [ktvs, saveData]);
 
   return { ktvs, addKtv, updateKtv, deleteKtv, isLoading };
 };
