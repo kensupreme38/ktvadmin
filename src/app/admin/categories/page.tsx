@@ -160,14 +160,14 @@ export default function AdminCategoriesPage() {
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>
             <AlertDialogHeader>
-            <AlertDialogTitle>Bạn có chắc chắn không?</AlertDialogTitle>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-                Hành động này sẽ xóa vĩnh viễn danh mục <strong>{categoryToDelete?.name}</strong> và không thể hoàn tác.
+                This action cannot be undone. This will permanently delete the category <strong>{categoryToDelete?.name}</strong>.
             </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm}>Tiếp tục</AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>Continue</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
