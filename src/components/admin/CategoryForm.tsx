@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import type { Category } from '@/types';
+import { useEffect } from 'react';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -27,7 +28,7 @@ type CategoryFormValues = z.infer<typeof formSchema>;
 
 interface CategoryFormProps {
   category: Category | null;
-  onSave: (data: Omit<Category, 'id'>) => void;
+  onSave: (data: Omit<Category, 'id'> & { id?: string }) => void;
   onCancel: () => void;
 }
 
@@ -43,8 +44,17 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
     defaultValues,
   });
 
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [category, form]);
+
+
   function onSubmit(data: CategoryFormValues) {
-    onSave(data);
+    if (category) {
+      onSave({ ...data, id: category.id });
+    } else {
+      onSave(data);
+    }
   }
 
   return (

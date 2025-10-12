@@ -13,8 +13,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Edit, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { useToast } from '@/hooks/use-toast';
 import type { Category } from '@/types';
 import { allCategories as initialCategories } from '@/data/categories';
@@ -22,36 +32,71 @@ import { CategoryForm } from '@/components/admin/CategoryForm';
 
 export default function AdminCategoriesPage() {
   const router = useRouter();
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [categories, setCategories] = useState<Category[]>(initialCategories.filter(c => c.slug !== 'all'));
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const { toast } = useToast();
 
   const handleAdd = () => {
+    setEditingCategory(null);
+    setIsFormOpen(true);
+  };
+  
+  const handleEdit = (category: Category) => {
+    setEditingCategory(category);
     setIsFormOpen(true);
   };
 
+  const handleDeleteClick = (category: Category) => {
+    setCategoryToDelete(category);
+    setIsAlertOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (categoryToDelete) {
+        // This is a mock delete, it does not persist.
+        setCategories(categories.filter(c => c.id !== categoryToDelete.id));
+        toast({
+            title: 'Category Deleted',
+            description: `${categoryToDelete.name} has been removed.`,
+            variant: 'destructive',
+        });
+        setIsAlertOpen(false);
+        setCategoryToDelete(null);
+    }
+  };
+
   const handleRowClick = (slug: string) => {
-    if (slug === 'all') return;
     router.push(`/admin/categories/${slug}`);
   };
   
-  const handleSave = (categoryData: Omit<Category, 'id'>) => {
-    // For now, we are not really saving to a persistent store.
-    // This just updates the local state.
-    const newCategory: Category = {
-      ...categoryData,
-      id: `cat_${Date.now()}`,
-    };
-    setCategories([newCategory, ...categories]);
-    toast({
-      title: 'New Category Created!',
-      description: `${newCategory.name} has been added.`,
-    });
+  const handleSave = (categoryData: Omit<Category, 'id'> & { id?: string }) => {
+    if (editingCategory) { // Editing existing category
+        const updatedCategories = categories.map(c => 
+            c.id === editingCategory.id ? { ...c, ...categoryData } : c
+        );
+        setCategories(updatedCategories);
+        toast({
+            title: 'Category Updated!',
+            description: `${categoryData.name} has been updated.`,
+        });
+    } else { // Adding new category
+        const newCategory: Category = {
+            id: `cat_${Date.now()}`,
+            ...categoryData,
+        };
+        setCategories([newCategory, ...categories]);
+        toast({
+            title: 'New Category Created!',
+            description: `${newCategory.name} has been added.`,
+        });
+    }
     
     setIsFormOpen(false);
+    setEditingCategory(null);
   };
-
-  const displayCategories = categories.filter(category => category.slug !== 'all');
 
   return (
     <>
@@ -70,18 +115,25 @@ export default function AdminCategoriesPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {displayCategories.map((category) => (
-                <TableRow 
-                  key={category.id} 
-                  onClick={() => handleRowClick(category.slug)} 
-                  className={category.slug === 'all' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-                >
-                  <TableCell className="font-medium">{category.name}</TableCell>
-                  <TableCell>{category.slug}</TableCell>
-                   <TableCell className="text-muted-foreground">{category.description}</TableCell>
+              {categories.map((category) => (
+                <TableRow key={category.id}>
+                  <TableCell className="font-medium cursor-pointer" onClick={() => handleRowClick(category.slug)}>{category.name}</TableCell>
+                  <TableCell className="cursor-pointer" onClick={() => handleRowClick(category.slug)}>{category.slug}</TableCell>
+                  <TableCell className="text-muted-foreground cursor-pointer" onClick={() => handleRowClick(category.slug)}>{category.description}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(category)}>
+                        <Edit className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(category)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <span className="sr-only">Delete</span>
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -92,15 +144,34 @@ export default function AdminCategoriesPage() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Add New Category</DialogTitle>
+            <DialogTitle>{editingCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
           </DialogHeader>
           <CategoryForm
-            category={null}
+            category={editingCategory}
             onSave={handleSave}
-            onCancel={() => setIsFormOpen(false)}
+            onCancel={() => {
+                setIsFormOpen(false);
+                setEditingCategory(null);
+            }}
           />
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the category
+                and remove it from any KTVs it's associated with.
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
