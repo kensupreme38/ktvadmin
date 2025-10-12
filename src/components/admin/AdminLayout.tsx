@@ -24,6 +24,7 @@ import {
   Tags,
   PlusCircle,
   Image as ImageIcon,
+  Users,
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -51,6 +52,11 @@ const menuItems = [
     href: '/admin/categories',
     label: 'Categories',
     icon: Tags,
+  },
+  {
+    href: '/admin/users',
+    label: 'Users',
+    icon: Users,
   },
   {
     href: '/admin/settings',
