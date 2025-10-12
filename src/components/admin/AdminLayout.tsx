@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/sidebar';
 import {
   Building2,
-  Users,
   Settings,
   LogOut,
   Bell,
@@ -35,11 +34,6 @@ const menuItems = [
     href: '/admin',
     label: 'KTVs',
     icon: Building2,
-  },
-  {
-    href: '/admin/users',
-    label: 'Users',
-    icon: Users,
   },
   {
     href: '/admin/settings',
