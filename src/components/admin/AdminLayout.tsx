@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -31,7 +32,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const menuItems = [
   {
-    href: '/admin/ktvs',
+    href: '/admin',
     label: 'KTVs',
     icon: Building2,
   },
@@ -67,7 +68,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const [hasUnread, setHasUnread] = React.useState(true);
 
-  const pageTitle = menuItems.find(item => pathname.startsWith(item.href))?.label || 'Admin';
+  const pageTitle = menuItems.find(item => pathname === item.href)?.label || 'KTVs';
 
 
   return (
@@ -85,7 +86,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem key={href}>
                 <Link href={href}>
                   <SidebarMenuButton
-                    isActive={pathname.startsWith(href)}
+                    isActive={pathname === href}
                     tooltip={{ children: label }}
                     asChild
                   >
