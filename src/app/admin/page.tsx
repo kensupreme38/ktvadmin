@@ -40,19 +40,19 @@ const TableSkeleton = () => (
       <TableBody>
         {Array.from({ length: 5 }).map((_, index) => (
           <TableRow key={index}>
-            <TableCell>
+            <TableCell className="align-middle">
               <Skeleton className="h-[75px] w-[100px] rounded-md" />
             </TableCell>
-            <TableCell>
+            <TableCell className="align-middle">
               <Skeleton className="h-4 w-[150px]" />
             </TableCell>
-            <TableCell>
+            <TableCell className="align-middle">
               <Skeleton className="h-4 w-[100px]" />
             </TableCell>
-            <TableCell>
+            <TableCell className="align-middle">
               <Skeleton className="h-6 w-[80px] rounded-full" />
             </TableCell>
-            <TableCell>
+            <TableCell className="align-middle">
               <Skeleton className="h-4 w-[120px]" />
             </TableCell>
           </TableRow>
@@ -93,7 +93,7 @@ export default function AdminKtvsPage() {
                   const categoryName = getCategoryName(ktv.categoryId);
                   return (
                       <TableRow key={ktv.id} onClick={() => handleRowClick(ktv.id)} className="cursor-pointer">
-                      <TableCell>
+                      <TableCell className="align-middle">
                           <Image
                               src={ktv.mainImageUrl || "https://placehold.co/100x75"}
                               alt={ktv.name}
@@ -102,12 +102,12 @@ export default function AdminKtvsPage() {
                               className="rounded-md object-cover"
                           />
                       </TableCell>
-                      <TableCell className="font-medium">{ktv.name}</TableCell>
-                      <TableCell>{ktv.city}</TableCell>
-                      <TableCell>
+                      <TableCell className="font-medium align-middle">{ktv.name}</TableCell>
+                      <TableCell className="align-middle">{ktv.city}</TableCell>
+                      <TableCell className="align-middle">
                           <Badge variant="secondary">{categoryName}</Badge>
                       </TableCell>
-                      <TableCell>{ktv.phone}</TableCell>
+                      <TableCell className="align-middle">{ktv.phone}</TableCell>
                       </TableRow>
                   )
                 })}
