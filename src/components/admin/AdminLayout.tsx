@@ -84,7 +84,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const [hasUnread, setHasUnread] = React.useState(true);
 
-  const pageTitle = menuItems.find(item => pathname.startsWith(item.href))?.label || 'Dashboard';
+  const pageTitle = menuItems.find(item => pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href)))?.label || 'Dashboard';
 
 
   return (
@@ -102,7 +102,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem key={href}>
                 <Link href={href}>
                   <SidebarMenuButton
-                    isActive={pathname === href}
+                    isActive={pathname === href || (href !== '/admin' && pathname.startsWith(href))}
                     tooltip={{ children: label }}
                     asChild
                   >
@@ -168,7 +168,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             </Popover>
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-4 md:p-6 bg-muted/30">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
