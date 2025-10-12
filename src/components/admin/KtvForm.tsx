@@ -30,9 +30,25 @@ import { useState, useImperativeHandle, forwardRef, useEffect, useRef } from 're
 import { ImageGallery } from './ImageGallery';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Image from 'next/image';
-import { ImagePlus, X } from 'lucide-react';
+import { ImagePlus, X, Check, ChevronsUpDown } from 'lucide-react';
 import { countries, citiesByCountry } from '@/data/locations';
 import { Switch } from '@/components/ui/switch';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import { cn } from '@/lib/utils';
+import { Badge } from '../ui/badge';
+
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -44,7 +60,7 @@ const formSchema = z.object({
   city: z.string().optional(),
   country: z.string().optional(),
   phone: z.string().optional(),
-  categoryId: z.string().optional(),
+  categoryIds: z.array(z.string()).min(1, { message: 'Please select at least one category.' }),
   price: z.string().optional(),
   hours: z.string().optional(),
   description: z.object({
@@ -82,7 +98,7 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
     city: ktv?.city ?? 'Ho Chi Minh City',
     country: ktv?.country ?? 'Vietnam',
     phone: ktv?.phone ?? '',
-    categoryId: ktv?.categoryId ?? allCategories.find(c => c.slug === 'ktv')?.id,
+    categoryIds: ktv?.categoryIds ?? [],
     price: ktv?.price ?? '',
     hours: ktv?.hours ?? '',
     description: {
@@ -150,12 +166,15 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
     const fullKtvData: Partial<Ktv> = {
       ...(ktv || {}),
       ...rest,
-      categoryId: data.categoryId || '',
+      categoryIds: data.categoryIds || [],
       images: data.images || [],
       description: finalDescription,
     };
     onSave(fullKtvData);
   }
+
+  const categoryOptions = allCategories.filter(c => c.slug !== 'all');
+  const selectedCategories = form.watch('categoryIds').map(id => categoryOptions.find(c => c.id === id)).filter(Boolean);
 
   return (
     <>
@@ -334,24 +353,92 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
             <div className="grid grid-cols-2 gap-4 mt-4">
                 <FormField
                     control={form.control}
-                    name="categoryId"
+                    name="categoryIds"
                     render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormItem className="flex flex-col">
+                        <FormLabel>Categories</FormLabel>
+                        <Popover>
+                        <PopoverTrigger asChild>
                             <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
-                            </SelectTrigger>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                "w-full justify-between",
+                                !field.value?.length && "text-muted-foreground"
+                                )}
+                            >
+                                <span className="truncate">
+                                {selectedCategories.length > 0
+                                ? selectedCategories.map(c => c!.name).join(', ')
+                                : "Select categories"}
+                                </span>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
                             </FormControl>
-                            <SelectContent>
-                                {allCategories.filter(c => c.slug !== 'all').map(cat => (
-                                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command>
+                            <CommandInput placeholder="Search categories..." />
+                            <CommandEmpty>No category found.</CommandEmpty>
+                            <CommandList>
+                                <CommandGroup>
+                                    {categoryOptions.map((option) => (
+                                    <CommandItem
+                                        key={option.id}
+                                        onSelect={() => {
+                                        const currentIds = field.value || [];
+                                        const newIds = currentIds.includes(option.id)
+                                            ? currentIds.filter((id) => id !== option.id)
+                                            : [...currentIds, option.id];
+                                        field.onChange(newIds);
+                                        }}
+                                    >
+                                        <Check
+                                        className={cn(
+                                            "mr-2 h-4 w-4",
+                                            field.value?.includes(option.id)
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                        />
+                                        {option.name}
+                                    </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </CommandList>
+                            </Command>
+                        </PopoverContent>
+                        </Popover>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                        {selectedCategories.map((category) => (
+                            <Badge
+                            variant="secondary"
+                            key={category!.id}
+                            className="flex items-center gap-1"
+                            >
+                            {category!.name}
+                            <button
+                                type="button"
+                                className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    field.onChange(field.value.filter(id => id !== category!.id));
+                                }
+                                }}
+                                onMouseDown={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                }}
+                                onClick={() => field.onChange(field.value.filter(id => id !== category!.id))}
+                            >
+                                <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                            </button>
+                            </Badge>
+                        ))}
+                        </div>
                         <FormMessage />
-                        </FormItem>
+                    </FormItem>
                     )}
                 />
                 <FormField
@@ -458,3 +545,5 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
 });
 
 KtvForm.displayName = 'KtvForm';
+
+    

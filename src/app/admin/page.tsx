@@ -24,8 +24,10 @@ import { Search, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 
-const getCategoryName = (categoryId: string) => {
-    return allCategories.find(c => c.id === categoryId)?.name || 'N/A';
+const getCategoryName = (categoryIds: string[]) => {
+    if (!categoryIds || categoryIds.length === 0) return 'N/A';
+    // Return the name of the first category
+    return allCategories.find(c => c.id === categoryIds[0])?.name || 'N/A';
 }
 
 const TableSkeleton = () => (
@@ -147,7 +149,7 @@ export default function AdminKtvsPage() {
               </TableHeader>
               <TableBody>
                 {paginatedKtvs.map((ktv) => {
-                  const categoryName = getCategoryName(ktv.categoryId);
+                  const categoryName = getCategoryName(ktv.categoryIds);
                   return (
                       <TableRow key={ktv.id} onClick={() => handleRowClick(ktv.id)} className="cursor-pointer">
                       <TableCell className="align-middle">

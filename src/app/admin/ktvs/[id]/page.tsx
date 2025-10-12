@@ -16,8 +16,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
 
-const getCategoryName = (categoryId: string) => {
-    return allCategories.find(c => c.id === categoryId)?.name || 'N/A';
+const getCategoryNames = (categoryIds: string[]) => {
+    if (!categoryIds || categoryIds.length === 0) return ['N/A'];
+    return categoryIds.map(id => allCategories.find(c => c.id === id)?.name || 'N/A');
 };
 
 const DetailItem = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value?: string | null }) => {
@@ -106,7 +107,7 @@ export default function KtvDetailPage() {
         );
     }
     
-    const categoryName = getCategoryName(ktv.categoryId);
+    const categoryNames = getCategoryNames(ktv.categoryIds);
 
     return (
         <>
@@ -175,8 +176,10 @@ export default function KtvDetailPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-3xl font-bold">{ktv.name}</CardTitle>
-                             <div className="text-sm text-muted-foreground pt-1">
-                                 <Badge variant="secondary">{categoryName}</Badge>
+                             <div className="text-sm text-muted-foreground pt-1 flex flex-wrap gap-2">
+                                 {categoryNames.map((name, index) => (
+                                     <Badge key={index} variant="secondary">{name}</Badge>
+                                 ))}
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6">

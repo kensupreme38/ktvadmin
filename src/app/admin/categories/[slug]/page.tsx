@@ -53,7 +53,7 @@ export default function CategoryDetailPage() {
     const category = allCategories.find(c => c.slug === slug);
     const categoryId = category?.id;
 
-    const filteredKtvs = categoryId ? ktvs.filter(ktv => ktv.categoryId === categoryId) : [];
+    const filteredKtvs = categoryId ? ktvs.filter(ktv => ktv.categoryIds.includes(categoryId)) : [];
 
     const handleKtvClick = (ktvId: string) => {
         router.push(`/admin/ktvs/${ktvId}`);

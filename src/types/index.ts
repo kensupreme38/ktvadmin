@@ -20,7 +20,7 @@ export interface Ktv {
   city: string;
   country: string;
   phone: string;
-  categoryId: string;
+  categoryIds: string[];
   price: string;
   hours: string;
   contact?: string;
