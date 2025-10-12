@@ -23,7 +23,6 @@ import {
   LogOut,
   Bell,
   Tags,
-  ChevronRight,
   PlusCircle,
   Image as ImageIcon,
 } from 'lucide-react';
@@ -145,15 +144,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-2">
                 <SidebarTrigger />
                 <div className="flex items-center gap-2 text-lg font-semibold">
-                    {pathname.startsWith('/admin/ktvs/new') ? (
-                    <>
-                        <Link href="/admin" className="text-muted-foreground hover:text-foreground">KTVs</Link>
-                        <ChevronRight className="h-4 w-4" />
-                        <span>{pageTitle}</span>
-                    </>
-                    ) : (
                     <h1>{pageTitle}</h1>
-                    )}
                 </div>
             </div>
             <div>
