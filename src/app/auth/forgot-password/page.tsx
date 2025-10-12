@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,41 +16,68 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Loader2 } from "lucide-react";
-import { signIn } from "@/lib/actions/auth";
+import { AlertCircle, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
+import { resetPassword } from "@/lib/actions/auth";
 
-export default function LoginPage() {
-  const router = useRouter();
+export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    setSuccess(false);
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
 
     try {
-      const result = await signIn(formData);
+      const result = await resetPassword(email);
 
       if (result?.error) {
         setError(result.error);
-        setLoading(false);
+      } else if (result?.success) {
+        setSuccess(true);
+        toast({
+          title: "Email sent!",
+          description: result.message,
+        });
       }
-      // If no error, redirect will happen automatically
-      // Don't show success toast as user will be redirected immediately
     } catch (err) {
-      // Check if it's a Next.js redirect (which is expected on success)
-      if (err && typeof err === "object" && "digest" in err) {
-        // This is a redirect - success! Don't show error
-        return;
-      }
       setError("An error occurred. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Card className="w-full max-w-sm">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <CheckCircle2 className="h-16 w-16 text-green-500" />
+            </div>
+            <CardTitle className="text-2xl">Email sent!</CardTitle>
+            <CardDescription>
+              Please check your email to reset your password.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button className="w-full" asChild>
+              <Link href="/login">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to sign in
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
@@ -60,17 +86,17 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <Logo />
           </div>
-          <CardTitle className="text-2xl">Sign In</CardTitle>
+          <CardTitle className="text-2xl">Forgot Password</CardTitle>
           <CardDescription>
-            Enter your credentials to access the admin dashboard.
+            Enter your email to receive a password reset link.
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
           <CardContent className="grid gap-4">
             {error && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Sign in failed</AlertTitle>
+                <AlertTitle>Error</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -80,35 +106,22 @@ export default function LoginPage() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="admin@example.com"
-                required
-                disabled={loading}
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/auth/forgot-password"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
+                placeholder="example@email.com"
                 required
                 disabled={loading}
               />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col gap-4">
             <Button className="w-full" type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign In
+              Send reset email
+            </Button>
+            <Button className="w-full" variant="ghost" asChild>
+              <Link href="/login">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to sign in
+              </Link>
             </Button>
           </CardFooter>
         </form>

@@ -1,7 +1,6 @@
+"use client";
 
-'use client';
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -12,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -22,8 +21,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { mockUsers as initialUsers, type User } from "@/data/users";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { UserForm } from "@/components/admin/UserForm";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -36,14 +39,47 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { getUsers, deleteUser } from "@/lib/actions/users";
+
+type User = {
+  id: string;
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  role: "admin" | "editor" | "user";
+  created_at: string;
+};
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
+
+  // Load users
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    setLoading(true);
+    const result = await getUsers();
+    if (result.users) {
+      setUsers(result.users);
+    }
+    if (result.error) {
+      toast({
+        title: "Error",
+        description: result.error,
+        variant: "destructive",
+      });
+    }
+    setLoading(false);
+  };
 
   const handleAdd = () => {
     setEditingUser(null);
@@ -60,46 +96,48 @@ export default function UsersPage() {
     setIsAlertOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    if (userToDelete) {
-      setUsers(users.filter(u => u.id !== userToDelete.id));
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return;
+
+    setDeleting(true);
+    const result = await deleteUser(userToDelete.id);
+
+    if (result.error) {
       toast({
-        title: 'User Deleted',
-        description: `${userToDelete.name} has been removed.`,
-        variant: 'destructive',
+        title: "Delete failed",
+        description: result.error,
+        variant: "destructive",
       });
-      setIsAlertOpen(false);
-      setUserToDelete(null);
+    } else {
+      toast({
+        title: "User deleted",
+        description: `${
+          userToDelete.full_name || userToDelete.email
+        } has been removed.`,
+      });
+      loadUsers(); // Reload users
     }
+
+    setDeleting(false);
+    setIsAlertOpen(false);
+    setUserToDelete(null);
   };
 
-  const handleSave = (userData: Partial<User>) => {
-     if (editingUser) {
-        // Editing existing user
-        setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...userData } as User : u));
-        toast({
-            title: 'User Updated!',
-            description: `${userData.name} has been updated.`,
-        });
-     } else {
-        // Adding new user
-        const newUser: User = {
-            id: `user_${Date.now()}`,
-            name: userData.name || '',
-            email: userData.email || '',
-            avatar: `https://i.pravatar.cc/150?u=${userData.email}`,
-            role: userData.role || 'User',
-            status: 'Active',
-        };
-        setUsers([newUser, ...users]);
-        toast({
-            title: 'New User Created!',
-            description: `${newUser.name} has been added.`,
-        });
-    }
-    
+  const handleSaveSuccess = () => {
     setIsFormOpen(false);
     setEditingUser(null);
+    loadUsers(); // Reload users
+  };
+
+  const getRoleBadgeVariant = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "destructive";
+      case "editor":
+        return "default";
+      default:
+        return "secondary";
+    }
   };
 
   return (
@@ -113,73 +151,110 @@ export default function UsersPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-4">
-                      <Avatar>
-                        <AvatarImage src={user.avatar} alt={user.name} />
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">{user.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {user.email}
+          {loading ? (
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : users.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No users found. Create your first user!
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Joined</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-4">
+                        <Avatar>
+                          <AvatarImage
+                            src={
+                              user.avatar_url ||
+                              `https://i.pravatar.cc/150?u=${user.email}`
+                            }
+                            alt={user.full_name || user.email}
+                          />
+                          <AvatarFallback>
+                            {(user.full_name || user.email)
+                              .charAt(0)
+                              .toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium">
+                            {user.full_name || "No name"}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {user.email}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={user.role === 'Admin' ? 'destructive' : 'secondary'}>{user.role}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={user.status === 'Active' ? 'success' : 'outline'}>{user.status}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleEdit(user)}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDeleteClick(user)}>Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={getRoleBadgeVariant(user.role)}>
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(user.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            aria-haspopup="true"
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => handleEdit(user)}>
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteClick(user)}
+                            className="text-red-600"
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
-      
+
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{editingUser ? 'Edit User' : 'Add New User'}</DialogTitle>
+            <DialogTitle>
+              {editingUser ? "Edit User" : "Add New User"}
+            </DialogTitle>
           </DialogHeader>
           <UserForm
             user={editingUser}
-            onSave={handleSave}
+            onSuccess={handleSaveSuccess}
             onCancel={() => {
-                setIsFormOpen(false);
-                setEditingUser(null);
+              setIsFormOpen(false);
+              setEditingUser(null);
             }}
           />
         </DialogContent>
@@ -187,16 +262,26 @@ export default function UsersPage() {
 
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>
-            <AlertDialogHeader>
+          <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the user <strong>{userToDelete?.name}</strong>.
+              This action cannot be undone. This will permanently delete the
+              user{" "}
+              <strong>{userToDelete?.full_name || userToDelete?.email}</strong>{" "}
+              and remove their data from the system.
             </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm}>Continue</AlertDialogAction>
-            </AlertDialogFooter>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
