@@ -31,11 +31,11 @@ const TableSkeleton = () => (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Image</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>City</TableHead>
-          <TableHead>Category</TableHead>
-          <TableHead>Phone</TableHead>
+          <TableHead className="w-[15%]">Image</TableHead>
+          <TableHead className="w-[30%]">Name</TableHead>
+          <TableHead className="w-[20%]">City</TableHead>
+          <TableHead className="w-[15%]">Category</TableHead>
+          <TableHead className="w-[20%]">Phone</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -121,11 +121,11 @@ export default function AdminKtvsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Image</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>City</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Phone</TableHead>
+                  <TableHead style={{width: '15%'}}>Image</TableHead>
+                  <TableHead style={{width: '30%'}}>Name</TableHead>
+                  <TableHead style={{width: '20%'}}>City</TableHead>
+                  <TableHead style={{width: '15%'}}>Category</TableHead>
+                  <TableHead style={{width: '20%'}}>Phone</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
