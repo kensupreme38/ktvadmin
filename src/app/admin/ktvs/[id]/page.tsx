@@ -86,7 +86,7 @@ export default function KtvDetailPage() {
     const categoryName = getCategoryName(ktv.categoryId);
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <>
             <div className="mb-4">
                 <Button variant="outline" onClick={() => router.push('/admin')}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -190,6 +190,6 @@ export default function KtvDetailPage() {
                     </Card>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
