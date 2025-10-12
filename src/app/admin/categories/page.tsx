@@ -12,14 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MoreHorizontal, PlusCircle } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { PlusCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import type { Category } from '@/types';
@@ -67,17 +60,6 @@ export default function AdminCategoriesPage() {
     setIsFormOpen(false);
   };
 
-  const handleDelete = (categoryId: string) => {
-    if (confirm('Are you sure you want to delete this category?')) {
-      setCategories(categories.filter(c => c.id !== categoryId));
-      toast({
-        title: 'Category Deleted',
-        description: 'The category has been successfully removed.',
-        variant: 'destructive',
-      });
-    }
-  };
-
   return (
     <>
       <Card>
@@ -94,29 +76,13 @@ export default function AdminCategoriesPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Slug</TableHead>
-                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {categories.map((category) => (
-                <TableRow key={category.id}>
+                <TableRow key={category.id} onClick={() => handleEdit(category)} className="cursor-pointer">
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell>{category.slug}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleEdit(category)}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(category.id)}>Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
