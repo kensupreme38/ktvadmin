@@ -3,7 +3,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -13,12 +13,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
 import Image from 'next/image';
 import { allCategories } from '@/data/categories';
 import { useKtvData } from '@/hooks/use-ktv-data';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -68,14 +67,35 @@ export default function AdminKtvsPage() {
   const { ktvs, isLoading } = useKtvData();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const handleRowClick = (ktvId: string) => {
     router.push(`/admin/ktvs/${ktvId}`);
   };
 
-  const filteredKtvs = ktvs.filter(ktv => 
+  const filteredKtvs = useMemo(() => ktvs.filter(ktv => 
     ktv.name.toLowerCase().includes(searchTerm.toLowerCase())
+  ), [ktvs, searchTerm]);
+
+  const totalPages = Math.ceil(filteredKtvs.length / itemsPerPage);
+  const paginatedKtvs = filteredKtvs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+  
+  // Reset to page 1 when search term changes
+  useState(() => {
+    setCurrentPage(1);
+  });
 
   return (
     <>
@@ -89,7 +109,10 @@ export default function AdminKtvsPage() {
               placeholder="Search by name..."
               className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // Reset to first page on new search
+              }}
             />
           </div>
         </CardHeader>
@@ -106,7 +129,7 @@ export default function AdminKtvsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredKtvs.map((ktv) => {
+                {paginatedKtvs.map((ktv) => {
                   const categoryName = getCategoryName(ktv.categoryId);
                   return (
                       <TableRow key={ktv.id} onClick={() => handleRowClick(ktv.id)} className="cursor-pointer">
@@ -137,6 +160,31 @@ export default function AdminKtvsPage() {
                 </div>
             )}
         </CardContent>
+         {totalPages > 1 && (
+            <CardFooter className="flex items-center justify-between border-t bg-background px-6 py-3">
+                <div className="text-xs text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next
+                    </Button>
+                </div>
+            </CardFooter>
+        )}
       </Card>
     </>
   );
