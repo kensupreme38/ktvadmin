@@ -1,4 +1,3 @@
-import type { ImagePlaceholder } from "@/lib/placeholder-images";
 
 export interface Category {
   id: string;
@@ -7,29 +6,20 @@ export interface Category {
 }
 export interface Ktv {
   id: string;
+  slug: string;
   name: string;
+  mainImageUrl?: string;
+  images?: string[];
   address: string;
-  district: 'District 1' | 'District 3' | 'District 5' | 'District 7' | 'Phu Nhuan';
+  city: string;
+  country: string;
+  phone: string;
   categoryId: string;
-  description: string;
-  priceRange: string;
+  price: string;
   hours: string;
-  contact: {
-    phone: string;
-  };
-   // The following properties are now optional or removed as they are no longer used in the admin UI
-  services?: string[];
-  rooms?: { type: string; capacity: string; price: string; }[];
-  menu?: { category: string; items: { name: string; price: string; }[]; }[];
-  paymentMethods?: {
-    method: string;
-    details?: string;
-  }[];
-  numberOfRooms?: number;
-  mapUrl?: string;
-  cardImage?: ImagePlaceholder;
-  gallery?: ImagePlaceholder[];
-  reviews?: { author: string; comment: string; rating: number }[];
+  contact?: string;
+  description: any;
+  isActive: boolean;
 }
 
 export interface Booking {

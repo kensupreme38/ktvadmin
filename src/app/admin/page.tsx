@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -76,6 +77,7 @@ export default function AdminKtvsPage() {
       const newKtv: Ktv = {
         ...ktvData,
         id: `ktv_${Date.now()}`,
+        slug: ktvData.name.toLowerCase().replace(/\s+/g, '-'),
       };
       setKtvs([newKtv, ...ktvs]);
       toast({
@@ -113,8 +115,8 @@ export default function AdminKtvsPage() {
               <TableRow>
                 <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>District</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>City</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -126,7 +128,7 @@ export default function AdminKtvsPage() {
                     <TableRow key={ktv.id}>
                     <TableCell>
                         <Image
-                            src={ktv.cardImage?.imageUrl || "https://placehold.co/100x75"}
+                            src={ktv.mainImageUrl || "https://placehold.co/100x75"}
                             alt={ktv.name}
                             width={100}
                             height={75}
@@ -134,11 +136,11 @@ export default function AdminKtvsPage() {
                         />
                     </TableCell>
                     <TableCell className="font-medium">{ktv.name}</TableCell>
-                    <TableCell>{ktv.district}</TableCell>
+                    <TableCell>{ktv.city}</TableCell>
                     <TableCell>
                         <Badge variant={getKtvTypeVariant(categoryName)}>{categoryName}</Badge>
                     </TableCell>
-                    <TableCell>{ktv.contact.phone}</TableCell>
+                    <TableCell>{ktv.phone}</TableCell>
                     <TableCell>
                         <DropdownMenu>
                         <DropdownMenuTrigger asChild>
