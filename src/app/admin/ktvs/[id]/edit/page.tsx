@@ -77,11 +77,11 @@ export default function EditKtvPage() {
   }
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col">
       <CardHeader>
         <CardTitle>Edit KTV: {ktv.name}</CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 overflow-y-auto p-4">
+      <CardContent className="p-4">
         <KtvForm ref={formRef} ktv={ktv} onSave={handleSave} />
       </CardContent>
       <CardFooter className="flex justify-end gap-2 border-t pt-4">
