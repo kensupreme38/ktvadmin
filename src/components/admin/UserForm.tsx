@@ -34,6 +34,7 @@ const formSchema = z.object({
   message: "Passwords don't match",
   path: ['confirmPassword'],
 }).refine(data => {
+    // only validate password length if it's being set
     if (data.password && data.password.length < 8) return false;
     return true;
 }, {
@@ -142,7 +143,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Role</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValuechange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a role" />
