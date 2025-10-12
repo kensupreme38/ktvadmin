@@ -344,17 +344,21 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
       </Form>
 
       <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
-        <DialogContent className="max-w-4xl h-[80vh]">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl h-[80vh] p-0 flex flex-col">
+          <DialogHeader className="p-6 pb-0">
             <DialogTitle>Select Images</DialogTitle>
           </DialogHeader>
-          <ImageGallery
-            onSelect={handleImageSelect}
-            multiple={galleryTarget === 'multi'}
-            onClose={() => setIsGalleryOpen(false)}
-          />
+          <div className="flex-1 overflow-hidden">
+            <ImageGallery
+              onSelect={handleImageSelect}
+              multiple={galleryTarget === 'multi'}
+              onClose={() => setIsGalleryOpen(false)}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </>
   );
 }
+
+    
