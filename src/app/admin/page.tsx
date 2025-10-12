@@ -22,6 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Search, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationEllipsis, PaginationNext } from '@/components/ui/pagination';
 
 
 const getCategoryName = (categoryIds: string[]) => {
@@ -99,12 +100,74 @@ export default function AdminKtvsPage() {
     currentPage * itemsPerPage
   );
 
-  const handlePreviousPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  }
 
-  const handleNextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const renderPaginationItems = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    const ellipsis = <PaginationEllipsis key="ellipsis" />;
+
+    if (totalPages <= maxPagesToShow + 2) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(
+          <PaginationItem key={i}>
+            <PaginationLink href="#" isActive={i === currentPage} onClick={(e) => { e.preventDefault(); handlePageChange(i);}}>
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    } else {
+      pageNumbers.push(
+        <PaginationItem key={1}>
+          <PaginationLink href="#" isActive={1 === currentPage} onClick={(e) => { e.preventDefault(); handlePageChange(1);}}>
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+      
+      if (currentPage > 3) {
+        pageNumbers.push(<PaginationEllipsis key="start-ellipsis" />);
+      }
+
+      let startPage = Math.max(2, currentPage - 1);
+      let endPage = Math.min(totalPages - 1, currentPage + 1);
+
+      if (currentPage <= 3) {
+        startPage = 2;
+        endPage = 4;
+      }
+      if (currentPage >= totalPages - 2) {
+        startPage = totalPages - 3;
+        endPage = totalPages - 1;
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(
+          <PaginationItem key={i}>
+            <PaginationLink href="#" isActive={i === currentPage} onClick={(e) => { e.preventDefault(); handlePageChange(i);}}>
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+
+      if (currentPage < totalPages - 2) {
+        pageNumbers.push(<PaginationEllipsis key="end-ellipsis" />);
+      }
+
+      pageNumbers.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink href="#" isActive={totalPages === currentPage} onClick={(e) => { epreventDefault(); handlePageChange(totalPages);}}>
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return pageNumbers;
   };
   
   // Reset to page 1 when search term changes
@@ -182,26 +245,21 @@ export default function AdminKtvsPage() {
          {totalPages > 1 && (
             <CardFooter className="flex items-center justify-between border-t bg-background px-6 py-3">
                 <div className="text-xs text-muted-foreground">
-                    Page {currentPage} of {totalPages}
+                    Showing <strong>{(currentPage - 1) * itemsPerPage + 1}-
+                    {Math.min(currentPage * itemsPerPage, filteredKtvs.length)}
+                    </strong> of <strong>{filteredKtvs.length}</strong> products
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handlePreviousPage}
-                        disabled={currentPage === 1}
-                    >
-                        Previous
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages}
-                    >
-                        Next
-                    </Button>
-                </div>
+                <Pagination>
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); handlePageChange(Math.max(1, currentPage - 1))}} className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}/>
+                        </PaginationItem>
+                        {renderPaginationItems()}
+                        <PaginationItem>
+                            <PaginationNext href="#" onClick={(e) => { e.preventDefault(); handlePageChange(Math.min(totalPages, currentPage + 1))}} className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''} />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
             </CardFooter>
         )}
       </Card>
