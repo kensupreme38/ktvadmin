@@ -24,19 +24,20 @@ import {
 } from '@/components/ui/select';
 import type { Ktv } from '@/types';
 import { allCategories } from '@/data/categories';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   mainImageUrl: z.string().url({ message: 'Please enter a valid URL.' }).optional().or(z.literal('')),
   images: z.string().optional(),
-  address: z.string().min(5, { message: 'Address is required.' }),
-  city: z.string().min(2, { message: 'City is required.' }),
-  country: z.string().min(2, { message: 'Country is required.' }),
-  phone: z.string().min(9, { message: 'Phone number is required.' }),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  country: z.string().optional(),
+  phone: z.string().optional(),
   categoryId: z.string({ required_error: 'Please select a category.' }),
-  price: z.string().min(3, { message: 'Price is required.' }),
-  hours: z.string().min(5, { message: 'Hours are required.' }),
-  description: z.string().min(10, { message: 'Description is required.' }),
+  price: z.string().optional(),
+  hours: z.string().optional(),
+  description: z.string().optional(),
   contact: z.string().optional(),
 });
 
@@ -49,6 +50,8 @@ interface KtvFormProps {
 }
 
 export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
+  const { toast } = useToast();
+  
   const defaultValues: KtvFormValues = {
     name: ktv?.name ?? '',
     mainImageUrl: ktv?.mainImageUrl ?? '',
@@ -74,12 +77,16 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
     
     let parsedDescription;
     try {
-        parsedDescription = description ? JSON.parse(description) : {};
+        if (description) {
+            parsedDescription = JSON.parse(description);
+        } else {
+            parsedDescription = {};
+        }
     } catch (error) {
         toast({
             variant: "destructive",
             title: "Invalid JSON in Description",
-            description: "Please ensure the description is a valid JSON object.",
+            description: "Please ensure the description is a valid JSON object or empty.",
         });
         return;
     }
