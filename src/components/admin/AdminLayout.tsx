@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -21,6 +22,7 @@ import {
   Settings,
   LogOut,
   Bell,
+  Tags,
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -34,6 +36,11 @@ const menuItems = [
     href: '/admin',
     label: 'KTVs',
     icon: Building2,
+  },
+  {
+    href: '/admin/categories',
+    label: 'Categories',
+    icon: Tags,
   },
   {
     href: '/admin/settings',
@@ -62,7 +69,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const [hasUnread, setHasUnread] = React.useState(true);
 
-  const pageTitle = menuItems.find(item => pathname === item.href)?.label || 'KTVs';
+  const pageTitle = menuItems.find(item => pathname.startsWith(item.href))?.label || 'Dashboard';
 
 
   return (
