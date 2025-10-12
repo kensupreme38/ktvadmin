@@ -130,8 +130,8 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
   }, [watchedCountry, form]);
 
   useEffect(() => {
-    // Auto-generate slug from name if creating a new KTV
-    if (!ktv && watchedName) {
+    // Auto-generate slug from name if creating a new KTV and slug is empty
+    if (!ktv && watchedName && !form.getValues('slug')) {
         const generatedSlug = watchedName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         form.setValue('slug', generatedSlug);
     }
@@ -350,7 +350,7 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                     )}
                 />
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="grid grid-cols-2 gap-4 mt-4 items-start">
                 <FormField
                     control={form.control}
                     name="categoryIds"
