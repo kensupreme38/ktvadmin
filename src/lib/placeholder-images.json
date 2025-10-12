@@ -1,4 +1,3 @@
-
 {
   "placeholderImages": [
     {
@@ -114,6 +113,30 @@
       "description": "KTV room with intricate ceiling lights",
       "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146447679_f1be80d5b8ea286de5ddbd0470f1332b.jpg",
       "imageHint": "ceiling lights"
+    },
+    {
+      "id": "ktv-gallery-new-5",
+      "description": "KTV room with star lights",
+      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146435306_af2f3575971a812373a6a9b403d16298.jpg",
+      "imageHint": "star lights"
+    },
+    {
+      "id": "ktv-gallery-new-6",
+      "description": "KTV room with galaxy lights",
+      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146435272_0b213b3513a9606835695029a5317765.jpg",
+      "imageHint": "galaxy lights"
+    },
+    {
+      "id": "ktv-gallery-new-7",
+      "description": "KTV room with classic design",
+      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146609971_a7374714f5262e3d360e2270912f7166.jpg",
+      "imageHint": "classic design"
+    },
+    {
+      "id": "ktv-gallery-new-8",
+      "description": "KTV room with neon signs",
+      "imageUrl": "https://hcmc-ktv.com/wp-content/uploads/2025/06/z6710146702758_68913988f01c8008a28723b7e7161b40.jpg",
+      "imageHint": "neon signs"
     }
   ]
 }
