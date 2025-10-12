@@ -55,7 +55,8 @@ export default function AdminKtvsPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const handleEdit = (ktv: Ktv) => {
+  const handleEdit = (e: React.MouseEvent, ktv: Ktv) => {
+    e.stopPropagation();
     setSelectedKtv(ktv);
     setIsFormOpen(true);
   };
@@ -69,7 +70,8 @@ export default function AdminKtvsPage() {
     setSelectedKtv(null);
   };
 
-  const handleDelete = (ktvId: string) => {
+  const handleDelete = (e: React.MouseEvent, ktvId: string) => {
+    e.stopPropagation();
     if (confirm('Are you sure you want to delete this KTV?')) {
       deleteKtv(ktvId);
       toast({
@@ -78,6 +80,16 @@ export default function AdminKtvsPage() {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleRowClick = (ktvId: string) => {
+    // This is a placeholder for navigating to a detail page.
+    // In a real app, you would navigate to something like `/admin/ktvs/${ktvId}`
+    toast({
+      title: 'Navigating to Details',
+      description: `Would navigate to details for KTV with ID: ${ktvId}`,
+    });
+    console.log(`Navigate to details for KTV ${ktvId}`);
   };
 
   return (
@@ -102,7 +114,7 @@ export default function AdminKtvsPage() {
               {ktvs.map((ktv) => {
                 const categoryName = getCategoryName(ktv.categoryId);
                 return (
-                    <TableRow key={ktv.id}>
+                    <TableRow key={ktv.id} onClick={() => handleRowClick(ktv.id)} className="cursor-pointer">
                     <TableCell>
                         <Image
                             src={ktv.mainImageUrl || "https://placehold.co/100x75"}
@@ -118,7 +130,7 @@ export default function AdminKtvsPage() {
                         <Badge variant={getKtvTypeVariant(categoryName)}>{categoryName}</Badge>
                     </TableCell>
                     <TableCell>{ktv.phone}</TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -128,8 +140,8 @@ export default function AdminKtvsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => handleEdit(ktv)}>Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(ktv.id)}>Delete</DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => handleEdit(e, ktv)}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive" onClick={(e) => handleDelete(e, ktv.id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                         </DropdownMenu>
                     </TableCell>
