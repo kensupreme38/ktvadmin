@@ -1,10 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Building, FileText, Star, CalendarPlus, Edit3, UserPlus } from 'lucide-react';
-import { allKtvs } from '@/data/ktvs';
-import { allArticles } from '@/data/articles';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
 
 const recentActivities = [
   {
@@ -32,16 +29,19 @@ const recentActivities = [
     user: { name: 'David Chen', id: 'usr_8' }
   },
     {
-    icon: <CalendarPlus className="h-5 w-5 text-green-500" />,
+    icon: <CalendarPlus className="h-5 w<5 text-green-500" />,
     description: 'New booking for Nnice KTV by Tran Thi B.',
     time: 'Yesterday',
     user: { name: 'Tran Thi B', id: 'usr_9' }
   }
 ];
 
+// Mock data since the original data files were removed.
+const totalKtvs = 6;
+const totalArticles = 3;
+const totalReviews = 25;
 
 export default function AdminDashboardPage() {
-  const totalReviews = allKtvs.reduce((sum, ktv) => sum + ktv.reviews.length, 0);
 
   return (
     <>
@@ -52,7 +52,7 @@ export default function AdminDashboardPage() {
             <Building className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{allKtvs.length}</div>
+            <div className="text-2xl font-bold">{totalKtvs}</div>
             <p className="text-xs text-muted-foreground">venues currently listed</p>
           </CardContent>
         </Card>
@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{allArticles.length}</div>
+            <div className="text-2xl font-bold">{totalArticles}</div>
             <p className="text-xs text-muted-foreground">insights published</p>
           </CardContent>
         </Card>
