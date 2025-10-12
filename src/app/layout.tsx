@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
       </head>
-      <body className={cn('antialiased min-h-screen flex flex-col no-scrollbar')} suppressHydrationWarning>
+      <body className={cn('antialiased min-h-screen flex flex-col no-scrollbar bg-background')} suppressHydrationWarning>
         {children}
         <Toaster />
       </body>
