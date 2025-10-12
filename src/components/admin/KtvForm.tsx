@@ -12,6 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,9 +32,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import Image from 'next/image';
 import { ImagePlus, X } from 'lucide-react';
 import { countries, citiesByCountry } from '@/data/locations';
+import { Switch } from '@/components/ui/switch';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  slug: z.string().min(2, { message: 'Slug must be at least 2 characters.' }).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be in kebab-case format (e.g., "my-cool-ktv").'),
+  isActive: z.boolean(),
   mainImageUrl: z.string().optional(),
   images: z.array(z.string()).optional(),
   address: z.string().optional(),
@@ -70,6 +74,8 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
 
   const defaultValues: KtvFormValues = {
     name: ktv?.name ?? '',
+    slug: ktv?.slug ?? '',
+    isActive: ktv?.isActive ?? true,
     mainImageUrl: ktv?.mainImageUrl ?? '',
     images: ktv?.images ?? [],
     address: ktv?.address ?? '',
@@ -92,6 +98,7 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
   });
   
   const watchedCountry = form.watch('country');
+  const watchedName = form.watch('name');
   const availableCities = watchedCountry ? citiesByCountry[watchedCountry] || [] : [];
   
   useEffect(() => {
@@ -105,6 +112,15 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
         form.setValue('city', '');
     }
   }, [watchedCountry, form]);
+
+  useEffect(() => {
+    // Auto-generate slug from name if creating a new KTV
+    if (!ktv && watchedName) {
+        const generatedSlug = watchedName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        form.setValue('slug', generatedSlug);
+    }
+  }, [watchedName, form, ktv]);
+
 
   useImperativeHandle(ref, () => ({
     submit: () => {
@@ -131,12 +147,8 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
         features: description?.features?.split('\n').filter(f => f.trim() !== '') || [],
     };
 
-    const fullKtvData: Ktv = {
-      ...(ktv || {
-        id: '', 
-        slug: '', 
-        isActive: true,
-      }),
+    const fullKtvData: Partial<Ktv> = {
+      ...(ktv || {}),
       ...rest,
       categoryId: data.categoryId || '',
       images: data.images || [],
@@ -150,17 +162,53 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
       <Form {...form}>
         <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="p-1">
+             <div className="grid grid-cols-2 gap-4 mt-4">
+                <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                        <Input placeholder="Iconic KTV" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="slug"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Slug</FormLabel>
+                        <FormControl>
+                        <Input placeholder="iconic-ktv" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+             </div>
+            
             <FormField
                 control={form.control}
-                name="name"
+                name="isActive"
                 render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-4">
+                    <div className="space-y-0.5">
+                        <FormLabel>Active</FormLabel>
+                        <FormDescription>
+                        Is this KTV currently active and displayed to users?
+                        </FormDescription>
+                    </div>
                     <FormControl>
-                    <Input placeholder="Iconic KTV" {...field} />
+                        <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        />
                     </FormControl>
-                    <FormMessage />
-                </FormItem>
+                    </FormItem>
                 )}
             />
 

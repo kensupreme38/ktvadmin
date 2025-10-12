@@ -16,14 +16,10 @@ export default function NewKtvPage() {
   const { addKtv } = useKtvData();
   const formRef = useRef<{ submit: () => void }>(null);
 
-  const handleSave = (ktvData: Omit<Ktv, 'id' | 'slug' | 'isActive'>) => {
+  const handleSave = (ktvData: Omit<Ktv, 'id'>) => {
     const newKtv: Ktv = {
       ...ktvData,
       id: `ktv_${Date.now()}`,
-      slug: ktvData.name.toLowerCase().replace(/\s+/g, '-'),
-      isActive: true,
-      images: ktvData.images || [],
-      categoryId: ktvData.categoryId || '',
     };
     
     addKtv(newKtv);
