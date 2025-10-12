@@ -46,14 +46,14 @@ const menuItems = [
     icon: PlusCircle,
   },
   {
-    href: '/admin/categories',
-    label: 'Categories',
-    icon: Tags,
-  },
-  {
     href: '/admin/media',
     label: 'Media',
     icon: ImageIcon,
+  },
+  {
+    href: '/admin/categories',
+    label: 'Categories',
+    icon: Tags,
   },
   {
     href: '/admin/settings',
