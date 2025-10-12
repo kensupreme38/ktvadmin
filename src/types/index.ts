@@ -1,7 +1,7 @@
 
 export interface Category {
   id: string;
-  name: 'High-end' | 'Budget' | 'Mid-range';
+  name: string;
   slug: string;
 }
 

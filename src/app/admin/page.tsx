@@ -22,19 +22,6 @@ import { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 
-const getKtvTypeVariant = (categoryName: string) => {
-  switch (categoryName) {
-    case 'High-end':
-      return 'destructive';
-    case 'Mid-range':
-      return 'default';
-    case 'Budget':
-      return 'secondary';
-    default:
-      return 'outline';
-  }
-};
-
 const getCategoryName = (categoryId: string) => {
     return allCategories.find(c => c.id === categoryId)?.name || 'N/A';
 }
@@ -118,7 +105,7 @@ export default function AdminKtvsPage() {
                       <TableCell className="font-medium">{ktv.name}</TableCell>
                       <TableCell>{ktv.city}</TableCell>
                       <TableCell>
-                          <Badge variant={getKtvTypeVariant(categoryName)}>{categoryName}</Badge>
+                          <Badge variant="secondary">{categoryName}</Badge>
                       </TableCell>
                       <TableCell>{ktv.phone}</TableCell>
                       </TableRow>

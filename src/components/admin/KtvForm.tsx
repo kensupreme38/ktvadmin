@@ -78,7 +78,7 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
     city: ktv?.city ?? 'Ho Chi Minh City',
     country: ktv?.country ?? 'Vietnam',
     phone: ktv?.phone ?? '',
-    categoryId: ktv?.categoryId ?? allCategories[1].id,
+    categoryId: ktv?.categoryId ?? allCategories.find(c => c.slug === 'ktv')?.id,
     price: ktv?.price ?? '',
     hours: ktv?.hours ?? '',
     description: {
@@ -141,7 +141,7 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
     <>
       <Form {...form}>
         <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="max-h-[65vh] overflow-y-auto p-4">
+          <div className="max-h-[65vh] overflow-y-auto p-1">
             <FormField
                 control={form.control}
                 name="name"
@@ -271,7 +271,7 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
                             </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                {allCategories.map(cat => (
+                                {allCategories.filter(c => c.slug !== 'all').map(cat => (
                                 <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -375,7 +375,7 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
 
       <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
         <DialogContent className="max-w-4xl h-[80vh] p-0 flex flex-col">
-          <DialogHeader className="p-6 pb-0">
+          <DialogHeader className="p-4 pb-0">
             <DialogTitle>Select Images</DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-hidden">
