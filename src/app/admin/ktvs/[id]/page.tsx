@@ -175,9 +175,9 @@ export default function KtvDetailPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-3xl font-bold">{ktv.name}</CardTitle>
-                            <CardDescription>
+                             <div className="text-sm text-muted-foreground pt-1">
                                  <Badge variant="secondary">{categoryName}</Badge>
-                            </CardDescription>
+                            </div>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="space-y-4 text-sm">
