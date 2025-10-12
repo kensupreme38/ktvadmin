@@ -33,11 +33,6 @@ import { Separator } from '../ui/separator';
 
 const menuItems = [
   {
-    href: '/admin',
-    label: 'Dashboard',
-    icon: Home,
-  },
-  {
     href: '/admin/ktvs',
     label: 'KTVs',
     icon: Building2,
@@ -84,7 +79,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const [hasUnread, setHasUnread] = React.useState(true);
 
-  const pageTitle = menuItems.find(item => pathname.startsWith(item.href) && (item.href === '/admin' ? pathname === item.href : true))?.label || 'Dashboard';
+  const pageTitle = menuItems.find(item => pathname.startsWith(item.href))?.label || 'Dashboard';
 
 
   return (
@@ -92,12 +87,26 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       defaultOpen={!isMobile}
       collapsible={isMobile ? 'offcanvas' : 'icon'}
     >
-      <Sidebar side="left" variant="sidebar" className="p-0">
+      <Sidebar side="left" variant="inset" className="p-0">
         <SidebarContent className="flex flex-col p-2">
           <SidebarHeader>
             <Logo />
           </SidebarHeader>
           <SidebarMenu className="flex-1">
+             <SidebarMenuItem>
+                <Link href="/admin">
+                  <SidebarMenuButton
+                    isActive={pathname === '/admin'}
+                    tooltip={{ children: 'Dashboard' }}
+                    asChild
+                  >
+                    <div>
+                      <Home />
+                      <span>Dashboard</span>
+                    </div>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
             {menuItems.map(({ href, label, icon: Icon }) => (
               <SidebarMenuItem key={href}>
                 <Link href={href}>
