@@ -20,14 +20,12 @@ import {
   Users,
   Settings,
   LogOut,
-  CalendarCheck,
   Bell,
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Separator } from '../ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 
@@ -36,11 +34,6 @@ const menuItems = [
     href: '/admin/ktvs',
     label: 'KTVs',
     icon: Building2,
-  },
-  {
-    href: '/admin/bookings',
-    label: 'Bookings',
-    icon: CalendarCheck,
   },
   {
     href: '/admin/users',
