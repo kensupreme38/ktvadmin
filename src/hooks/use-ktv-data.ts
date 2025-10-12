@@ -7,37 +7,39 @@ import { initialKtvs } from '@/data/ktvs';
 
 const KTV_STORAGE_KEY = 'ktv_data';
 
-// Helper function to safely get data from localStorage
-const getInitialData = (): Ktv[] => {
-  if (typeof window === 'undefined') {
-    return initialKtvs;
-  }
-  try {
-    const item = window.localStorage.getItem(KTV_STORAGE_KEY);
-    if (item) {
-      return JSON.parse(item);
-    } else {
-      // If no data in localStorage, initialize it with the default data
-      window.localStorage.setItem(KTV_STORAGE_KEY, JSON.stringify(initialKtvs));
-      return initialKtvs;
-    }
-  } catch (error) {
-    console.warn(`Error reading localStorage key “${KTV_STORAGE_KEY}”:`, error);
-    return initialKtvs;
-  }
-};
-
 export const useKtvData = () => {
-  const [ktvs, setKtvs] = useState<Ktv[]>(getInitialData);
+  const [ktvs, setKtvs] = useState<Ktv[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Effect to update localStorage whenever `ktvs` state changes
+  // Effect to load data from localStorage on client-side mount
   useEffect(() => {
     try {
-      window.localStorage.setItem(KTV_STORAGE_KEY, JSON.stringify(ktvs));
+      const item = window.localStorage.getItem(KTV_STORAGE_KEY);
+      if (item) {
+        setKtvs(JSON.parse(item));
+      } else {
+        // If no data, initialize with default and set it in localStorage
+        setKtvs(initialKtvs);
+        window.localStorage.setItem(KTV_STORAGE_KEY, JSON.stringify(initialKtvs));
+      }
     } catch (error) {
-      console.warn(`Error setting localStorage key “${KTV_STORAGE_KEY}”:`, error);
+      console.warn(`Error reading localStorage key “${KTV_STORAGE_KEY}”:`, error);
+      setKtvs(initialKtvs); // Fallback to initial data on error
+    } finally {
+      setIsLoading(false);
     }
-  }, [ktvs]);
+  }, []);
+
+  // Effect to update localStorage whenever `ktvs` state changes, but only after initial load
+  useEffect(() => {
+    if (!isLoading) {
+      try {
+        window.localStorage.setItem(KTV_STORAGE_KEY, JSON.stringify(ktvs));
+      } catch (error) {
+        console.warn(`Error setting localStorage key “${KTV_STORAGE_KEY}”:`, error);
+      }
+    }
+  }, [ktvs, isLoading]);
 
   // Effect to listen for changes from other tabs/windows
   useEffect(() => {
@@ -67,5 +69,5 @@ export const useKtvData = () => {
     setKtvs((prevKtvs) => prevKtvs.filter((ktv) => ktv.id !== id));
   }, []);
 
-  return { ktvs, addKtv, updateKtv, deleteKtv };
+  return { ktvs, addKtv, updateKtv, deleteKtv, isLoading };
 };

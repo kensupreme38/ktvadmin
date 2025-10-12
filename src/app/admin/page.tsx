@@ -29,6 +29,7 @@ import Image from 'next/image';
 import { allCategories } from '@/data/categories';
 import { useKtvData } from '@/hooks/use-ktv-data';
 import { useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 const getKtvTypeVariant = (categoryName: string) => {
@@ -48,8 +49,48 @@ const getCategoryName = (categoryId: string) => {
     return allCategories.find(c => c.id === categoryId)?.name || 'N/A';
 }
 
+const TableSkeleton = () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Image</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>City</TableHead>
+          <TableHead>Category</TableHead>
+          <TableHead>Phone</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {Array.from({ length: 5 }).map((_, index) => (
+          <TableRow key={index}>
+            <TableCell>
+              <Skeleton className="h-[75px] w-[100px] rounded-md" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[150px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[100px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-6 w-[80px] rounded-full" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[120px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-8 w-8" />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+);
+
+
 export default function AdminKtvsPage() {
-  const { ktvs, deleteKtv, updateKtv } = useKtvData();
+  const { ktvs, deleteKtv, updateKtv, isLoading } = useKtvData();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedKtv, setSelectedKtv] = useState<Ktv | null>(null);
   const { toast } = useToast();
@@ -83,13 +124,7 @@ export default function AdminKtvsPage() {
   };
 
   const handleRowClick = (ktvId: string) => {
-    // This is a placeholder for navigating to a detail page.
-    // In a real app, you would navigate to something like `/admin/ktvs/${ktvId}`
-    toast({
-      title: 'Navigating to Details',
-      description: `Would navigate to details for KTV with ID: ${ktvId}`,
-    });
-    console.log(`Navigate to details for KTV ${ktvId}`);
+    router.push(`/admin/ktvs/${ktvId}`);
   };
 
   return (
@@ -99,57 +134,59 @@ export default function AdminKtvsPage() {
           <CardTitle>KTV Management</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>City</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {ktvs.map((ktv) => {
-                const categoryName = getCategoryName(ktv.categoryId);
-                return (
-                    <TableRow key={ktv.id} onClick={() => handleRowClick(ktv.id)} className="cursor-pointer">
-                    <TableCell>
-                        <Image
-                            src={ktv.mainImageUrl || "https://placehold.co/100x75"}
-                            alt={ktv.name}
-                            width={100}
-                            height={75}
-                            className="rounded-md object-cover"
-                        />
-                    </TableCell>
-                    <TableCell className="font-medium">{ktv.name}</TableCell>
-                    <TableCell>{ktv.city}</TableCell>
-                    <TableCell>
-                        <Badge variant={getKtvTypeVariant(categoryName)}>{categoryName}</Badge>
-                    </TableCell>
-                    <TableCell>{ktv.phone}</TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={(e) => handleEdit(e, ktv)}>Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive" onClick={(e) => handleDelete(e, ktv.id)}>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                        </DropdownMenu>
-                    </TableCell>
-                    </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
+          {isLoading ? <TableSkeleton /> : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Image</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>City</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ktvs.map((ktv) => {
+                  const categoryName = getCategoryName(ktv.categoryId);
+                  return (
+                      <TableRow key={ktv.id} onClick={() => handleRowClick(ktv.id)} className="cursor-pointer">
+                      <TableCell>
+                          <Image
+                              src={ktv.mainImageUrl || "https://placehold.co/100x75"}
+                              alt={ktv.name}
+                              width={100}
+                              height={75}
+                              className="rounded-md object-cover"
+                          />
+                      </TableCell>
+                      <TableCell className="font-medium">{ktv.name}</TableCell>
+                      <TableCell>{ktv.city}</TableCell>
+                      <TableCell>
+                          <Badge variant={getKtvTypeVariant(categoryName)}>{categoryName}</Badge>
+                      </TableCell>
+                      <TableCell>{ktv.phone}</TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem onClick={(e) => handleEdit(e, ktv)}>Edit</DropdownMenuItem>
+                              <DropdownMenuItem className="text-destructive" onClick={(e) => handleDelete(e, ktv.id)}>Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                          </DropdownMenu>
+                      </TableCell>
+                      </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
 
