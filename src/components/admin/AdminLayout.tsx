@@ -24,6 +24,7 @@ import {
   Bell,
   Tags,
   ChevronRight,
+  PlusCircle,
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,6 +38,11 @@ const menuItems = [
     href: '/admin',
     label: 'KTVs',
     icon: Building2,
+  },
+  {
+    href: '/admin/ktvs/new',
+    label: 'Thêm KTV',
+    icon: PlusCircle,
   },
   {
     href: '/admin/categories',
@@ -95,7 +101,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem key={href}>
                 <Link href={href}>
                   <SidebarMenuButton
-                    isActive={pathname === href || (href !== '/admin' && pathname.startsWith(href))}
+                    isActive={pathname === href || (href !== '/admin' && pathname.startsWith(href) && href !== '/admin/ktvs/new') || (href === '/admin/ktvs/new' && pathname === '/admin/ktvs/new')}
                     tooltip={{ children: label }}
                     asChild
                   >
