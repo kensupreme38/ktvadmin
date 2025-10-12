@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { CheckCircle, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import {
-  PlaceHolderImages,
+  PlaceHolderImages as defaultImages,
   type ImagePlaceholder,
 } from '@/lib/placeholder-images';
 
@@ -16,10 +16,25 @@ interface ImageGalleryProps {
   onSelect?: (urls: string[]) => void;
   multiple?: boolean;
   onClose?: () => void;
+  isUploading?: boolean;
+  UploadingSkeleton?: React.ComponentType;
 }
 
-export function ImageGallery({ onSelect, multiple = false, onClose }: ImageGalleryProps) {
+export function ImageGallery({ 
+  onSelect, 
+  multiple = false, 
+  onClose,
+  isUploading = false,
+  UploadingSkeleton 
+}: ImageGalleryProps) {
   const [selectedImages, setSelectedImages] = useState<ImagePlaceholder[]>([]);
+  const [combinedImages, setCombinedImages] = useState<ImagePlaceholder[]>(defaultImages);
+
+  useEffect(() => {
+    const userUploadedImages = JSON.parse(localStorage.getItem('user_uploaded_images') || '[]');
+    setCombinedImages([...userUploadedImages, ...defaultImages]);
+  }, []);
+
 
   const handleImageClick = (image: ImagePlaceholder) => {
     if (!onSelect) return;
@@ -50,7 +65,8 @@ export function ImageGallery({ onSelect, multiple = false, onClose }: ImageGalle
     <div className="flex flex-col h-full">
       <ScrollArea className="flex-grow">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
-          {PlaceHolderImages.map((image) => (
+          {isUploading && UploadingSkeleton && <UploadingSkeleton />}
+          {combinedImages.map((image) => (
             <div
               key={image.id}
               className={cn(
@@ -65,6 +81,7 @@ export function ImageGallery({ onSelect, multiple = false, onClose }: ImageGalle
                 layout="fill"
                 objectFit="cover"
                 className="transition-transform duration-300 group-hover:scale-105"
+                unoptimized={image.imageUrl.startsWith('data:image')}
               />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
               {isSelected(image) ? (
