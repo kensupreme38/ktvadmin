@@ -14,7 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, PlusCircle } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,10 +55,6 @@ export default function AdminKtvsPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const handleAdd = () => {
-    router.push('/admin/ktvs/new');
-  };
-
   const handleEdit = (ktv: Ktv) => {
     setSelectedKtv(ktv);
     setIsFormOpen(true);
@@ -92,12 +88,8 @@ export default function AdminKtvsPage() {
   return (
     <>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle>KTV Management</CardTitle>
-          <Button onClick={handleAdd}>
-             <PlusCircle className="mr-2 h-4 w-4" />
-            Add New KTV
-          </Button>
         </CardHeader>
         <CardContent>
           <Table>
