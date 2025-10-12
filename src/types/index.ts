@@ -4,6 +4,11 @@ export interface Category {
   name: 'High-end' | 'Budget' | 'Mid-range';
   slug: string;
 }
+
+export interface KtvDescription {
+  summary?: string;
+  features?: string[];
+}
 export interface Ktv {
   id: string;
   slug: string;
@@ -18,7 +23,7 @@ export interface Ktv {
   price: string;
   hours: string;
   contact?: string;
-  description: any;
+  description: KtvDescription;
   isActive: boolean;
 }
 

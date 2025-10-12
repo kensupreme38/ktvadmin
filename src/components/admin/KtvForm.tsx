@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { Ktv } from '@/types';
+import type { Ktv, KtvDescription } from '@/types';
 import { allCategories } from '@/data/categories';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
@@ -42,7 +42,10 @@ const formSchema = z.object({
   categoryId: z.string().optional(),
   price: z.string().optional(),
   hours: z.string().optional(),
-  description: z.string().optional(),
+  description: z.object({
+    summary: z.string().optional(),
+    features: z.string().optional(), // Will be string from textarea, split into array on submit
+  }).optional(),
   contact: z.string().optional(),
 });
 
@@ -69,7 +72,10 @@ export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv,
     categoryId: ktv?.categoryId ?? allCategories[1].id,
     price: ktv?.price ?? '',
     hours: ktv?.hours ?? '',
-    description: ktv?.description ? JSON.stringify(ktv.description, null, 2) : '',
+    description: {
+      summary: ktv?.description?.summary ?? '',
+      features: ktv?.description?.features?.join('\n') ?? '',
+    },
     contact: ktv?.contact ?? '',
   };
 
@@ -99,22 +105,11 @@ export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv,
 
   function onSubmit(data: KtvFormValues) {
     const { description, ...rest } = data;
-    
-    let parsedDescription;
-    try {
-        if (description) {
-            parsedDescription = JSON.parse(description);
-        } else {
-            parsedDescription = {};
-        }
-    } catch (error) {
-        toast({
-            variant: "destructive",
-            title: "Invalid JSON in Description",
-            description: "Please ensure the description is a valid JSON object or empty.",
-        });
-        return;
-    }
+
+    const finalDescription: KtvDescription = {
+        summary: description?.summary || '',
+        features: description?.features?.split('\n').filter(f => f.trim() !== '') || [],
+    };
 
     const fullKtvData: Ktv = {
       ...(ktv || {
@@ -125,7 +120,7 @@ export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv,
       ...rest,
       categoryId: data.categoryId || '',
       images: data.images || [],
-      description: parsedDescription,
+      description: finalDescription,
     };
     onSave(fullKtvData);
   }
@@ -315,18 +310,31 @@ export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv,
               />
           </div>
           <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                  <FormItem>
-                  <FormLabel>Description (JSON)</FormLabel>
-                  <FormControl>
-                      <Textarea placeholder='{ "summary": "A great place...", "features": ["Karaoke", "Bar"] }' {...field} rows={5} />
-                  </FormControl>
-                  <FormMessage />
-                  </FormItem>
-              )}
-              />
+            control={form.control}
+            name="description.summary"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Summary</FormLabel>
+                <FormControl>
+                    <Textarea placeholder="A brief summary of the KTV." {...field} rows={3} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="description.features"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Features</FormLabel>
+                <FormControl>
+                    <Textarea placeholder="List features, one per line..." {...field} rows={4} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
           <FormField
             control={form.control}
             name="contact"
