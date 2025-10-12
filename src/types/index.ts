@@ -1,11 +1,16 @@
 import type { ImagePlaceholder } from "@/lib/placeholder-images";
 
+export interface Category {
+  id: string;
+  name: 'High-end' | 'Budget' | 'Mid-range';
+  slug: string;
+}
 export interface Ktv {
   id: string;
   name: string;
   address: string;
   district: 'District 1' | 'District 3' | 'District 5' | 'District 7' | 'Phu Nhuan';
-  type: 'High-end' | 'Budget' | 'Mid-range';
+  categoryId: string;
   description: string;
   priceRange: string;
   hours: string;

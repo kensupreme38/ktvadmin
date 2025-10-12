@@ -24,12 +24,13 @@ import {
 } from '@/components/ui/select';
 import type { Ktv } from '@/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { allCategories } from '@/data/categories';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   address: z.string().min(5, { message: 'Address is required.' }),
   district: z.enum(['District 1', 'District 3', 'District 5', 'District 7', 'Phu Nhuan']),
-  type: z.enum(['High-end', 'Mid-range', 'Budget']),
+  categoryId: z.string({ required_error: 'Please select a category.' }),
   description: z.string().min(10, { message: 'Description is required.' }),
   priceRange: z.string().min(3, { message: 'Price range is required.' }),
   hours: z.string().min(5, { message: 'Hours are required.' }),
@@ -53,7 +54,7 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
     name: ktv?.name ?? '',
     address: ktv?.address ?? '',
     district: ktv?.district ?? 'District 1',
-    type: ktv?.type ?? 'Mid-range',
+    categoryId: ktv?.categoryId ?? allCategories[1].id,
     description: ktv?.description ?? '',
     priceRange: ktv?.priceRange ?? '',
     hours: ktv?.hours ?? '',
@@ -93,7 +94,7 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto p-1 pr-4 no-scrollbar">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto p-1 pr-4">
         <FormField
           control={form.control}
           name="name"
@@ -147,7 +148,7 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
             />
             <FormField
             control={form.control}
-            name="type"
+            name="categoryId"
             render={({ field }) => (
                 <FormItem>
                 <FormLabel>Type</FormLabel>
@@ -158,9 +159,9 @@ export function KtvForm({ ktv, onSave, onCancel }: KtvFormProps) {
                     </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        <SelectItem value="High-end">High-end</SelectItem>
-                        <SelectItem value="Mid-range">Mid-range</SelectItem>
-                        <SelectItem value="Budget">Budget</SelectItem>
+                        {allCategories.map(cat => (
+                           <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
                 <FormMessage />
