@@ -7,25 +7,24 @@ export interface Ktv {
   district: 'District 1' | 'District 3' | 'District 5' | 'District 7' | 'Phu Nhuan';
   type: 'High-end' | 'Budget' | 'Mid-range';
   description: string;
-  services: string[];
-  rooms: { type: string; capacity: string; price: string; }[];
-  menu: { category: string; items: { name: string; price: string; }[]; }[];
-  paymentMethods: {
+  priceRange: string;
+  hours: string;
+  contact: {
+    phone: string;
+  };
+   // The following properties are now optional or removed as they are no longer used in the admin UI
+  services?: string[];
+  rooms?: { type: string; capacity: string; price: string; }[];
+  menu?: { category: string; items: { name: string; price: string; }[]; }[];
+  paymentMethods?: {
     method: string;
     details?: string;
   }[];
-  contact: {
-    phone: string;
-    whatsapp?: string;
-    wechat?: string;
-  };
-  priceRange: string;
-  hours: string;
-  numberOfRooms: number;
-  mapUrl: string;
-  cardImage: ImagePlaceholder;
-  gallery: ImagePlaceholder[];
-  reviews: { author: string; comment: string; rating: number }[];
+  numberOfRooms?: number;
+  mapUrl?: string;
+  cardImage?: ImagePlaceholder;
+  gallery?: ImagePlaceholder[];
+  reviews?: { author: string; comment: string; rating: number }[];
 }
 
 export interface Article {
