@@ -27,17 +27,6 @@ export interface Ktv {
   reviews?: { author: string; comment: string; rating: number }[];
 }
 
-export interface Article {
-  slug: string;
-  title: string;
-  author: string;
-  publishedDate: string;
-  status: 'Published' | 'Draft';
-  excerpt: string;
-  content: string;
-  image: ImagePlaceholder;
-}
-
 export interface Booking {
   id: string;
   customerName: string;

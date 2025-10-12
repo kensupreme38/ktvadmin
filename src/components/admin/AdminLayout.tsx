@@ -43,11 +43,6 @@ const menuItems = [
     icon: CalendarCheck,
   },
   {
-    href: '/admin/articles',
-    label: 'Articles',
-    icon: FileText,
-  },
-  {
     href: '/admin/users',
     label: 'Users',
     icon: Users,
