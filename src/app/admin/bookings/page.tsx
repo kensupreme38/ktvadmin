@@ -24,7 +24,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { BookingForm } from '@/components/admin/BookingForm';
 import { useToast } from '@/hooks/use-toast';
 import type { Booking } from '@/types';
-import { allKtvs } from '@/data/ktvs';
+
+const allKtvs = [
+    { id: 'kingdom-ktv', name: 'Kingdom KTV' },
+    { id: 'nnice-ktv', name: 'Nnice KTV' },
+    { id: 'icool-ktv', name: 'ICOOL KTV' },
+    { id: 'catwalk-ktv', name: 'Catwalk KTV' },
+];
 
 const initialBookings: Booking[] = [
   {

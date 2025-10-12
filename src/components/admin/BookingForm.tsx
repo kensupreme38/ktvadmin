@@ -21,12 +21,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { Booking } from '@/types';
-import { allKtvs } from '@/data/ktvs';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '../ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+
+const allKtvs = [
+    { id: 'kingdom-ktv', name: 'Kingdom KTV' },
+    { id: 'nnice-ktv', name: 'Nnice KTV' },
+    { id: 'icool-ktv', name: 'ICOOL KTV' },
+    { id: 'catwalk-ktv', name: 'Catwalk KTV' },
+];
 
 const formSchema = z.object({
   customerName: z.string().min(2, { message: 'Name is required.' }),
