@@ -350,98 +350,8 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                     )}
                 />
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4 items-start">
-                <FormField
-                    control={form.control}
-                    name="categoryIds"
-                    render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                        <FormLabel>Categories</FormLabel>
-                        <Popover>
-                        <PopoverTrigger asChild>
-                            <FormControl>
-                            <Button
-                                variant="outline"
-                                role="combobox"
-                                className={cn(
-                                "w-full justify-between",
-                                !field.value?.length && "text-muted-foreground"
-                                )}
-                            >
-                                <span className="truncate">
-                                {selectedCategories.length > 0
-                                ? selectedCategories.map(c => c!.name).join(', ')
-                                : "Select categories"}
-                                </span>
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                            </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                            <Command>
-                            <CommandInput placeholder="Search categories..." />
-                            <CommandEmpty>No category found.</CommandEmpty>
-                            <CommandList>
-                                <CommandGroup>
-                                    {categoryOptions.map((option) => (
-                                    <CommandItem
-                                        key={option.id}
-                                        onSelect={() => {
-                                        const currentIds = field.value || [];
-                                        const newIds = currentIds.includes(option.id)
-                                            ? currentIds.filter((id) => id !== option.id)
-                                            : [...currentIds, option.id];
-                                        field.onChange(newIds);
-                                        }}
-                                    >
-                                        <Check
-                                        className={cn(
-                                            "mr-2 h-4 w-4",
-                                            field.value?.includes(option.id)
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        )}
-                                        />
-                                        {option.name}
-                                    </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </CommandList>
-                            </Command>
-                        </PopoverContent>
-                        </Popover>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                        {selectedCategories.map((category) => (
-                            <Badge
-                            variant="secondary"
-                            key={category!.id}
-                            className="flex items-center gap-1"
-                            >
-                            {category!.name}
-                            <button
-                                type="button"
-                                className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                                onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    field.onChange(field.value.filter(id => id !== category!.id));
-                                }
-                                }}
-                                onMouseDown={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                }}
-                                onClick={() => field.onChange(field.value.filter(id => id !== category!.id))}
-                            >
-                                <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                            </button>
-                            </Badge>
-                        ))}
-                        </div>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                <FormField
+            <div className="grid grid-cols-2 gap-4 mt-4">
+                 <FormField
                     control={form.control}
                     name="phone"
                     render={({ field }) => (
@@ -454,8 +364,6 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                     </FormItem>
                     )}
                 />
-            </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
                 <FormField
                 control={form.control}
                 name="price"
@@ -469,6 +377,8 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                     </FormItem>
                 )}
                 />
+            </div>
+             <div className="grid grid-cols-2 gap-4 mt-4">
                 <FormField
                 control={form.control}
                 name="hours"
@@ -482,7 +392,112 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                     </FormItem>
                 )}
                 />
+                 <FormField
+                    control={form.control}
+                    name="contact"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Other Contact Info</FormLabel>
+                        <FormControl>
+                        <Input placeholder="WeChat ID, Telegram..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
             </div>
+
+            <FormField
+                control={form.control}
+                name="categoryIds"
+                render={({ field }) => (
+                <FormItem className="flex flex-col mt-4">
+                    <FormLabel>Categories</FormLabel>
+                    <Popover>
+                    <PopoverTrigger asChild>
+                        <FormControl>
+                        <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn(
+                            "w-full justify-between",
+                            !field.value?.length && "text-muted-foreground"
+                            )}
+                        >
+                            <span className="truncate">
+                            {selectedCategories.length > 0
+                            ? selectedCategories.map(c => c!.name).join(', ')
+                            : "Select categories"}
+                            </span>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                        </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                        <Command>
+                        <CommandInput placeholder="Search categories..." />
+                        <CommandEmpty>No category found.</CommandEmpty>
+                        <CommandList>
+                            <CommandGroup>
+                                {categoryOptions.map((option) => (
+                                <CommandItem
+                                    key={option.id}
+                                    onSelect={() => {
+                                    const currentIds = field.value || [];
+                                    const newIds = currentIds.includes(option.id)
+                                        ? currentIds.filter((id) => id !== option.id)
+                                        : [...currentIds, option.id];
+                                    field.onChange(newIds);
+                                    }}
+                                >
+                                    <Check
+                                    className={cn(
+                                        "mr-2 h-4 w-4",
+                                        field.value?.includes(option.id)
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                    />
+                                    {option.name}
+                                </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                        </Command>
+                    </PopoverContent>
+                    </Popover>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                    {selectedCategories.map((category) => (
+                        <Badge
+                        variant="secondary"
+                        key={category!.id}
+                        className="flex items-center gap-1"
+                        >
+                        {category!.name}
+                        <button
+                            type="button"
+                            className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                            onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                field.onChange(field.value.filter(id => id !== category!.id));
+                            }
+                            }}
+                            onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            }}
+                            onClick={() => field.onChange(field.value.filter(id => id !== category!.id))}
+                        >
+                            <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                        </button>
+                        </Badge>
+                    ))}
+                    </div>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+           
             <FormField
                 control={form.control}
                 name="description.summary"
@@ -509,19 +524,6 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                     </FormItem>
                 )}
                 />
-            <FormField
-                control={form.control}
-                name="contact"
-                render={({ field }) => (
-                <FormItem className="mt-4">
-                    <FormLabel>Other Contact Info</FormLabel>
-                    <FormControl>
-                    <Input placeholder="WeChat ID, Telegram..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
           </div>
         </form>
       </Form>
@@ -546,4 +548,5 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
 
 KtvForm.displayName = 'KtvForm';
 
+    
     
