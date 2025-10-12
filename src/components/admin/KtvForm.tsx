@@ -30,7 +30,6 @@ import { ImageGallery } from './ImageGallery';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Image from 'next/image';
 import { ImagePlus, X } from 'lucide-react';
-import { CardFooter } from '../ui/card';
 import { countries, citiesByCountry } from '@/data/locations';
 
 const formSchema = z.object({
@@ -56,14 +55,13 @@ type KtvFormValues = z.infer<typeof formSchema>;
 interface KtvFormProps {
   ktv?: Ktv | null;
   onSave: (data: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
-  onCancel?: () => void;
 }
 
 type KtvFormRef = {
     submit: () => void;
 };
 
-export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCancel }, ref) => {
+export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, ref) => {
   const { toast } = useToast();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [galleryTarget, setGalleryTarget] = useState<'main' | 'multi' | null>(null);
@@ -390,14 +388,6 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
                 )}
             />
           </div>
-          {onCancel && (
-             <CardFooter className="flex justify-end gap-2 border-t pt-4">
-                <Button variant="outline" type="button" onClick={onCancel}>
-                    Cancel
-                </Button>
-                <Button type="submit">Save Changes</Button>
-            </CardFooter>
-          )}
         </form>
       </Form>
 
@@ -420,7 +410,3 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
 });
 
 KtvForm.displayName = 'KtvForm';
-
-    
-
-    

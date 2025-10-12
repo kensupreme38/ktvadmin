@@ -64,6 +64,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
 
   const getPageTitle = () => {
+    if (pathname.endsWith('/edit')) {
+        return 'Edit KTV';
+    }
     if (pathname.startsWith('/admin/ktvs/new')) {
       return 'Add New KTV';
     }

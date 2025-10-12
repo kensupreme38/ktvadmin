@@ -13,8 +13,6 @@ import { Separator } from '@/components/ui/separator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { allCategories } from '@/data/categories';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { KtvForm } from '@/components/admin/KtvForm';
 import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
 
@@ -73,22 +71,14 @@ const PageSkeleton = () => (
 export default function KtvDetailPage() {
     const router = useRouter();
     const params = useParams();
-    const { ktvs, isLoading, updateKtv, deleteKtv } = useKtvData();
+    const { ktvs, isLoading, deleteKtv } = useKtvData();
     const { toast } = useToast();
-
-    const [isFormOpen, setIsFormOpen] = useState(false);
 
     const ktvId = typeof params.id === 'string' ? params.id : '';
     const ktv = ktvs.find(k => k.id === ktvId);
 
     const handleEdit = () => {
-        setIsFormOpen(true);
-    };
-
-    const handleSave = (ktvData: Ktv) => {
-        updateKtv(ktvData.id, ktvData);
-        toast({ title: 'KTV updated successfully!' });
-        setIsFormOpen(false);
+        router.push(`/admin/ktvs/${ktvId}/edit`);
     };
     
     const handleDelete = () => {
@@ -230,18 +220,6 @@ export default function KtvDetailPage() {
                     </Card>
                 </div>
             </div>
-
-            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <DialogContent className="sm:max-w-[600px]">
-                <DialogHeader>
-                    <DialogTitle>Edit KTV</DialogTitle>
-                </DialogHeader>
-                <KtvForm
-                    ktv={ktv}
-                    onSave={handleSave}
-                />
-                </DialogContent>
-            </Dialog>
         </>
     );
 }
