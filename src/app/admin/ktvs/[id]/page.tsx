@@ -15,6 +15,17 @@ import { allCategories } from '@/data/categories';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 
 const getCategoryNames = (categoryIds: string[]) => {
     if (!categoryIds || categoryIds.length === 0) return ['N/A'];
@@ -74,6 +85,7 @@ export default function KtvDetailPage() {
     const params = useParams();
     const { ktvs, isLoading, deleteKtv } = useKtvData();
     const { toast } = useToast();
+    const [isAlertOpen, setIsAlertOpen] = useState(false);
 
     const ktvId = typeof params.id === 'string' ? params.id : '';
     const ktv = ktvs.find(k => k.id === ktvId);
@@ -82,8 +94,12 @@ export default function KtvDetailPage() {
         router.push(`/admin/ktvs/${ktvId}/edit`);
     };
     
-    const handleDelete = () => {
-        if (ktv && confirm('Are you sure you want to delete this KTV?')) {
+    const handleDeleteClick = () => {
+        setIsAlertOpen(true);
+    };
+
+    const handleDeleteConfirm = () => {
+        if (ktv) {
             deleteKtv(ktv.id);
             toast({
                 title: 'KTV Deleted',
@@ -92,6 +108,7 @@ export default function KtvDetailPage() {
             });
             router.push('/admin');
         }
+        setIsAlertOpen(false);
     };
     
     if (isLoading) {
@@ -120,7 +137,7 @@ export default function KtvDetailPage() {
                     <Button onClick={handleEdit}>
                         <Edit className="mr-2 h-4 w-4" /> Edit
                     </Button>
-                    <Button variant="destructive" onClick={handleDelete}>
+                    <Button variant="destructive" onClick={handleDeleteClick}>
                         <Trash2 className="mr-2 h-4 w-4" /> Delete
                     </Button>
                 </div>
@@ -223,6 +240,22 @@ export default function KtvDetailPage() {
                     </Card>
                 </div>
             </div>
+
+             <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the KTV
+                        and all of its associated data.
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteConfirm}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }
