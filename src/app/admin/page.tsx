@@ -20,7 +20,8 @@ import { useKtvData } from '@/hooks/use-ktv-data';
 import { useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, RefreshCw } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 
 const getCategoryName = (categoryId: string) => {
@@ -66,6 +67,7 @@ const TableSkeleton = () => (
 export default function AdminKtvsPage() {
   const { ktvs, isLoading } = useKtvData();
   const router = useRouter();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -73,6 +75,17 @@ export default function AdminKtvsPage() {
   const handleRowClick = (ktvId: string) => {
     router.push(`/admin/ktvs/${ktvId}`);
   };
+
+  const handleRefresh = () => {
+    if (confirm('Are you sure you want to reset all KTV data to the initial default state? All your changes will be lost.')) {
+        localStorage.removeItem('ktv_data');
+        toast({
+            title: "Data Reset",
+            description: "KTV data has been reset to its initial state. The page will now reload."
+        });
+        setTimeout(() => window.location.reload(), 1500);
+    }
+  }
 
   const filteredKtvs = useMemo(() => ktvs.filter(ktv => 
     ktv.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -102,7 +115,7 @@ export default function AdminKtvsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>KTV Management</CardTitle>
-          <div className="relative ml-auto flex-1 md:grow-0">
+          <div className="relative ml-auto flex items-center gap-2">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
@@ -114,6 +127,10 @@ export default function AdminKtvsPage() {
                 setCurrentPage(1); // Reset to first page on new search
               }}
             />
+            <Button variant="outline" size="icon" className="h-9 w-9" onClick={handleRefresh}>
+                <RefreshCw className="h-4 w-4"/>
+                <span className="sr-only">Refresh Data</span>
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
