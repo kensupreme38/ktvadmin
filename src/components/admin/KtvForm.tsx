@@ -31,6 +31,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import Image from 'next/image';
 import { ImagePlus, X } from 'lucide-react';
 import { CardFooter } from '../ui/card';
+import { countries, citiesByCountry } from '@/data/locations';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -67,7 +68,6 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [galleryTarget, setGalleryTarget] = useState<'main' | 'multi' | null>(null);
   
-  // Create a ref for the form element
   const formRef = useRef<HTMLFormElement>(null);
 
   const defaultValues: KtvFormValues = {
@@ -93,13 +93,23 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
     defaultValues,
   });
   
+  const watchedCountry = form.watch('country');
+  const availableCities = watchedCountry ? citiesByCountry[watchedCountry] || [] : [];
+  
   useEffect(() => {
     form.reset(defaultValues);
   }, [ktv, form]);
 
+  useEffect(() => {
+    // Reset city when country changes if the current city is not in the new country's list
+    const currentCity = form.getValues('city');
+    if (watchedCountry && !citiesByCountry[watchedCountry]?.some(c => c.value === currentCity)) {
+        form.setValue('city', '');
+    }
+  }, [watchedCountry, form]);
+
   useImperativeHandle(ref, () => ({
     submit: () => {
-        // Trigger form submission
         formRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
     },
   }));
@@ -231,30 +241,48 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCa
             />
             <div className="grid grid-cols-2 gap-4 mt-4">
                 <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                        <Input placeholder="Ho Chi Minh City" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a country" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {countries.map(country => (
+                                <SelectItem key={country.value} value={country.value}>{country.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
                 />
                 <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                        <Input placeholder="Vietnam" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>City</FormLabel>
+                         <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a city" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {availableCities.length > 0 ? availableCities.map(city => (
+                                    <SelectItem key={city.value} value={city.value}>{city.label}</SelectItem>
+                                )) : <SelectItem value="all" disabled>Select a country first</SelectItem>}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
                 />
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4">
