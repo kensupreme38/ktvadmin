@@ -25,11 +25,12 @@ import {
 import type { Ktv, KtvDescription } from '@/types';
 import { allCategories } from '@/data/categories';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
+import { useState, useImperativeHandle, forwardRef, useEffect, useRef } from 'react';
 import { ImageGallery } from './ImageGallery';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Image from 'next/image';
 import { ImagePlus, X } from 'lucide-react';
+import { CardFooter } from '../ui/card';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -54,13 +55,21 @@ type KtvFormValues = z.infer<typeof formSchema>;
 interface KtvFormProps {
   ktv?: Ktv | null;
   onSave: (data: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
+  onCancel?: () => void;
 }
 
-export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv, onSave }, ref) => {
+type KtvFormRef = {
+    submit: () => void;
+};
+
+export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave, onCancel }, ref) => {
   const { toast } = useToast();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [galleryTarget, setGalleryTarget] = useState<'main' | 'multi' | null>(null);
   
+  // Create a ref for the form element
+  const formRef = useRef<HTMLFormElement>(null);
+
   const defaultValues: KtvFormValues = {
     name: ktv?.name ?? '',
     mainImageUrl: ktv?.mainImageUrl ?? '',
@@ -89,7 +98,10 @@ export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv,
   }, [ktv, form]);
 
   useImperativeHandle(ref, () => ({
-    submit: () => form.handleSubmit(onSubmit)(),
+    submit: () => {
+        // Trigger form submission
+        formRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    },
   }));
 
   const handleImageSelect = (urls: string[]) => {
@@ -128,226 +140,236 @@ export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv,
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Iconic KTV" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Controller
-            control={form.control}
-            name="mainImageUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Main Image</FormLabel>
-                <FormControl>
-                  <div className="w-full">
-                    <Button type="button" variant="outline" onClick={() => { setGalleryTarget('main'); setIsGalleryOpen(true); }}>
-                      <ImagePlus className="mr-2 h-4 w-4" />
-                      Select Main Image
-                    </Button>
-                    {field.value && (
-                      <div className="mt-2 relative w-48 h-32">
-                        <Image src={field.value} alt="Main image preview" layout="fill" objectFit="cover" className="rounded-md" />
-                        <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => field.onChange('')}>
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Controller
-            control={form.control}
-            name="images"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Image Gallery</FormLabel>
-                <FormControl>
-                  <div>
-                    <Button type="button" variant="outline" onClick={() => { setGalleryTarget('multi'); setIsGalleryOpen(true); }}>
-                      <ImagePlus className="mr-2 h-4 w-4" />
-                      Add to Gallery
-                    </Button>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {field.value?.map((url, index) => (
-                        <div key={index} className="relative w-32 h-24">
-                          <Image src={url} alt={`Gallery image ${index + 1}`} layout="fill" objectFit="cover" className="rounded-md" />
-                           <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => {
-                             const newImages = [...field.value!];
-                             newImages.splice(index, 1);
-                             field.onChange(newImages);
-                           }}>
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Address</FormLabel>
-                <FormControl>
-                  <Input placeholder="35 Selegie Rd" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="grid grid-cols-2 gap-4">
+        <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="max-h-[65vh] overflow-y-auto p-4">
             <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ho Chi Minh City" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Vietnam" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-              <FormField
                 control={form.control}
-                name="categoryId"
+                name="name"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                    <Input placeholder="Iconic KTV" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+
+            <Controller
+                control={form.control}
+                name="mainImageUrl"
+                render={({ field }) => (
+                <FormItem className="mt-4">
+                    <FormLabel>Main Image</FormLabel>
+                    <FormControl>
+                    <div className="w-full">
+                        <Button type="button" variant="outline" onClick={() => { setGalleryTarget('main'); setIsGalleryOpen(true); }}>
+                        <ImagePlus className="mr-2 h-4 w-4" />
+                        Select Main Image
+                        </Button>
+                        {field.value && (
+                        <div className="mt-2 relative w-48 h-32">
+                            <Image src={field.value} alt="Main image preview" layout="fill" objectFit="cover" className="rounded-md" />
+                            <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => field.onChange('')}>
+                            <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                        )}
+                    </div>
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+
+            <Controller
+                control={form.control}
+                name="images"
+                render={({ field }) => (
+                <FormItem className="mt-4">
+                    <FormLabel>Image Gallery</FormLabel>
+                    <FormControl>
+                    <div>
+                        <Button type="button" variant="outline" onClick={() => { setGalleryTarget('multi'); setIsGalleryOpen(true); }}>
+                        <ImagePlus className="mr-2 h-4 w-4" />
+                        Add to Gallery
+                        </Button>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                        {field.value?.map((url, index) => (
+                            <div key={index} className="relative w-32 h-24">
+                            <Image src={url} alt={`Gallery image ${index + 1}`} layout="fill" objectFit="cover" className="rounded-md" />
+                            <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => {
+                                const newImages = [...field.value!];
+                                newImages.splice(index, 1);
+                                field.onChange(newImages);
+                            }}>
+                                <X className="h-4 w-4" />
+                            </Button>
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+
+            <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                <FormItem className="mt-4">
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                    <Input placeholder="35 Selegie Rd" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <div className="grid grid-cols-2 gap-4 mt-4">
+                <FormField
+                control={form.control}
+                name="city"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            {allCategories.map(cat => (
-                              <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                        <Input placeholder="Ho Chi Minh City" {...field} />
+                    </FormControl>
                     <FormMessage />
                     </FormItem>
                 )}
-              />
-              <FormField
+                />
+                <FormField
                 control={form.control}
-                name="phone"
+                name="country"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
+                    <FormItem>
+                    <FormLabel>Country</FormLabel>
                     <FormControl>
-                      <Input placeholder="+84 123 456 789" {...field} />
+                        <Input placeholder="Vietnam" {...field} />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
+                    </FormItem>
                 )}
-              />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-              <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                  <FormItem>
-                  <FormLabel>Price</FormLabel>
-                  <FormControl>
-                      <Input placeholder="$248" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  </FormItem>
-              )}
-              />
-              <FormField
-              control={form.control}
-              name="hours"
-              render={({ field }) => (
-                  <FormItem>
-                  <FormLabel>Opening Hours</FormLabel>
-                  <FormControl>
-                      <Input placeholder="4PM - 3AM" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  </FormItem>
-              )}
-              />
-          </div>
-          <FormField
-            control={form.control}
-            name="description.summary"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Summary</FormLabel>
-                <FormControl>
-                    <Textarea placeholder="A brief summary of the KTV." {...field} rows={3} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
+                />
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+                <FormField
+                    control={form.control}
+                    name="categoryId"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {allCategories.map(cat => (
+                                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                        <Input placeholder="+84 123 456 789" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+                <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Price</FormLabel>
+                    <FormControl>
+                        <Input placeholder="$248" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="hours"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Opening Hours</FormLabel>
+                    <FormControl>
+                        <Input placeholder="4PM - 3AM" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
             <FormField
-            control={form.control}
-            name="description.features"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Features</FormLabel>
-                <FormControl>
-                    <Textarea placeholder="List features, one per line..." {...field} rows={4} />
-                </FormControl>
-                <FormMessage />
+                control={form.control}
+                name="description.summary"
+                render={({ field }) => (
+                    <FormItem className="mt-4">
+                    <FormLabel>Summary</FormLabel>
+                    <FormControl>
+                        <Textarea placeholder="A brief summary of the KTV." {...field} rows={3} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="description.features"
+                render={({ field }) => (
+                    <FormItem className="mt-4">
+                    <FormLabel>Features</FormLabel>
+                    <FormControl>
+                        <Textarea placeholder="List features, one per line..." {...field} rows={4} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            <FormField
+                control={form.control}
+                name="contact"
+                render={({ field }) => (
+                <FormItem className="mt-4">
+                    <FormLabel>Other Contact Info</FormLabel>
+                    <FormControl>
+                    <Input placeholder="WeChat ID, Telegram..." {...field} />
+                    </FormControl>
+                    <FormMessage />
                 </FormItem>
-            )}
+                )}
             />
-          <FormField
-            control={form.control}
-            name="contact"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Other Contact Info</FormLabel>
-                <FormControl>
-                  <Input placeholder="WeChat ID, Telegram..." {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          </div>
+          {onCancel && (
+             <CardFooter className="flex justify-end gap-2 border-t pt-4">
+                <Button variant="outline" type="button" onClick={onCancel}>
+                    Cancel
+                </Button>
+                <Button type="submit">Save Changes</Button>
+            </CardFooter>
+          )}
         </form>
       </Form>
 
@@ -370,4 +392,3 @@ export const KtvForm = forwardRef<{ submit: () => void; }, KtvFormProps>(({ ktv,
 });
 
 KtvForm.displayName = 'KtvForm';
-    

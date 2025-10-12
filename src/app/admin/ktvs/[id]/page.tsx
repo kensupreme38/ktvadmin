@@ -1,17 +1,22 @@
 
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useKtvData } from '@/hooks/use-ktv-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { ArrowLeft, MapPin, Phone, Clock, DollarSign, Tag, Info, CheckCircle } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Clock, DollarSign, CheckCircle, Edit, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { allCategories } from '@/data/categories';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { KtvForm } from '@/components/admin/KtvForm';
+import { useToast } from '@/hooks/use-toast';
+import type { Ktv } from '@/types';
 
 const getCategoryName = (categoryId: string) => {
     return allCategories.find(c => c.id === categoryId)?.name || 'N/A';
@@ -32,8 +37,12 @@ const DetailItem = ({ icon: Icon, label, value }: { icon: React.ElementType, lab
 
 const PageSkeleton = () => (
     <div>
-        <div className="mb-4">
-            <Skeleton className="h-9 w-24" />
+        <div className="flex justify-between items-center mb-4">
+            <Skeleton className="h-9 w-32" />
+            <div className="flex gap-2">
+                <Skeleton className="h-9 w-20" />
+                <Skeleton className="h-9 w-20" />
+            </div>
         </div>
         <div className="grid md:grid-cols-5 gap-8">
             <div className="md:col-span-3 space-y-6">
@@ -64,21 +73,45 @@ const PageSkeleton = () => (
 export default function KtvDetailPage() {
     const router = useRouter();
     const params = useParams();
-    const { ktvs, isLoading } = useKtvData();
+    const { ktvs, isLoading, updateKtv, deleteKtv } = useKtvData();
+    const { toast } = useToast();
+
+    const [isFormOpen, setIsFormOpen] = useState(false);
 
     const ktvId = typeof params.id === 'string' ? params.id : '';
+    const ktv = ktvs.find(k => k.id === ktvId);
+
+    const handleEdit = () => {
+        setIsFormOpen(true);
+    };
+
+    const handleSave = (ktvData: Ktv) => {
+        updateKtv(ktvData.id, ktvData);
+        toast({ title: 'KTV updated successfully!' });
+        setIsFormOpen(false);
+    };
+    
+    const handleDelete = () => {
+        if (ktv && confirm('Are you sure you want to delete this KTV?')) {
+            deleteKtv(ktv.id);
+            toast({
+                title: 'KTV Deleted',
+                description: `${ktv.name} has been successfully removed.`,
+                variant: 'destructive',
+            });
+            router.push('/admin');
+        }
+    };
     
     if (isLoading) {
         return <PageSkeleton />;
     }
 
-    const ktv = ktvs.find(k => k.id === ktvId);
-
     if (!ktv) {
         return (
-            <div className="text-center">
+            <div className="text-center py-10">
                 <p className="text-lg font-semibold">KTV not found</p>
-                <Button onClick={() => router.back()} className="mt-4">Go Back</Button>
+                <Button onClick={() => router.push('/admin')} className="mt-4">Go Back to List</Button>
             </div>
         );
     }
@@ -87,11 +120,19 @@ export default function KtvDetailPage() {
 
     return (
         <>
-            <div className="mb-4">
+            <div className="flex justify-between items-center mb-4">
                 <Button variant="outline" onClick={() => router.push('/admin')}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to List
                 </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleEdit}>
+                        <Edit className="mr-2 h-4 w-4" /> Edit
+                    </Button>
+                    <Button variant="destructive" onClick={handleDelete}>
+                        <Trash2 className="mr-2 h-4 w-4" /> Delete
+                    </Button>
+                </div>
             </div>
 
             <div className="grid md:grid-cols-5 gap-8">
@@ -150,11 +191,10 @@ export default function KtvDetailPage() {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="space-y-4 text-sm">
-                                <DetailItem icon={MapPin} label="Address" value={`${ktv.address}, ${ktv.city}, ${ktv.country}`} />
+                                <DetailItem icon={MapPin} label="Address" value={`${ktv.address}, ${ktv.city}`} />
                                 <DetailItem icon={Phone} label="Phone" value={ktv.phone} />
                                 <DetailItem icon={Clock} label="Hours" value={ktv.hours} />
                                 <DetailItem icon={DollarSign} label="Price Range" value={ktv.price} />
-                                <DetailItem icon={Info} label="Contact" value={ktv.contact} />
                             </div>
                             
                             {(ktv.description?.summary || (ktv.description?.features && ktv.description.features.length > 0)) && (
@@ -190,6 +230,18 @@ export default function KtvDetailPage() {
                     </Card>
                 </div>
             </div>
+
+            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                    <DialogTitle>Edit KTV</DialogTitle>
+                </DialogHeader>
+                <KtvForm
+                    ktv={ktv}
+                    onSave={handleSave}
+                />
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
