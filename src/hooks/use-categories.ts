@@ -10,6 +10,7 @@ type UseCategoriesResult = {
   error: string | null;
   reload: () => Promise<void>;
   createCategory: (input: { name: string; slug: string; description?: string | null }) => Promise<{ category?: Category; error?: string }>;
+  deleteCategory: (id: string) => Promise<{ success?: true; error?: string }>;
 };
 
 export function useCategories(): UseCategoriesResult {
@@ -74,7 +75,19 @@ export function useCategories(): UseCategoriesResult {
     [supabase]
   );
 
-  return { categories, isLoading, error, reload: load, createCategory };
+  const deleteCategory = useCallback(
+    async (id: string): Promise<{ success?: true; error?: string }> => {
+      const { error } = await supabase.from('categories').delete().eq('id', id);
+      if (error) {
+        return { error: error.message };
+      }
+      setCategories(prev => prev.filter(c => c.id !== id));
+      return { success: true as const };
+    },
+    [supabase]
+  );
+
+  return { categories, isLoading, error, reload: load, createCategory, deleteCategory };
 }
 
 

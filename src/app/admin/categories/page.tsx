@@ -39,7 +39,7 @@ export default function AdminCategoriesPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const { toast } = useToast();
-  const { categories: remoteCategories, isLoading, error, createCategory, reload } = useCategories();
+  const { categories: remoteCategories, isLoading, error, createCategory, deleteCategory, reload } = useCategories();
 
   useEffect(() => {
     if (error) {
@@ -70,18 +70,18 @@ export default function AdminCategoriesPage() {
     setIsAlertOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    if (categoryToDelete) {
-        // This is a mock delete, it does not persist.
-        setCategories(categories.filter(c => c.id !== categoryToDelete.id));
-        toast({
-            title: 'Category Deleted',
-            description: `${categoryToDelete.name} has been removed.`,
-            variant: 'destructive',
-        });
-        setIsAlertOpen(false);
-        setCategoryToDelete(null);
+  const handleDeleteConfirm = async () => {
+    if (!categoryToDelete) return;
+    const id = categoryToDelete.id;
+    const name = categoryToDelete.name;
+    const { error } = await deleteCategory(id);
+    if (error) {
+      toast({ title: 'Delete failed', description: error, variant: 'destructive' });
+    } else {
+      toast({ title: 'Category Deleted', description: `${name} has been removed.` });
     }
+    setIsAlertOpen(false);
+    setCategoryToDelete(null);
   };
 
   const handleRowClick = (slug: string) => {
