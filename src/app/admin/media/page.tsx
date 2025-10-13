@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImageGallery } from "@/components/admin/ImageGallery";
 import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useStorageImages } from "@/hooks/use-storage-images";
+import { createClient } from "@/lib/supabase/client";
 
 const UploadingSkeleton = () => (
   <div className="relative aspect-square rounded-md overflow-hidden border-4 border-dashed border-primary/50 flex items-center justify-center">
@@ -20,9 +22,43 @@ const UploadingSkeleton = () => (
 
 export default function MediaLibraryPage() {
   const { toast } = useToast();
+  const supabase = useMemo(() => createClient(), []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [key, setKey] = useState(Date.now());
+  const [uploadingCount, setUploadingCount] = useState(0);
+  const { uploadImagesAndCreateRecords } = useStorageImages();
+  const [storageImages, setStorageImages] = useState<any[]>([]);
+  const [loadingList, setLoadingList] = useState(false);
+  
+
+  const loadFromStorage = useCallback(async () => {
+    setLoadingList(true);
+    const { data, error } = await supabase
+      .from('images')
+      .select('id, image_url, created_at')
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) {
+      toast({ variant: "destructive", title: "Error loading images", description: error.message });
+      setStorageImages([]);
+      setLoadingList(false);
+      return;
+    }
+
+    const images = (data || []).map((row: any) => ({
+      id: row.id,
+      imageUrl: row.image_url as string,
+      description: row.image_url.split('/').pop() || 'image',
+      imageHint: 'db image',
+    }));
+    setStorageImages(images);
+    setLoadingList(false);
+  }, [supabase, toast]);
+
+  useEffect(() => {
+    loadFromStorage();
+  }, [loadFromStorage]);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -31,78 +67,59 @@ export default function MediaLibraryPage() {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const fileList = event.target.files;
+    if (!fileList || fileList.length === 0) return;
 
-    if (!file.type.startsWith("image/")) {
+    const files = Array.from(fileList);
+    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+    const invalidCount = files.length - imageFiles.length;
+
+    if (invalidCount > 0) {
       toast({
         variant: "destructive",
-        title: "Invalid File Type",
-        description: "Please select an image file.",
+        title: "Some files were skipped",
+        description: `${invalidCount} non-image file(s) ignored`,
       });
+    }
+
+    if (imageFiles.length === 0) {
       return;
     }
 
     setIsUploading(true);
+    setUploadingCount(imageFiles.length);
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-      try {
-        const imageDataUri = reader.result as string;
+    try {
+      // Upload and create DB records in public.images
+      const { images, errors, dbError } = await uploadImagesAndCreateRecords(imageFiles);
 
-        toast({
-          title: "Uploading Image...",
-          description: "Adding your image to the library.",
-        });
-
-        // Upload directly without AI optimization
-        const existingImages = JSON.parse(
-          localStorage.getItem("user_uploaded_images") || "[]"
-        );
-        const newImage = {
-          id: `user_${Date.now()}`,
-          imageUrl: imageDataUri,
-          description: file.name,
-          imageHint: "uploaded image",
-        };
-        const updatedImages = [newImage, ...existingImages];
-        localStorage.setItem(
-          "user_uploaded_images",
-          JSON.stringify(updatedImages)
-        );
-
-        toast({
-          title: "Upload Successful!",
-          description: "Your image has been added to the library.",
-        });
-
-        // Force re-render of ImageGallery
-        setKey(Date.now());
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        toast({
-          variant: "destructive",
-          title: "Upload Failed",
-          description: "There was an error while uploading your image.",
-        });
-      } finally {
-        setIsUploading(false);
+      if (images.length > 0) {
+        toast({ title: "Upload Successful!", description: `${images.length} image(s) uploaded to Storage` });
       }
-    };
-    reader.onerror = (error) => {
-      console.error("Error reading file:", error);
+      if (errors.length > 0) {
+        toast({ variant: "destructive", title: "Some uploads failed", description: errors.slice(0, 3).join("; ") + (errors.length > 3 ? " ..." : "") });
+      }
+      if (dbError) {
+        toast({ variant: 'destructive', title: 'Database insert failed', description: dbError });
+      }
+
+      await loadFromStorage();
+    } catch (error) {
+      console.error("Error uploading images:", error);
       toast({
         variant: "destructive",
-        title: "File Read Error",
-        description: "Could not read the selected file.",
+        title: "Upload Failed",
+        description: "There was an error while uploading your images.",
       });
+    } finally {
       setIsUploading(false);
-    };
+      setUploadingCount(0);
+    }
 
-    // Reset file input
+    // Reset file input to allow same file re-selection
     event.target.value = "";
   };
+
 
   return (
     <Card>
@@ -110,22 +127,30 @@ export default function MediaLibraryPage() {
         <CardTitle>Media Library</CardTitle>
         <Button onClick={handleUploadClick} disabled={isUploading}>
           <Upload className="mr-2 h-4 w-4" />
-          {isUploading ? "Uploading..." : "Upload Image"}
+          {isUploading ? `Uploading${uploadingCount > 1 ? ` (${uploadingCount})` : ""}...` : "Upload Images"}
         </Button>
         <input
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}
           className="hidden"
-          accept="image/*"
+          multiple
+          accept=".jpg,.jpeg,.png,.webp,.gif,.svg,.avif,.bmp,.tif,.tiff,image/*"
         />
       </CardHeader>
       <CardContent>
-        <ImageGallery
-          key={key}
-          isUploading={isUploading}
-          UploadingSkeleton={UploadingSkeleton}
-        />
+        {loadingList ? (
+          <div className="py-10 text-center text-sm text-muted-foreground">Loading images from storage...</div>
+        ) : storageImages.length === 0 ? (
+          <div className="py-10 text-center text-sm text-muted-foreground">No images found in storage.</div>
+        ) : (
+          <ImageGallery
+            isUploading={isUploading}
+            UploadingSkeleton={UploadingSkeleton}
+            images={storageImages as any}
+            emptyText="No images found in storage."
+          />
+        )}
       </CardContent>
     </Card>
   );

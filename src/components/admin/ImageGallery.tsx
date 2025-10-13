@@ -18,6 +18,8 @@ interface ImageGalleryProps {
   onClose?: () => void;
   isUploading?: boolean;
   UploadingSkeleton?: React.ComponentType;
+  images?: ImagePlaceholder[]; // optional external images source
+  emptyText?: string;
 }
 
 export function ImageGallery({ 
@@ -25,15 +27,21 @@ export function ImageGallery({
   multiple = false, 
   onClose,
   isUploading = false,
-  UploadingSkeleton 
+  UploadingSkeleton,
+  images,
+  emptyText,
 }: ImageGalleryProps) {
   const [selectedImages, setSelectedImages] = useState<ImagePlaceholder[]>([]);
-  const [combinedImages, setCombinedImages] = useState<ImagePlaceholder[]>(defaultImages);
+  const [combinedImages, setCombinedImages] = useState<ImagePlaceholder[]>([]);
 
   useEffect(() => {
+    if (images) {
+      setCombinedImages(images);
+      return;
+    }
     const userUploadedImages = JSON.parse(localStorage.getItem('user_uploaded_images') || '[]');
     setCombinedImages([...userUploadedImages, ...defaultImages]);
-  }, []);
+  }, [images]);
 
 
   const handleImageClick = (image: ImagePlaceholder) => {
@@ -66,6 +74,11 @@ export function ImageGallery({
       <ScrollArea className="flex-grow">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
           {isUploading && UploadingSkeleton && <UploadingSkeleton />}
+          {combinedImages.length === 0 && (
+            <div className="col-span-full text-center text-sm text-muted-foreground py-10">
+              {emptyText || 'No images available.'}
+            </div>
+          )}
           {combinedImages.map((image) => (
             <div
               key={image.id}
@@ -78,9 +91,8 @@ export function ImageGallery({
               <Image
                 src={image.imageUrl}
                 alt={image.description}
-                layout="fill"
-                objectFit="cover"
-                className="transition-transform duration-300 group-hover:scale-105"
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
                 unoptimized={image.imageUrl.startsWith('data:image')}
               />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />

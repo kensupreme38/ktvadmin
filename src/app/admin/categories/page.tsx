@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { Category } from '@/types';
 import { allCategories as initialCategories } from '@/data/categories';
 import { CategoryForm } from '@/components/admin/CategoryForm';
+import { useCategories } from '@/hooks/use-categories';
 
 export default function AdminCategoriesPage() {
   const router = useRouter();
@@ -38,6 +39,21 @@ export default function AdminCategoriesPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const { toast } = useToast();
+  const { categories: remoteCategories, isLoading, error, createCategory, reload } = useCategories();
+
+  useEffect(() => {
+    if (error) {
+      toast({ title: 'Failed to load categories', description: error, variant: 'destructive' });
+    }
+  }, [error, toast]);
+
+  useEffect(() => {
+    if (remoteCategories && remoteCategories.length) {
+      setCategories(remoteCategories);
+    } else if (!isLoading) {
+      setCategories([]);
+    }
+  }, [remoteCategories, isLoading]);
 
   const handleAdd = () => {
     setEditingCategory(null);
@@ -72,30 +88,45 @@ export default function AdminCategoriesPage() {
     router.push(`/admin/categories/${slug}`);
   };
   
-  const handleSave = (categoryData: Omit<Category, 'id'> & { id?: string }) => {
-    if (editingCategory) { // Editing existing category
-        const updatedCategories = categories.map(c => 
-            c.id === editingCategory.id ? { ...c, ...categoryData } : c
-        );
-        setCategories(updatedCategories);
-        toast({
-            title: 'Category Updated!',
-            description: `${categoryData.name} has been updated.`,
-        });
-    } else { // Adding new category
-        const newCategory: Category = {
-            id: `cat_${Date.now()}`,
-            ...categoryData,
-        };
-        setCategories([newCategory, ...categories]);
-        toast({
-            title: 'New Category Created!',
-            description: `${newCategory.name} has been added.`,
-        });
+  const handleSave = async (categoryData: Omit<Category, 'id'> & { id?: string }) => {
+    if (editingCategory) {
+      // Local edit only (server update not implemented yet)
+      const updatedCategories = categories.map(c =>
+        c.id === editingCategory.id ? { ...c, ...categoryData } : c
+      );
+      setCategories(updatedCategories);
+      toast({
+        title: 'Category Updated!',
+        description: `${categoryData.name} has been updated.`,
+      });
+      setIsFormOpen(false);
+      setEditingCategory(null);
+      return;
     }
-    
-    setIsFormOpen(false);
-    setEditingCategory(null);
+
+    try {
+      const { category, error } = await createCategory({
+        name: categoryData.name,
+        slug: categoryData.slug,
+        description: categoryData.description ?? null,
+      });
+      if (error) {
+        throw new Error(error);
+      }
+      const newCategory = category as Category;
+      setCategories([newCategory, ...categories]);
+      toast({
+        title: 'New Category Created!',
+        description: `${newCategory.name} has been added.`,
+      });
+      setIsFormOpen(false);
+      setEditingCategory(null);
+    } catch (e: any) {
+      const raw = e?.message || '';
+      const conflict = raw.toLowerCase().includes('duplicate') || raw.toLowerCase().includes('unique');
+      const message = conflict ? 'Slug already exists. Please choose another.' : (raw || 'Unable to create category');
+      toast({ title: 'Create failed', description: message, variant: 'destructive' });
+    }
   };
 
   return (
@@ -119,7 +150,11 @@ export default function AdminCategoriesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((category) => (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-muted-foreground">Loading...</TableCell>
+                </TableRow>
+              ) : categories.map((category) => (
                 <TableRow key={category.id}>
                   <TableCell className="font-medium cursor-pointer" onClick={() => handleRowClick(category.slug)}>{category.name}</TableCell>
                   <TableCell className="cursor-pointer" onClick={() => handleRowClick(category.slug)}>{category.slug}</TableCell>

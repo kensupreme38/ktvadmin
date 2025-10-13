@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Settings, User } from "lucide-react";
 import { signOut } from "@/lib/actions/auth";
-import { useUser } from "@/hooks/use-supabase";
+import { useUser } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 export function UserNav() {
@@ -56,7 +56,7 @@ export function UserNav() {
   const userName = user.user_metadata?.full_name || userEmail.split("@")[0];
   const userInitials = userName
     .split(" ")
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);

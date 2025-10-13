@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
   title: 'Aura KTV - Admin',
@@ -18,8 +19,10 @@ export default function RootLayout({
       <head>
       </head>
       <body className={cn('antialiased min-h-screen bg-background text-foreground no-scrollbar')} suppressHydrationWarning>
-        {children}
-        <Toaster />
+        <AuthProvider>
+          {children}
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

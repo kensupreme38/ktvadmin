@@ -28,7 +28,7 @@ import { Logo } from "../Logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useUser } from "@/hooks/use-supabase";
+import { useUser } from "@/contexts/AuthContext";
 import { signOut } from "@/lib/actions/auth";
 import { useToast } from "@/hooks/use-toast";
 import { UserNav } from "@/components/auth/UserNav";
