@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useKtvData } from '@/hooks/use-ktv-data';
+import { useKtvs } from '@/hooks/use-ktvs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -11,7 +11,7 @@ import { ArrowLeft, MapPin, Phone, Clock, DollarSign, CheckCircle, Edit, Trash2 
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { allCategories } from '@/data/categories';
+// import { allCategories } from '@/data/categories';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
@@ -27,9 +27,9 @@ import {
 } from "@/components/ui/alert-dialog";
 
 
-const getCategoryNames = (categoryIds: string[]) => {
-    if (!categoryIds || categoryIds.length === 0) return ['N/A'];
-    return categoryIds.map(id => allCategories.find(c => c.id === id)?.name || 'N/A');
+const getCategoryNames = (categories: any[]) => {
+    if (!categories || categories.length === 0) return ['N/A'];
+    return categories.map(cat => cat.name || 'N/A');
 };
 
 const DetailItem = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value?: string | null }) => {
@@ -83,7 +83,7 @@ const PageSkeleton = () => (
 export default function KtvDetailPage() {
     const router = useRouter();
     const params = useParams();
-    const { ktvs, isLoading, deleteKtv } = useKtvData();
+    const { ktvs, isLoading, deleteKtv } = useKtvs();
     const { toast } = useToast();
     const [isAlertOpen, setIsAlertOpen] = useState(false);
 
@@ -104,7 +104,6 @@ export default function KtvDetailPage() {
             toast({
                 title: 'KTV Deleted',
                 description: `${ktv.name} has been successfully removed.`,
-                variant: 'destructive',
             });
             router.push('/admin');
         }
@@ -124,7 +123,7 @@ export default function KtvDetailPage() {
         );
     }
     
-    const categoryNames = getCategoryNames(ktv.categoryIds);
+    const categoryNames = getCategoryNames(ktv.categories || []);
 
     return (
         <>
@@ -149,7 +148,7 @@ export default function KtvDetailPage() {
                     <Card className="overflow-hidden">
                         <CardContent className="p-0">
                            <Image
-                                src={ktv.mainImageUrl || "https://placehold.co/1200x800"}
+                                src={ktv.main_image_url || "https://placehold.co/1200x800"}
                                 alt={ktv.name}
                                 width={1200}
                                 height={800}
@@ -164,12 +163,12 @@ export default function KtvDetailPage() {
                              <Carousel className="w-full">
                                 <CarouselContent>
                                     {ktv.images.map((image, index) => (
-                                        <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                                        <CarouselItem key={image.image_id || index} className="md:basis-1/2 lg:basis-1/3">
                                             <div className="p-1">
                                                 <Card className="overflow-hidden">
                                                     <CardContent className="p-0 flex items-center justify-center">
                                                          <Image
-                                                            src={image}
+                                                            src={image.imageUrl}
                                                             alt={`${ktv.name} gallery image ${index + 1}`}
                                                             width={400}
                                                             height={300}
@@ -207,32 +206,16 @@ export default function KtvDetailPage() {
                                 <DetailItem icon={DollarSign} label="Price Range" value={ktv.price} />
                             </div>
                             
-                            {(ktv.description?.summary || (ktv.description?.features && ktv.description.features.length > 0)) && (
+                            {ktv.description && (
                                 <>
                                     <Separator />
                                     <div className="space-y-4">
-                                        {ktv.description.summary && (
-                                             <div>
-                                                <h4 className="font-semibold mb-2">Summary</h4>
-                                                <p className="text-muted-foreground text-sm">
-                                                    {ktv.description.summary}
-                                                </p>
-                                            </div>
-                                        )}
-                                       
-                                        {ktv.description.features && ktv.description.features.length > 0 && (
-                                            <div>
-                                                <h4 className="font-semibold mb-2">Features</h4>
-                                                <ul className="space-y-2 text-sm">
-                                                    {ktv.description.features.map((feature, index) => (
-                                                        <li key={index} className="flex items-center gap-2">
-                                                            <CheckCircle className="h-4 w-4 text-green-500" />
-                                                            <span className="text-muted-foreground">{feature}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
+                                        <div>
+                                            <h4 className="font-semibold mb-2">Description</h4>
+                                            <p className="text-muted-foreground text-sm">
+                                                {ktv.description}
+                                            </p>
+                                        </div>
                                     </div>
                                 </>
                             )}

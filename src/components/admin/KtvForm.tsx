@@ -23,10 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { Ktv, KtvDescription } from '@/types';
-import { allCategories } from '@/data/categories';
+import type { Ktv } from '@/types';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useImperativeHandle, forwardRef, useEffect, useRef } from 'react';
+import { useState, useImperativeHandle, forwardRef, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ImageGallery } from './ImageGallery';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Image from 'next/image';
@@ -48,32 +47,31 @@ import {
 } from "@/components/ui/command"
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/badge';
+import { createClient } from '@/lib/supabase/client';
+import { allCategories } from '@/data/categories';
 
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   slug: z.string().min(2, { message: 'Slug must be at least 2 characters.' }).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be in kebab-case format (e.g., "my-cool-ktv").'),
-  isActive: z.boolean(),
-  mainImageUrl: z.string().optional(),
-  images: z.array(z.string()).optional(),
+  is_active: z.boolean(),
+  main_image_url: z.string().optional(),
+  imageIds: z.array(z.string()).optional(),
   address: z.string().optional(),
   city: z.string().optional(),
   country: z.string().optional(),
   phone: z.string().optional(),
-  categoryIds: z.array(z.string()).min(1, { message: 'Please select at least one category.' }),
   price: z.string().optional(),
   hours: z.string().optional(),
-  description: z.object({
-    summary: z.string().optional(),
-    features: z.string().optional(), // Will be string from textarea, split into array on submit
-  }).optional(),
   contact: z.string().optional(),
+  description: z.string().optional(),
+  categoryIds: z.array(z.string()).optional(),
 });
 
 type KtvFormValues = z.infer<typeof formSchema>;
 
 interface KtvFormProps {
-  ktv?: Ktv | null;
+  ktv?: any | null; // Use any to support KtvWithImages
   onSave: (data: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
@@ -85,27 +83,29 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
   const { toast } = useToast();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [galleryTarget, setGalleryTarget] = useState<'main' | 'multi' | null>(null);
+  const [availableImages, setAvailableImages] = useState<any[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<any[]>([]);
+  const [loadingImages, setLoadingImages] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
   
   const formRef = useRef<HTMLFormElement>(null);
+  const supabase = useMemo(() => createClient(), []);
 
   const defaultValues: KtvFormValues = {
     name: ktv?.name ?? '',
     slug: ktv?.slug ?? '',
-    isActive: ktv?.isActive ?? true,
-    mainImageUrl: ktv?.mainImageUrl ?? '',
-    images: ktv?.images ?? [],
+    is_active: ktv?.is_active ?? true,
+    main_image_url: ktv?.main_image_url ?? '',
+    imageIds: ktv?.images?.map((img: any) => img.image_id) ?? [],
     address: ktv?.address ?? '',
     city: ktv?.city ?? 'Ho Chi Minh City',
     country: ktv?.country ?? 'Vietnam',
     phone: ktv?.phone ?? '',
-    categoryIds: ktv?.categoryIds ?? [],
     price: ktv?.price ?? '',
     hours: ktv?.hours ?? '',
-    description: {
-      summary: ktv?.description?.summary ?? '',
-      features: ktv?.description?.features?.join('\n') ?? '',
-    },
     contact: ktv?.contact ?? '',
+    description: ktv?.description ?? '',
+    categoryIds: ktv?.categories?.map((c: any) => c.id) ?? [],
   };
 
   const form = useForm<KtvFormValues>({
@@ -116,6 +116,85 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
   const watchedCountry = form.watch('country');
   const watchedName = form.watch('name');
   const availableCities = watchedCountry ? citiesByCountry[watchedCountry] || [] : [];
+
+  // Load available images from database
+  const loadAvailableImages = useCallback(async () => {
+    try {
+      setLoadingImages(true);
+      
+      // Start with empty array
+      setAvailableImages([]);
+      
+      // Try to load from database
+      try {
+        const { data, error } = await supabase
+          .from('images')
+          .select('id, image_url, created_at')
+          .order('created_at', { ascending: false })
+          .limit(100);
+
+        if (!error && data && data.length > 0) {
+          const dbImages = data.map((row: any) => ({
+            id: row.id,
+            imageUrl: row.image_url,
+            description: row.image_url.split('/').pop() || 'image',
+            imageHint: 'db image',
+          }));
+          
+          setAvailableImages(dbImages);
+          console.log('Loaded images from database:', dbImages.length);
+        } else {
+          console.log('No images found in database');
+        }
+      } catch (dbError) {
+        console.log('Database images not available');
+      }
+      
+    } catch (error: any) {
+      console.error('Error loading images:', error);
+      // Don't show toast for image loading errors
+    } finally {
+      setLoadingImages(false);
+    }
+  }, [supabase, toast]);
+
+  // Load available categories from database
+  const loadAvailableCategories = useCallback(async () => {
+    try {
+      setLoadingCategories(true);
+      
+      // Always use static categories for now to avoid database issues
+      console.log('Using static categories');
+      setAvailableCategories(allCategories.filter(cat => cat.slug !== 'all'));
+      
+      // Optional: Try to load from database in background
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('id, name, slug, description')
+          .order('name', { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          console.log('Database categories loaded successfully, switching to database data');
+          setAvailableCategories(data);
+        }
+      } catch (dbError) {
+        console.log('Database categories not available, using static data');
+      }
+      
+    } catch (error: any) {
+      console.error('Error loading categories:', error);
+      // Always fallback to static categories
+      setAvailableCategories(allCategories.filter(cat => cat.slug !== 'all'));
+    } finally {
+      setLoadingCategories(false);
+    }
+  }, [supabase, toast]);
+
+  useEffect(() => {
+    loadAvailableImages();
+    loadAvailableCategories();
+  }, [loadAvailableImages, loadAvailableCategories]);
   
   useEffect(() => {
     form.reset(defaultValues);
@@ -144,37 +223,39 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
     },
   }));
 
-  const handleImageSelect = (urls: string[]) => {
+  const handleImageSelect = (imageIds: string[]) => {
     if (galleryTarget === 'main') {
-      form.setValue('mainImageUrl', urls[0]);
+      const selectedImage = availableImages.find(img => img.id === imageIds[0]);
+      
+      if (selectedImage?.imageUrl) {
+        form.setValue('main_image_url', selectedImage.imageUrl);
+      } else {
+        // Fallback: try to use the imageId as URL if it looks like a URL
+        if (imageIds[0] && (imageIds[0].startsWith('http') || imageIds[0].startsWith('/'))) {
+          form.setValue('main_image_url', imageIds[0]);
+        }
+      }
     } else if (galleryTarget === 'multi') {
-      const currentImages = form.getValues('images') || [];
-      const newImages = [...currentImages, ...urls];
-      form.setValue('images', newImages);
+      const currentImageIds = form.getValues('imageIds') || [];
+      const newImageIds = [...currentImageIds, ...imageIds];
+      form.setValue('imageIds', newImageIds);
     }
     setIsGalleryOpen(false);
   }
 
   function onSubmit(data: KtvFormValues) {
-    const { description, ...rest } = data;
+    const { imageIds, categoryIds, ...rest } = data;
 
-    const finalDescription: KtvDescription = {
-        summary: description?.summary || '',
-        features: description?.features?.split('\n').filter(f => f.trim() !== '') || [],
-    };
-
-    const fullKtvData: Partial<Ktv> = {
-      ...(ktv || {}),
+    const processedData = {
       ...rest,
-      categoryIds: data.categoryIds || [],
-      images: data.images || [],
-      description: finalDescription,
+      // Pass image and category data separately for handling in the parent component
+      selectedImageIds: imageIds || [],
+      selectedCategoryIds: categoryIds || [],
     };
-    onSave(fullKtvData);
+
+    onSave(processedData);
   }
 
-  const categoryOptions = allCategories.filter(c => c.slug !== 'all');
-  const selectedCategories = form.watch('categoryIds').map(id => categoryOptions.find(c => c.id === id)).filter(Boolean);
 
   return (
     <>
@@ -212,7 +293,7 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
             
             <FormField
                 control={form.control}
-                name="isActive"
+                name="is_active"
                 render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-4">
                     <div className="space-y-0.5">
@@ -231,21 +312,31 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                 )}
             />
 
-            <Controller
+            <FormField
                 control={form.control}
-                name="mainImageUrl"
+                name="main_image_url"
                 render={({ field }) => (
                 <FormItem className="mt-4">
-                    <FormLabel>Main Image</FormLabel>
+                        <FormLabel>Main Image URL</FormLabel>
                     <FormControl>
                     <div className="w-full">
                         <Button type="button" variant="outline" onClick={() => { setGalleryTarget('main'); setIsGalleryOpen(true); }}>
                         <ImagePlus className="mr-2 h-4 w-4" />
                         Select Main Image
                         </Button>
+                            <Input 
+                                placeholder="Enter image URL or select from gallery" 
+                                {...field} 
+                                className="mt-2"
+                            />
                         {field.value && (
-                        <div className="mt-2 relative w-48 h-32">
-                            <Image src={field.value} alt="Main image preview" layout="fill" objectFit="cover" className="rounded-md" />
+                        <div className="mt-2 relative w-48 h-32 border rounded-md overflow-hidden">
+                            <Image 
+                                src={field.value} 
+                                alt="Main image preview" 
+                                fill
+                                className="object-cover" 
+                            />
                             <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => field.onChange('')}>
                             <X className="h-4 w-4" />
                             </Button>
@@ -260,8 +351,12 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
 
             <Controller
                 control={form.control}
-                name="images"
-                render={({ field }) => (
+                name="imageIds"
+                render={({ field }) => {
+                  const selectedImages = (field.value || [])
+                    .map(id => availableImages.find(img => img.id === id))
+                    .filter(Boolean);
+                  return (
                 <FormItem className="mt-4">
                     <FormLabel>Image Gallery</FormLabel>
                     <FormControl>
@@ -271,13 +366,17 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                         Add to Gallery
                         </Button>
                         <div className="mt-2 flex flex-wrap gap-2">
-                        {field.value?.map((url, index) => (
-                            <div key={index} className="relative w-32 h-24">
-                            <Image src={url} alt={`Gallery image ${index + 1}`} layout="fill" objectFit="cover" className="rounded-md" />
+                            {selectedImages.map((image, index) => (
+                                <div key={image.id} className="relative w-32 h-24 border rounded-md overflow-hidden">
+                                <Image 
+                                    src={image.imageUrl} 
+                                    alt={`Gallery image ${index + 1}`} 
+                                    fill
+                                    className="object-cover" 
+                                />
                             <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => {
-                                const newImages = [...field.value!];
-                                newImages.splice(index, 1);
-                                field.onChange(newImages);
+                                    const newImageIds = field.value?.filter(id => id !== image.id) || [];
+                                    field.onChange(newImageIds);
                             }}>
                                 <X className="h-4 w-4" />
                             </Button>
@@ -288,7 +387,102 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                     </FormControl>
                     <FormMessage />
                 </FormItem>
-                )}
+                  );
+                }}
+            />
+
+            <FormField
+                control={form.control}
+                name="categoryIds"
+                render={({ field }) => {
+                  const selectedCategories = availableCategories.filter(cat => field.value?.includes(cat.id));
+                  return (
+                    <FormItem className="flex flex-col mt-4">
+                        <FormLabel>Categories</FormLabel>
+                        <Popover>
+                        <PopoverTrigger asChild>
+                            <FormControl>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                "w-full justify-between",
+                                !field.value?.length && "text-muted-foreground"
+                                )}
+                            >
+                                <span className="truncate">
+                                {selectedCategories.length > 0
+                                ? selectedCategories.map(c => c.name).join(', ')
+                                : "Select categories"}
+                                </span>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                            </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command>
+                            <CommandInput placeholder="Search categories..." />
+                            <CommandEmpty>No category found.</CommandEmpty>
+                            <CommandList>
+                                <CommandGroup>
+                                    {availableCategories.map((option) => (
+                                    <CommandItem
+                                        key={option.id}
+                                        onSelect={() => {
+                                        const currentIds = field.value || [];
+                                        const newIds = currentIds.includes(option.id)
+                                            ? currentIds.filter((id: string) => id !== option.id)
+                                            : [...currentIds, option.id];
+                                        field.onChange(newIds);
+                                        }}
+                                    >
+                                        <Check
+                                        className={cn(
+                                            "mr-2 h-4 w-4",
+                                            field.value?.includes(option.id)
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                        />
+                                        {option.name}
+                                    </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </CommandList>
+                            </Command>
+                        </PopoverContent>
+                        </Popover>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                        {selectedCategories.map((category) => (
+                            <Badge
+                            variant="secondary"
+                            key={category.id}
+                            className="flex items-center gap-1"
+                            >
+                            {category.name}
+                            <button
+                                type="button"
+                                className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    field.onChange((field.value || []).filter((id: string) => id !== category.id));
+                                }
+                                }}
+                                onMouseDown={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                }}
+                                onClick={() => field.onChange((field.value || []).filter((id: string) => id !== category.id))}
+                            >
+                                <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                            </button>
+                            </Badge>
+                        ))}
+                        </div>
+                        <FormMessage />
+                    </FormItem>
+                  );
+                }}
             />
 
             <FormField
@@ -407,118 +601,15 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                 />
             </div>
 
-            <FormField
-                control={form.control}
-                name="categoryIds"
-                render={({ field }) => (
-                <FormItem className="flex flex-col mt-4">
-                    <FormLabel>Categories</FormLabel>
-                    <Popover>
-                    <PopoverTrigger asChild>
-                        <FormControl>
-                        <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                            "w-full justify-between",
-                            !field.value?.length && "text-muted-foreground"
-                            )}
-                        >
-                            <span className="truncate">
-                            {selectedCategories.length > 0
-                            ? selectedCategories.map(c => c!.name).join(', ')
-                            : "Select categories"}
-                            </span>
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                        </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                        <Command>
-                        <CommandInput placeholder="Search categories..." />
-                        <CommandEmpty>No category found.</CommandEmpty>
-                        <CommandList>
-                            <CommandGroup>
-                                {categoryOptions.map((option) => (
-                                <CommandItem
-                                    key={option.id}
-                                    onSelect={() => {
-                                    const currentIds = field.value || [];
-                                    const newIds = currentIds.includes(option.id)
-                                        ? currentIds.filter((id) => id !== option.id)
-                                        : [...currentIds, option.id];
-                                    field.onChange(newIds);
-                                    }}
-                                >
-                                    <Check
-                                    className={cn(
-                                        "mr-2 h-4 w-4",
-                                        field.value?.includes(option.id)
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                    />
-                                    {option.name}
-                                </CommandItem>
-                                ))}
-                            </CommandGroup>
-                        </CommandList>
-                        </Command>
-                    </PopoverContent>
-                    </Popover>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                    {selectedCategories.map((category) => (
-                        <Badge
-                        variant="secondary"
-                        key={category!.id}
-                        className="flex items-center gap-1"
-                        >
-                        {category!.name}
-                        <button
-                            type="button"
-                            className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                            onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                field.onChange(field.value.filter(id => id !== category!.id));
-                            }
-                            }}
-                            onMouseDown={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            }}
-                            onClick={() => field.onChange(field.value.filter(id => id !== category!.id))}
-                        >
-                            <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                        </button>
-                        </Badge>
-                    ))}
-                    </div>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
            
             <FormField
                 control={form.control}
-                name="description.summary"
+                name="description"
                 render={({ field }) => (
                     <FormItem className="mt-4">
-                    <FormLabel>Summary</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
-                        <Textarea placeholder="A brief summary of the KTV." {...field} rows={3} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="description.features"
-                render={({ field }) => (
-                    <FormItem className="mt-4">
-                    <FormLabel>Features</FormLabel>
-                    <FormControl>
-                        <Textarea placeholder="List features, one per line..." {...field} rows={4} />
+                        <Textarea placeholder="A brief description of the KTV." {...field} rows={4} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -534,11 +625,14 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
             <DialogTitle>Select Images</DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-hidden">
-            <ImageGallery
-              onSelect={handleImageSelect}
-              multiple={galleryTarget === 'multi'}
-              onClose={() => setIsGalleryOpen(false)}
-            />
+                    <ImageGallery
+                      onSelect={handleImageSelect}
+                      multiple={galleryTarget === 'multi'}
+                      onClose={() => setIsGalleryOpen(false)}
+                      images={availableImages}
+                      emptyText="No images available in media library."
+                      onRefresh={loadAvailableImages}
+                    />
           </div>
         </DialogContent>
       </Dialog>

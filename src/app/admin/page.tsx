@@ -18,10 +18,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import type { Ktv } from "@/types";
 import Image from "next/image";
-import { allCategories } from "@/data/categories";
-import { useKtvData } from "@/hooks/use-ktv-data";
+import { useKtvs } from "@/hooks/use-ktvs";
 import { useMemo, useCallback, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -29,10 +27,10 @@ import { Search, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDebouncedCallback } from "use-debounce";
 
-const getCategoryName = (categoryIds: string[]) => {
-  if (!categoryIds || categoryIds.length === 0) return "N/A";
+const getCategoryName = (categories: any[]) => {
+  if (!categories || categories.length === 0) return "N/A";
   // Return the name of the first category
-  return allCategories.find((c) => c.id === categoryIds[0])?.name || "N/A";
+  return categories[0]?.name || "N/A";
 };
 
 const TableSkeleton = () => (
@@ -71,16 +69,16 @@ const TableSkeleton = () => (
 );
 
 function AdminKtvsPageContent() {
-  const { ktvs, isLoading } = useKtvData();
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { toast } = useToast();
 
   const itemsPerPage = 10;
-
   const searchTerm = searchParams.get("search") || "";
   const currentPage = Number(searchParams.get("page")) || 1;
+
+  const { ktvs, totalCount, isLoading, refreshKtvs } = useKtvs(searchTerm, currentPage, itemsPerPage);
 
   const createQueryString = useCallback(
     (params: Record<string, string | number | null>) => {
@@ -102,35 +100,23 @@ function AdminKtvsPageContent() {
     router.push(`/admin/ktvs/${ktvId}`);
   };
 
-  const handleRefresh = () => {
-    if (
-      confirm(
-        "Are you sure you want to reset all KTV data to the initial default state? All your changes will be lost."
-      )
-    ) {
-      localStorage.removeItem("ktv_data");
+  const handleRefresh = async () => {
+    try {
+      await refreshKtvs();
       toast({
-        title: "Data Reset",
-        description:
-          "KTV data has been reset to its initial state. The page will now reload.",
+        title: "Data Refreshed",
+        description: "KTV data has been refreshed from the database.",
       });
-      setTimeout(() => window.location.reload(), 1500);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error refreshing data",
+        description: error.message || "Failed to refresh data",
+      });
     }
   };
 
-  const filteredKtvs = useMemo(
-    () =>
-      ktvs.filter((ktv) =>
-        ktv.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ),
-    [ktvs, searchTerm]
-  );
-
-  const totalPages = Math.ceil(filteredKtvs.length / itemsPerPage);
-  const paginatedKtvs = filteredKtvs.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -202,43 +188,43 @@ function AdminKtvsPageContent() {
                   <TableHead style={{ width: "20%" }}>Phone</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {paginatedKtvs.map((ktv) => {
-                  const categoryName = getCategoryName(ktv.categoryIds);
-                  return (
-                    <TableRow
-                      key={ktv.id}
-                      onClick={() => handleRowClick(ktv.id)}
-                      className="cursor-pointer"
-                    >
-                      <TableCell className="align-middle">
-                        <Image
-                          src={
-                            ktv.mainImageUrl || "https://placehold.co/100x75"
-                          }
-                          alt={ktv.name}
-                          width={100}
-                          height={75}
-                          className="rounded-md object-cover"
-                        />
-                      </TableCell>
-                      <TableCell className="font-medium align-middle">
-                        {ktv.name}
-                      </TableCell>
-                      <TableCell className="align-middle">{ktv.city}</TableCell>
-                      <TableCell className="align-middle">
-                        <Badge variant="secondary">{categoryName}</Badge>
-                      </TableCell>
-                      <TableCell className="align-middle">
-                        {ktv.phone}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+               <TableBody>
+                 {ktvs.map((ktv) => {
+                   const categoryName = getCategoryName(ktv.categories || []);
+                   return (
+                     <TableRow
+                       key={ktv.id}
+                       onClick={() => handleRowClick(ktv.id)}
+                       className="cursor-pointer"
+                     >
+                       <TableCell className="align-middle">
+                         <Image
+                           src={
+                             ktv.main_image_url || "https://placehold.co/100x75"
+                           }
+                           alt={ktv.name}
+                           width={100}
+                           height={75}
+                           className="rounded-md object-cover"
+                         />
+                       </TableCell>
+                       <TableCell className="font-medium align-middle">
+                         {ktv.name}
+                       </TableCell>
+                       <TableCell className="align-middle">{ktv.city}</TableCell>
+                       <TableCell className="align-middle">
+                         <Badge variant="secondary">{categoryName}</Badge>
+                       </TableCell>
+                       <TableCell className="align-middle">
+                         {ktv.phone}
+                       </TableCell>
+                     </TableRow>
+                   );
+                 })}
               </TableBody>
             </Table>
           )}
-          {!isLoading && filteredKtvs.length === 0 && (
+          {!isLoading && ktvs.length === 0 && (
             <div className="text-center py-10 text-muted-foreground">
               No KTVs found matching your search.
             </div>
@@ -250,9 +236,9 @@ function AdminKtvsPageContent() {
               Showing{" "}
               <strong>
                 {(currentPage - 1) * itemsPerPage + 1}-
-                {Math.min(currentPage * itemsPerPage, filteredKtvs.length)}
+                {Math.min(currentPage * itemsPerPage, totalCount)}
               </strong>{" "}
-              of <strong>{filteredKtvs.length}</strong> products
+              of <strong>{totalCount}</strong> KTVs
             </div>
             <div className="flex items-center gap-2">
               <Button

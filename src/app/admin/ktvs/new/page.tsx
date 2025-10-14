@@ -5,31 +5,65 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { KtvForm } from '@/components/admin/KtvForm';
 import { useToast } from '@/hooks/use-toast';
-import type { Ktv } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
-import { useKtvData } from '@/hooks/use-ktv-data';
+import { useKtvs } from '@/hooks/use-ktvs';
+import { useKtvImages } from '@/hooks/use-ktv-images';
+import { useKtvCategories } from '@/hooks/use-ktv-categories';
 
 export default function NewKtvPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { addKtv } = useKtvData();
+  const { createKtv } = useKtvs();
+  const { addImagesToKtv } = useKtvImages();
+  const { addCategoriesToKtv } = useKtvCategories();
   const formRef = useRef<{ submit: () => void }>(null);
 
-  const handleSave = (ktvData: Omit<Ktv, 'id'>) => {
-    const newKtv: Ktv = {
-      ...ktvData,
-      id: `ktv_${Date.now()}`,
-    };
-    
-    addKtv(newKtv);
+  const handleSave = async (formData: any) => {
+    try {
+      const { selectedImageIds, selectedCategoryIds, ...ktvData } = formData;
+      
+      // Create KTV first
+      const newKtv = await createKtv({
+        ...ktvData,
+        slug: ktvData.slug || ktvData.name.toLowerCase().replace(/\s+/g, '-'),
+      });
 
-    toast({
-      title: 'New KTV Created!',
-      description: `${newKtv.name} has been added to the directory.`,
-    });
+      // Add images to KTV if any were selected
+      if (selectedImageIds && selectedImageIds.length > 0) {
+        await addImagesToKtv(
+          newKtv.id,
+          selectedImageIds,
+          {
+            mainImageId: selectedImageIds[0], // First image as main
+            orderIndices: selectedImageIds.map((_: string, index: number) => index)
+          }
+        );
+      }
 
-    router.push('/admin');
+      // Add categories to KTV if any were selected
+      if (selectedCategoryIds && selectedCategoryIds.length > 0) {
+        try {
+          await addCategoriesToKtv(newKtv.id, selectedCategoryIds);
+        } catch (categoryError) {
+          console.warn('Could not add categories to KTV:', categoryError);
+          // Don't fail the entire operation if categories fail
+        }
+      }
+
+      toast({
+        title: 'New KTV Created!',
+        description: `${newKtv.name} has been added to the directory.`,
+      });
+
+      router.push('/admin');
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error creating KTV',
+        description: error.message || 'Failed to create KTV'
+      });
+    }
   };
 
   const handleCancel = () => {

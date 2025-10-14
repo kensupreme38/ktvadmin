@@ -28,49 +28,108 @@ export interface Database {
           id: string;
           name: string;
           slug: string;
+          main_image_url?: string;
           address: string;
-          district: string;
+          city: string;
+          country: string;
           phone: string;
-          description: string | null;
-          rating: number;
-          review_count: number;
-          price_range: string;
-          amenities: string[];
-          images: string[];
+          price: string;
+          hours: string;
+          contact?: string;
+          description?: string;
+          is_active: boolean;
           created_at: string;
           updated_at: string;
+          user_id: string;
         };
         Insert: {
           id?: string;
           name: string;
           slug: string;
+          main_image_url?: string;
           address: string;
-          district: string;
+          city: string;
+          country: string;
           phone: string;
-          description?: string | null;
-          rating?: number;
-          review_count?: number;
-          price_range: string;
-          amenities?: string[];
-          images?: string[];
+          price: string;
+          hours: string;
+          contact?: string;
+          description?: string;
+          is_active?: boolean;
           created_at?: string;
           updated_at?: string;
+          user_id: string;
         };
         Update: {
           id?: string;
           name?: string;
           slug?: string;
+          main_image_url?: string;
           address?: string;
-          district?: string;
+          city?: string;
+          country?: string;
           phone?: string;
-          description?: string | null;
-          rating?: number;
-          review_count?: number;
-          price_range?: string;
-          amenities?: string[];
-          images?: string[];
+          price?: string;
+          hours?: string;
+          contact?: string;
+          description?: string;
+          is_active?: boolean;
           created_at?: string;
           updated_at?: string;
+          user_id?: string;
+        };
+      };
+
+      // Images Table
+      images: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          image_url: string;
+          title: string | null;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          image_url: string;
+          title?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          image_url?: string;
+          title?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+      };
+
+      // KTV Images Table
+      ktv_images: {
+        Row: {
+          ktv_id: string;
+          image_id: string;
+          is_main: boolean;
+          order_index: number;
+          created_at: string;
+        };
+        Insert: {
+          ktv_id: string;
+          image_id: string;
+          is_main?: boolean;
+          order_index?: number;
+          created_at?: string;
+        };
+        Update: {
+          ktv_id?: string;
+          image_id?: string;
+          is_main?: boolean;
+          order_index?: number;
+          created_at?: string;
         };
       };
 
@@ -98,6 +157,25 @@ export interface Database {
           slug?: string;
           description?: string | null;
           icon?: string | null;
+          created_at?: string;
+        };
+      };
+
+      // KTV Categories Table (Junction table)
+      ktv_categories: {
+        Row: {
+          ktv_id: string;
+          category_id: string;
+          created_at: string;
+        };
+        Insert: {
+          ktv_id: string;
+          category_id: string;
+          created_at?: string;
+        };
+        Update: {
+          ktv_id?: string;
+          category_id?: string;
           created_at?: string;
         };
       };

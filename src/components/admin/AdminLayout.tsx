@@ -111,7 +111,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const userName = user?.user_metadata?.full_name || userEmail.split("@")[0];
   const userInitials = userName
     .split(" ")
-    .map((n) => n[0])
+    .map((n:any) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);

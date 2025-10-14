@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { CheckCircle, PlusCircle } from 'lucide-react';
+import { CheckCircle, PlusCircle, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ interface ImageGalleryProps {
   UploadingSkeleton?: React.ComponentType;
   images?: ImagePlaceholder[]; // optional external images source
   emptyText?: string;
+  onRefresh?: () => void; // callback for refresh action
 }
 
 export function ImageGallery({ 
@@ -30,6 +31,7 @@ export function ImageGallery({
   UploadingSkeleton,
   images,
   emptyText,
+  onRefresh,
 }: ImageGalleryProps) {
   const [selectedImages, setSelectedImages] = useState<ImagePlaceholder[]>([]);
   const [combinedImages, setCombinedImages] = useState<ImagePlaceholder[]>([]);
@@ -60,7 +62,8 @@ export function ImageGallery({
 
   const handleConfirmSelection = () => {
     if (onSelect) {
-      onSelect(selectedImages.map(img => img.imageUrl));
+      const selectedIds = selectedImages.map(img => img.id);
+      onSelect(selectedIds);
       setSelectedImages([]);
     }
   };
@@ -109,13 +112,23 @@ export function ImageGallery({
         </div>
       </ScrollArea>
       {onSelect && (
-        <div className="p-4 border-t flex justify-end gap-2">
-           <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmSelection} disabled={selectedImages.length === 0}>
-            {`Select ${selectedImages.length > 0 ? selectedImages.length : ''} Image(s)`}
-          </Button>
+        <div className="p-4 border-t flex justify-between items-center">
+          <div className="flex gap-2">
+            {onRefresh && (
+              <Button variant="outline" size="sm" onClick={onRefresh}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmSelection} disabled={selectedImages.length === 0}>
+              {`Select ${selectedImages.length > 0 ? selectedImages.length : ''} Image(s)`}
+            </Button>
+          </div>
         </div>
       )}
     </div>

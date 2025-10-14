@@ -92,7 +92,17 @@ export function useStorageImages() {
   const insertImageRecords = useCallback(
     async (publicUrls: string[]) => {
       if (publicUrls.length === 0) return { count: 0, error: null };
-      const rows = publicUrls.map((url) => ({ image_url: url }));
+      
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        return { count: 0, error: userError || new Error('No authenticated user') };
+      }
+      
+      const rows = publicUrls.map((url) => ({ 
+        image_url: url,
+        user_id: user.id 
+      }));
       const { error, count } = await supabase.from('images').insert(rows, { count: 'exact' });
       return { count: count || 0, error };
     },
@@ -103,10 +113,10 @@ export function useStorageImages() {
     async (files: File[]) => {
       const { images, errors } = await uploadImages(files);
       const urls = images.map((i) => i.url);
-      const { error } = await supabase.from('images').insert(urls.map((u) => ({ image_url: u })));
-      return { images, errors, dbError: error?.message };
+      const { count, error } = await insertImageRecords(urls);
+      return { images, errors, dbError: error?.message, insertedCount: count };
     },
-    [supabase, uploadImages]
+    [supabase, uploadImages, insertImageRecords]
   );
 
   return { uploadImages, insertImageRecords, uploadImagesAndCreateRecords };

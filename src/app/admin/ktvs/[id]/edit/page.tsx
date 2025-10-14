@@ -8,7 +8,9 @@ import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
-import { useKtvData } from '@/hooks/use-ktv-data';
+import { useKtvs } from '@/hooks/use-ktvs';
+import { useKtvImages } from '@/hooks/use-ktv-images';
+import { useKtvCategories } from '@/hooks/use-ktv-categories';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const EditPageSkeleton = () => (
@@ -40,19 +42,60 @@ export default function EditKtvPage() {
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
-  const { ktvs, updateKtv, isLoading } = useKtvData();
+  const { ktvs, updateKtv, isLoading } = useKtvs();
+  const { updateKtvImages } = useKtvImages();
+  const { updateKtvCategories } = useKtvCategories();
   const formRef = useRef<{ submit: () => void }>(null);
 
   const ktvId = typeof params.id === 'string' ? params.id : '';
   const ktv = ktvs.find(k => k.id === ktvId);
 
-  const handleSave = (ktvData: Ktv) => {
-    updateKtv(ktvData.id, ktvData);
-    toast({
-      title: 'KTV Updated!',
-      description: `${ktvData.name} has been successfully updated.`,
-    });
-    router.push(`/admin/ktvs/${ktvData.id}`);
+  const handleSave = async (formData: any) => {
+    try {
+      const { selectedImageIds, selectedCategoryIds, ...ktvData } = formData;
+      
+      // Update KTV basic info
+      await updateKtv(ktvId, ktvData, false); // Don't reload data
+
+      // Update images if provided
+      if (selectedImageIds !== undefined) {
+        try {
+          await updateKtvImages(
+            ktvId,
+            selectedImageIds,
+            {
+              mainImageId: selectedImageIds[0], // First image as main
+              orderIndices: selectedImageIds.map((_: string, index: number) => index)
+            }
+          );
+        } catch (imageError) {
+          console.warn('Could not update KTV images:', imageError);
+          // Don't fail the entire operation if images fail
+        }
+      }
+
+      // Update categories if provided
+      if (selectedCategoryIds !== undefined) {
+        try {
+          await updateKtvCategories(ktvId, selectedCategoryIds);
+        } catch (categoryError) {
+          console.warn('Could not update KTV categories:', categoryError);
+          // Don't fail the entire operation if categories fail
+        }
+      }
+
+      toast({
+        title: 'KTV Updated!',
+        description: `${ktvData.name} has been successfully updated.`,
+      });
+      router.push(`/admin/ktvs/${ktvId}`);
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error updating KTV',
+        description: error.message || 'Failed to update KTV'
+      });
+    }
   };
 
   const handleCancel = () => {

@@ -6,26 +6,46 @@ export interface Category {
   description?: string;
 }
 
-export interface KtvDescription {
-  summary?: string;
-  features?: string[];
+export interface KtvImage {
+  ktv_id: string;
+  image_id: string;
+  is_main: boolean;
+  order_index: number;
+  created_at: string;
+  imageUrl?: string;
 }
+
 export interface Ktv {
   id: string;
-  slug: string;
   name: string;
-  mainImageUrl?: string;
-  images?: string[];
+  slug: string;
+  main_image_url?: string;
   address: string;
   city: string;
   country: string;
   phone: string;
-  categoryIds: string[];
   price: string;
   hours: string;
   contact?: string;
-  description: KtvDescription;
-  isActive: boolean;
+  description?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+}
+
+export interface KtvWithImages extends Ktv {
+  images: KtvImage[];
+}
+
+export interface KtvWithCategories extends Ktv {
+  categories: Category[];
+}
+
+export interface KtvCategory {
+  ktv_id: string;
+  category_id: string;
+  created_at: string;
 }
 
 export interface User {
