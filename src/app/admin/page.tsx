@@ -78,7 +78,11 @@ function AdminKtvsPageContent() {
   const searchTerm = searchParams.get("search") || "";
   const currentPage = Number(searchParams.get("page")) || 1;
 
-  const { ktvs, totalCount, isLoading, refreshKtvs } = useKtvs(searchTerm, currentPage, itemsPerPage);
+  const { ktvs, totalCount, isLoading, refreshKtvs } = useKtvs(
+    searchTerm,
+    currentPage,
+    itemsPerPage
+  );
 
   const createQueryString = useCallback(
     (params: Record<string, string | number | null>) => {
@@ -188,39 +192,43 @@ function AdminKtvsPageContent() {
                   <TableHead style={{ width: "20%" }}>Phone</TableHead>
                 </TableRow>
               </TableHeader>
-               <TableBody>
-                 {ktvs.map((ktv) => {
-                   const categoryName = getCategoryName(ktv.categories || []);
-                   return (
-                     <TableRow
-                       key={ktv.id}
-                       onClick={() => handleRowClick(ktv.id)}
-                       className="cursor-pointer"
-                     >
-                       <TableCell className="align-middle">
-                         <Image
-                           src={
-                             ktv.main_image_url || "https://placehold.co/100x75"
-                           }
-                           alt={ktv.name}
-                           width={100}
-                           height={75}
-                           className="rounded-md object-cover"
-                         />
-                       </TableCell>
-                       <TableCell className="font-medium align-middle">
-                         {ktv.name}
-                       </TableCell>
-                       <TableCell className="align-middle">{ktv.city}</TableCell>
-                       <TableCell className="align-middle">
-                         <Badge variant="secondary">{categoryName}</Badge>
-                       </TableCell>
-                       <TableCell className="align-middle">
-                         {ktv.phone}
-                       </TableCell>
-                     </TableRow>
-                   );
-                 })}
+              <TableBody>
+                {ktvs.map((ktv) => {
+                  const categoryName = getCategoryName(ktv.categories || []);
+                  return (
+                    <TableRow
+                      key={ktv.id}
+                      onClick={() => handleRowClick(ktv.id)}
+                      className="cursor-pointer"
+                    >
+                      <TableCell className="align-middle">
+                        <Image
+                          src={
+                            ktv.main_image_url || "https://placehold.co/100x75"
+                          }
+                          alt={ktv.name}
+                          width={100}
+                          height={75}
+                          className="rounded-md object-cover"
+                          loading="lazy"
+                          quality={75}
+                          placeholder="blur"
+                          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium align-middle">
+                        {ktv.name}
+                      </TableCell>
+                      <TableCell className="align-middle">{ktv.city}</TableCell>
+                      <TableCell className="align-middle">
+                        <Badge variant="secondary">{categoryName}</Badge>
+                      </TableCell>
+                      <TableCell className="align-middle">
+                        {ktv.phone}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}

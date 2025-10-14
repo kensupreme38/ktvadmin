@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export interface KtvImage {
   imageUrl: string;
@@ -46,17 +46,19 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
   const loadKtvs = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
       if (userError || !user) {
-        throw new Error('No authenticated user');
+        throw new Error("No authenticated user");
       }
-      
+
       // Build query with search and pagination
-      let query = supabase
-        .from('ktvs')
-        .select(`
+      let query = supabase.from("ktvs").select(
+        `
           *,
           ktv_images (
             ktv_id,
@@ -78,11 +80,13 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
               description
             )
           )
-        `, { count: 'exact' })
+        `,
+        { count: "exact" }
+      );
 
       // Add search filter if searchTerm is provided
       if (searchTerm && searchTerm.trim()) {
-        query = query.ilike('name', `%${searchTerm.trim()}%`);
+        query = query.ilike("name", `%${searchTerm.trim()}%`);
       }
 
       // Add pagination
@@ -91,9 +95,7 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
       const from = (currentPage - 1) * currentPageSize;
       const to = from + currentPageSize - 1;
 
-      query = query
-        .order('created_at', { ascending: false })
-        .range(from, to);
+      query = query.order("created_at", { ascending: false }).range(from, to);
 
       const { data: ktvsData, error: ktvsError, count } = await query;
 
@@ -102,23 +104,42 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
       }
 
       // Transform data to include images and categories arrays
-      const ktvsWithImages: KtvWithImages[] = (ktvsData || []).map((ktv: any) => ({
-        ...ktv,
-        images: ktv.ktv_images?.map((ki: any) => ({
-          ...ki,
-          imageUrl: ki.images?.image_url
-        })).filter((img: any) => img.imageUrl) || [],
-        categories: ktv.ktv_categories?.map((kc: any) => kc.categories).filter(Boolean) || []
-      }));
+      const ktvsWithImages: KtvWithImages[] = (ktvsData || []).map(
+        (ktv: any) => {
+          // Map images với proper structure
+          const images =
+            ktv.ktv_images
+              ?.map((ki: any) => ({
+                ...ki,
+                imageUrl: ki.images?.image_url,
+              }))
+              .filter((img: any) => img.imageUrl) || [];
+
+          // Find main image URL từ image có is_main = true, hoặc fallback to first image
+          const mainImage = images.find((img: any) => img.is_main);
+          const main_image_url =
+            mainImage?.imageUrl || images[0]?.imageUrl || null;
+
+          return {
+            ...ktv,
+            images,
+            main_image_url,
+            categories:
+              ktv.ktv_categories
+                ?.map((kc: any) => kc.categories)
+                .filter(Boolean) || [],
+          };
+        }
+      );
 
       setKtvs(ktvsWithImages);
       setTotalCount(count || 0);
     } catch (error: any) {
-      console.error('Error loading KTVs:', error);
+      console.error("Error loading KTVs:", error);
       toast({
-        variant: 'destructive',
-        title: 'Error loading KTVs',
-        description: error.message || 'Failed to load KTVs'
+        variant: "destructive",
+        title: "Error loading KTVs",
+        description: error.message || "Failed to load KTVs",
       });
       setKtvs([]);
       setTotalCount(0);
@@ -131,77 +152,91 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
     loadKtvs();
   }, [loadKtvs]);
 
-  const createKtv = useCallback(async (ktvData: Omit<Ktv, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
-    try {
-      // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        throw new Error('No authenticated user');
-      }
+  const createKtv = useCallback(
+    async (
+      ktvData: Omit<Ktv, "id" | "created_at" | "updated_at" | "user_id">
+    ) => {
+      try {
+        // Get current user
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+        if (userError || !user) {
+          throw new Error("No authenticated user");
+        }
 
-      // Create KTV with user_id
-      const { data: newKtv, error: ktvError } = await supabase
-        .from('ktvs')
-        .insert([{ ...ktvData, user_id: user.id }])
-        .select()
-        .single();
+        // Create KTV with user_id
+        const { data: newKtv, error: ktvError } = await supabase
+          .from("ktvs")
+          .insert([{ ...ktvData, user_id: user.id }])
+          .select()
+          .single();
 
-      if (ktvError) {
-        throw ktvError;
-      }
+        if (ktvError) {
+          throw ktvError;
+        }
 
-      // Reload KTVs to get the new one with images
-      await loadKtvs();
-      
-      return newKtv;
-    } catch (error: any) {
-      console.error('Error creating KTV:', error);
-      throw error;
-    }
-  }, [supabase, loadKtvs]);
-
-  const updateKtv = useCallback(async (id: string, updates: Partial<Ktv>, reloadData: boolean = true) => {
-    try {
-      const { error } = await supabase
-        .from('ktvs')
-        .update({ ...updates, updated_at: new Date().toISOString() })
-        .eq('id', id);
-
-      if (error) {
-        throw error;
-      }
-
-      if (reloadData) {
+        // Reload KTVs to get the new one with images
         await loadKtvs();
-      }
-    } catch (error: any) {
-      console.error('Error updating KTV:', error);
-      throw error;
-    }
-  }, [supabase, loadKtvs]);
 
-  const deleteKtv = useCallback(async (id: string) => {
-    try {
-      // Delete KTV (ktv_images will be deleted automatically due to CASCADE)
-      const { error } = await supabase
-        .from('ktvs')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
+        return newKtv;
+      } catch (error: any) {
+        console.error("Error creating KTV:", error);
         throw error;
       }
+    },
+    [supabase, loadKtvs]
+  );
 
-      await loadKtvs();
-    } catch (error: any) {
-      console.error('Error deleting KTV:', error);
-      throw error;
-    }
-  }, [supabase, loadKtvs]);
+  const updateKtv = useCallback(
+    async (id: string, updates: Partial<Ktv>, reloadData: boolean = true) => {
+      try {
+        const { error } = await supabase
+          .from("ktvs")
+          .update({ ...updates, updated_at: new Date().toISOString() })
+          .eq("id", id);
 
-  const getKtvById = useCallback((id: string) => {
-    return ktvs.find(ktv => ktv.id === id);
-  }, [ktvs]);
+        if (error) {
+          throw error;
+        }
+
+        if (reloadData) {
+          await loadKtvs();
+        }
+      } catch (error: any) {
+        console.error("Error updating KTV:", error);
+        throw error;
+      }
+    },
+    [supabase, loadKtvs]
+  );
+
+  const deleteKtv = useCallback(
+    async (id: string) => {
+      try {
+        // Delete KTV (ktv_images will be deleted automatically due to CASCADE)
+        const { error } = await supabase.from("ktvs").delete().eq("id", id);
+
+        if (error) {
+          throw error;
+        }
+
+        await loadKtvs();
+      } catch (error: any) {
+        console.error("Error deleting KTV:", error);
+        throw error;
+      }
+    },
+    [supabase, loadKtvs]
+  );
+
+  const getKtvById = useCallback(
+    (id: string) => {
+      return ktvs.find((ktv) => ktv.id === id);
+    },
+    [ktvs]
+  );
 
   return {
     ktvs,
@@ -211,6 +246,6 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
     updateKtv,
     deleteKtv,
     getKtvById,
-    refreshKtvs: loadKtvs
+    refreshKtvs: loadKtvs,
   };
 }
