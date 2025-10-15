@@ -234,6 +234,7 @@ export interface Database {
           full_name: string | null;
           avatar_url: string | null;
           role: "admin" | "editor" | "user";
+          is_blocked: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -243,6 +244,7 @@ export interface Database {
           full_name?: string | null;
           avatar_url?: string | null;
           role?: "admin" | "editor" | "user";
+          is_blocked?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -252,6 +254,7 @@ export interface Database {
           full_name?: string | null;
           avatar_url?: string | null;
           role?: "admin" | "editor" | "user";
+          is_blocked?: boolean;
           created_at?: string;
           updated_at?: string;
         };

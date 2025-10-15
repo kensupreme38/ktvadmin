@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import {
   Table,
   TableBody,
@@ -11,15 +12,14 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
+import { PlusCircle, Loader2, Edit, ShieldBan, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
@@ -27,19 +27,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { UserForm } from "@/components/admin/UserForm";
 import { useToast } from "@/hooks/use-toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { getUsers, deleteUser } from "@/lib/actions/users";
+import { getUsers, updateUser } from "@/lib/actions/users";
+
+// Lazy load UserForm only when dialog opens
+const UserForm = dynamic(() => import("@/components/admin/UserForm").then(mod => ({ default: mod.UserForm })), {
+  loading: () => <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin" /></div>,
+  ssr: false
+});
 
 type User = {
   id: string;
@@ -47,6 +42,7 @@ type User = {
   full_name: string | null;
   avatar_url: string | null;
   role: "admin" | "editor" | "user";
+  is_blocked: boolean;
   created_at: string;
 };
 
@@ -55,9 +51,7 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<User | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Load users
@@ -91,36 +85,29 @@ export default function UsersPage() {
     setIsFormOpen(true);
   };
 
-  const handleDeleteClick = (user: User) => {
-    setUserToDelete(user);
-    setIsAlertOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!userToDelete) return;
-
-    setDeleting(true);
-    const result = await deleteUser(userToDelete.id);
+  const handleToggleBlock = async (user: User) => {
+    setUpdatingUserId(user.id);
+    const result = await updateUser(user.id, {
+      isBlocked: !user.is_blocked,
+    });
 
     if (result.error) {
       toast({
-        title: "Delete failed",
+        title: "Update failed",
         description: result.error,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "User deleted",
-        description: `${
-          userToDelete.full_name || userToDelete.email
-        } has been removed.`,
+        title: user.is_blocked ? "User unblocked" : "User blocked",
+        description: `${user.full_name || user.email} is now ${
+          user.is_blocked ? "active" : "blocked"
+        }.`,
       });
       loadUsers(); // Reload users
     }
 
-    setDeleting(false);
-    setIsAlertOpen(false);
-    setUserToDelete(null);
+    setUpdatingUserId(null);
   };
 
   const handleSaveSuccess = () => {
@@ -132,11 +119,11 @@ export default function UsersPage() {
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case "admin":
-        return "destructive";
-      case "editor":
         return "default";
-      default:
+      case "editor":
         return "secondary";
+      default:
+        return "outline";
     }
   };
 
@@ -165,10 +152,8 @@ export default function UsersPage() {
                 <TableRow>
                   <TableHead>User</TableHead>
                   <TableHead>Role</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead>
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -206,33 +191,57 @@ export default function UsersPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {new Date(user.created_at).toLocaleDateString()}
+                      <Badge variant={user.is_blocked ? "secondary" : "default"}>
+                        {user.is_blocked ? "Blocked" : "Active"}
+                      </Badge>
                     </TableCell>
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleEdit(user)}>
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteClick(user)}
-                            className="text-red-600"
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <TooltipProvider>
+                        <div className="flex items-center justify-end gap-2">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleEdit(user)}
+                                className="h-8 w-8"
+                              >
+                                <Edit className="h-4 w-4" />
+                                <span className="sr-only">Edit</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Edit user</p>
+                            </TooltipContent>
+                          </Tooltip>
+
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleToggleBlock(user)}
+                                disabled={updatingUserId === user.id}
+                                className="h-8 w-8"
+                              >
+                                {updatingUserId === user.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : user.is_blocked ? (
+                                  <ShieldCheck className="h-4 w-4" />
+                                ) : (
+                                  <ShieldBan className="h-4 w-4" />
+                                )}
+                                <span className="sr-only">
+                                  {user.is_blocked ? "Unblock" : "Block"}
+                                </span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{user.is_blocked ? "Unblock user" : "Block user"}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </TooltipProvider>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -259,31 +268,6 @@ export default function UsersPage() {
           />
         </DialogContent>
       </Dialog>
-
-      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              user{" "}
-              <strong>{userToDelete?.full_name || userToDelete?.email}</strong>{" "}
-              and remove their data from the system.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              disabled={deleting}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

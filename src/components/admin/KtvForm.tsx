@@ -378,18 +378,20 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(
                           className="mt-2"
                         />
                         {field.value && (
-                          <div className="mt-2 relative w-48 h-32 border rounded-md overflow-hidden">
-                            <Image
-                              src={field.value}
-                              alt="Main image preview"
-                              fill
-                              className="object-cover"
-                            />
+                          <div className="mt-2 relative w-48 h-32">
+                            <div className="relative w-full h-full border rounded-md overflow-hidden">
+                              <Image
+                                src={field.value}
+                                alt="Main image preview"
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
                             <Button
                               type="button"
                               size="icon"
                               variant="destructive"
-                              className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                              className="absolute -top-2 -right-2 h-6 w-6 rounded-full z-10"
                               onClick={() => field.onChange("")}
                             >
                               <X className="h-4 w-4" />
@@ -430,22 +432,24 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(
                             {selectedImages.map((image, index) => (
                               <div
                                 key={image.id}
-                                className="relative w-32 h-24 border rounded-md overflow-hidden"
+                                className="relative w-32 h-24"
                               >
-                                <Image
-                                  src={image.imageUrl}
-                                  alt={`Gallery image ${index + 1}`}
-                                  fill
-                                  className="object-cover"
-                                  loading="lazy"
-                                  quality={75}
-                                  sizes="128px"
-                                />
+                                <div className="relative w-full h-full border rounded-md overflow-hidden">
+                                  <Image
+                                    src={image.imageUrl}
+                                    alt={`Gallery image ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                    loading="lazy"
+                                    quality={75}
+                                    sizes="128px"
+                                  />
+                                </div>
                                 <Button
                                   type="button"
                                   size="icon"
                                   variant="destructive"
-                                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full z-10"
                                   onClick={() => {
                                     const newImageIds =
                                       field.value?.filter(

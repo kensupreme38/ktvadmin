@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { cache } from "@/lib/cache";
 
 export interface KtvImage {
   imageUrl: string;
@@ -47,6 +48,17 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
     try {
       setIsLoading(true);
 
+      // Check cache first
+      const cacheKey = `ktvs:${searchTerm || 'all'}:${page || 1}:${pageSize || 10}`;
+      const cachedData = cache.get<{ ktvs: KtvWithImages[]; count: number }>(cacheKey);
+      
+      if (cachedData) {
+        setKtvs(cachedData.ktvs);
+        setTotalCount(cachedData.count);
+        setIsLoading(false);
+        return;
+      }
+
       // Get current user
       const {
         data: { user },
@@ -56,28 +68,37 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
         throw new Error("No authenticated user");
       }
 
-      // Build query with search and pagination
+      // Build optimized query with specific fields and pagination
       let query = supabase.from("ktvs").select(
         `
-          *,
+          id,
+          name,
+          slug,
+          address,
+          city,
+          country,
+          phone,
+          price,
+          hours,
+          contact,
+          description,
+          is_active,
+          created_at,
+          updated_at,
           ktv_images (
             ktv_id,
             image_id,
             is_main,
             order_index,
-            created_at,
             images (
-              id,
               image_url
             )
           ),
           ktv_categories (
-            category_id,
             categories (
               id,
               name,
-              slug,
-              description
+              slug
             )
           )
         `,
@@ -134,6 +155,9 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
 
       setKtvs(ktvsWithImages);
       setTotalCount(count || 0);
+      
+      // Cache the results for 2 minutes for better performance
+      cache.set(cacheKey, { ktvs: ktvsWithImages, count: count || 0 }, 120);
     } catch (error: any) {
       console.error("Error loading KTVs:", error);
       toast({
@@ -177,7 +201,8 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
           throw ktvError;
         }
 
-        // Reload KTVs to get the new one with images
+        // Invalidate cache and reload KTVs
+        cache.invalidate('ktvs:');
         await loadKtvs();
 
         return newKtv;
@@ -202,6 +227,7 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
         }
 
         if (reloadData) {
+          cache.invalidate('ktvs:');
           await loadKtvs();
         }
       } catch (error: any) {
@@ -222,6 +248,7 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
           throw error;
         }
 
+        cache.invalidate('ktvs:');
         await loadKtvs();
       } catch (error: any) {
         console.error("Error deleting KTV:", error);

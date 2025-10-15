@@ -2,16 +2,23 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { KtvForm } from '@/components/admin/KtvForm';
 import { useToast } from '@/hooks/use-toast';
 import type { Ktv } from '@/types';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import { useRef } from 'react';
 import { useKtvs } from '@/hooks/use-ktvs';
 import { useKtvImages } from '@/hooks/use-ktv-images';
 import { useKtvCategories } from '@/hooks/use-ktv-categories';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// Lazy load KtvForm
+const KtvForm = dynamic(() => import('@/components/admin/KtvForm').then(mod => ({ default: mod.KtvForm })), {
+  loading: () => <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>,
+  ssr: false
+});
 
 const EditPageSkeleton = () => (
     <Card>

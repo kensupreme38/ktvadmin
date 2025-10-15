@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import { createUser, updateUser } from "@/lib/actions/users";
 import { useToast } from "@/hooks/use-toast";
@@ -35,6 +36,7 @@ const formSchema = z
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
     role: z.enum(["admin", "editor", "user"]),
+    isBlocked: z.boolean(),
   })
   .refine(
     (data) => {
@@ -68,6 +70,7 @@ type UserData = {
   email: string;
   full_name: string | null;
   role: "admin" | "editor" | "user";
+  is_blocked: boolean;
 };
 
 interface UserFormProps {
@@ -89,6 +92,7 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
       password: "",
       confirmPassword: "",
       role: user?.role ?? "user",
+      isBlocked: user?.is_blocked ?? false,
     },
   });
 
@@ -99,6 +103,7 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
       password: "",
       confirmPassword: "",
       role: user?.role ?? "user",
+      isBlocked: user?.is_blocked ?? false,
     });
   }, [user, form]);
 
@@ -111,6 +116,7 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
         const result = await updateUser(user.id, {
           fullName: data.fullName,
           role: data.role,
+          isBlocked: data.isBlocked,
           ...(data.password && { password: data.password }),
         });
 
@@ -275,6 +281,27 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
                 read-only access
               </FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="isBlocked"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+              <div className="space-y-0.5">
+                <FormLabel>Block Account</FormLabel>
+                <FormDescription>
+                  Block this user from accessing the system
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={loading}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

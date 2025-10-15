@@ -88,6 +88,7 @@ export async function updateUser(
     fullName?: string;
     role?: "admin" | "editor" | "user";
     password?: string;
+    isBlocked?: boolean;
   }
 ) {
   try {
@@ -113,12 +114,13 @@ export async function updateUser(
     }
 
     // Update user profile
-    if (formData.fullName || formData.role) {
+    if (formData.fullName || formData.role || formData.isBlocked !== undefined) {
       const { error: profileError } = await adminClient
         .from("users")
         .update({
           ...(formData.fullName && { full_name: formData.fullName }),
           ...(formData.role && { role: formData.role }),
+          ...(formData.isBlocked !== undefined && { is_blocked: formData.isBlocked }),
           updated_at: new Date().toISOString(),
         })
         .eq("id", userId);

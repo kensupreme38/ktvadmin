@@ -1,5 +1,13 @@
-# Firebase Studio
+# Asia Night Life
 
-This is a NextJS starter in Firebase Studio.
+Asia Night Life is a comprehensive directory for entertainment and nightlife venues in Ho Chi Minh City.
 
-To get started, take a look at src/app/page.tsx.
+Built with Next.js, Supabase, and Tailwind CSS.
+
+## Getting Started
+
+```bash
+npm run dev
+```
+
+Visit http://localhost:9002 to view the application.

@@ -18,7 +18,7 @@ export async function signIn(formData: FormData) {
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -32,6 +32,27 @@ export async function signIn(formData: FormData) {
       return { error: "Please confirm your email before signing in" };
     }
     return { error: "Sign in failed. Please try again." };
+  }
+
+  // Check if user account is blocked
+  if (data.user) {
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("is_blocked")
+      .eq("id", data.user.id)
+      .single();
+
+    if (userError) {
+      console.error("Error checking user status:", userError);
+    }
+
+    if (userData?.is_blocked) {
+      // Sign out the user immediately
+      await supabase.auth.signOut();
+      return { 
+        error: "Your account has been blocked. Please contact the administrator for more information." 
+      };
+    }
   }
 
   revalidatePath("/", "layout");

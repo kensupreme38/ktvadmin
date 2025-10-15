@@ -2,10 +2,19 @@ import type {Config} from 'tailwindcss';
 
 export default {
   darkMode: ['class'],
+  // Optimized content scanning for better performance
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/hooks/**/*.{js,ts,jsx,tsx}',
+  ],
+  // Enable JIT mode safelist for dynamic classes
+  safelist: [
+    'animate-spin',
+    'animate-pulse',
+    'opacity-0',
+    'opacity-100',
   ],
   theme: {
     container: {

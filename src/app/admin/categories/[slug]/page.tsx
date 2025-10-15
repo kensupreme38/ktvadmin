@@ -131,9 +131,10 @@ export default function CategoryDetailPage() {
                         height={75}
                         className="rounded-md object-cover"
                         loading="lazy"
-                        quality={75}
+                        quality={60}
+                        sizes="100px"
                         placeholder="blur"
-                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN89+7dfwAJRQOi3pdVgQAAAABJRU5ErkJggg=="
                       />
                     </TableCell>
                     <TableCell className="font-medium align-middle">

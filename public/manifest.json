@@ -1,0 +1,20 @@
+{
+  "name": "Asia Night Life - KTV Directory",
+  "short_name": "KTV Directory",
+  "description": "Discover the best KTV venues in Asia",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#171717",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["entertainment", "lifestyle"],
+  "prefer_related_applications": false
+}
+

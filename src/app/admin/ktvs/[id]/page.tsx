@@ -175,17 +175,18 @@ export default function KtvDetailPage() {
         <div className="md:col-span-3">
           <Card className="overflow-hidden">
             <CardContent className="p-0">
-              <Image
-                src={ktv.main_image_url || "https://placehold.co/1200x800"}
-                alt={ktv.name}
-                width={1200}
-                height={800}
-                className="w-full h-auto object-cover aspect-[4/3]"
-                priority
-                quality={85}
-                placeholder="blur"
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-              />
+            <Image
+              src={ktv.main_image_url || "https://placehold.co/1200x800"}
+              alt={ktv.name}
+              width={1200}
+              height={800}
+              className="w-full h-auto object-cover aspect-[4/3]"
+              priority
+              quality={80}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN89+7dfwAJRQOi3pdVgQAAAABJRU5ErkJggg=="
+            />
             </CardContent>
           </Card>
 
@@ -202,17 +203,18 @@ export default function KtvDetailPage() {
                       <div className="p-1">
                         <Card className="overflow-hidden">
                           <CardContent className="p-0 flex items-center justify-center">
-                            <Image
-                              src={image.imageUrl}
-                              alt={`${ktv.name} gallery image ${index + 1}`}
-                              width={400}
-                              height={300}
-                              className="aspect-[4/3] object-cover"
-                              loading="lazy"
-                              quality={75}
-                              placeholder="blur"
-                              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-                            />
+                    <Image
+                      src={image.imageUrl}
+                      alt={`${ktv.name} gallery image ${index + 1}`}
+                      width={400}
+                      height={300}
+                      className="aspect-[4/3] object-cover"
+                      loading="lazy"
+                      quality={65}
+                      sizes="(max-width: 640px) 280px, 400px"
+                      placeholder="blur"
+                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN89+7dfwAJRQOi3pdVgQAAAABJRU5ErkJggg=="
+                    />
                           </CardContent>
                         </Card>
                       </div>

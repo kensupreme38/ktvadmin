@@ -1,14 +1,14 @@
-# **App Name**: Aura KTV
+# **App Name**: Asia Night Life
 
 ## Core Features:
 
-- KTV Directory: A comprehensive listing of KTV venues in Ho Chi Minh City.
-- Advanced Search and Filtering: Allow users to filter KTVs by district, type (high-end, budget), and special services.
-- Detailed KTV Profiles: Each KTV listing includes name, address, gallery (AI-tool assists in optimizing the image gallery), basic information (hours, number of rooms, type), services, price ranges, integrated Google Maps, and contact info.
+- Nightlife Directory: A comprehensive listing of entertainment and nightlife venues in Ho Chi Minh City.
+- Advanced Search and Filtering: Allow users to filter venues by district, type (high-end, budget), and special services.
+- Detailed Venue Profiles: Each venue listing includes name, address, gallery (AI-tool assists in optimizing the image gallery), basic information (hours, number of rooms, type), services, price ranges, integrated Google Maps, and contact info.
 - Review Summarization: Summarize reviews using AI to highlight key points.
-- Editorial Content: Informative articles about KTV culture, reviews, and guides for newcomers.
-- Social Sharing: Enable users to easily share KTV listings and articles on social media platforms.
-- Contact Form for Owners: A contact form for KTV owners to submit their venue's information for inclusion in the directory.
+- Editorial Content: Informative articles about nightlife culture, reviews, and guides for newcomers.
+- Social Sharing: Enable users to easily share venue listings and articles on social media platforms.
+- Contact Form for Owners: A contact form for venue owners to submit their establishment's information for inclusion in the directory.
 
 ## Style Guidelines:
 

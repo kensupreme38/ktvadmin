@@ -213,7 +213,7 @@ function AdminKtvsPageContent() {
                           loading="lazy"
                           quality={75}
                           placeholder="blur"
-                          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+                          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN89+7dfwAJRQOi3pdVgQAAAABJRU5ErkJggg=="
                         />
                       </TableCell>
                       <TableCell className="font-medium align-middle">

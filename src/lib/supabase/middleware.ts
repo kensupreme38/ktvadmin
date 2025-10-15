@@ -42,6 +42,25 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Check if user is blocked (skip check for blocked page itself)
+  if (user && !request.nextUrl.pathname.startsWith("/blocked")) {
+    const { data: userData } = await supabase
+      .from("users")
+      .select("is_blocked")
+      .eq("id", user.id)
+      .single();
+
+    if (userData?.is_blocked) {
+      // Sign out blocked user
+      await supabase.auth.signOut();
+      
+      // Redirect to blocked page
+      const url = request.nextUrl.clone();
+      url.pathname = "/blocked";
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Protect admin routes - require authentication
   if (!user && request.nextUrl.pathname.startsWith("/admin")) {
     const url = request.nextUrl.clone();

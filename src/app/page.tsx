@@ -1,14 +1,9 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-
+/**
+ * Root page - redirect to login using Next.js redirect
+ * This is more efficient than client-side redirect
+ */
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace('/login');
-  }, [router]);
-
-  return null;
+  redirect('/login');
 }

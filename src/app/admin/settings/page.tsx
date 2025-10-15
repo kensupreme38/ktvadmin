@@ -28,11 +28,11 @@ export default function AdminSettingsPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="site-name">Site Name</Label>
-            <Input id="site-name" defaultValue="Aura KTV" />
+            <Input id="site-name" defaultValue="Asia Night Life" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="site-description">Site Description</Label>
-            <Textarea id="site-description" defaultValue="Your ultimate guide to KTV venues in Ho Chi Minh City." />
+            <Textarea id="site-description" defaultValue="Your ultimate guide to nightlife and entertainment venues in Ho Chi Minh City." />
           </div>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
