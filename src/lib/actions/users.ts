@@ -27,13 +27,17 @@ export async function createUser(formData: {
 
     // Use admin client to check role (bypasses RLS)
     const adminClient = createAdminClient();
-    const { data: currentProfile } = await adminClient
+    const { data: currentProfile, error: profileError } = await adminClient
       .from("users")
       .select("role")
       .eq("id", currentUser.id)
       .single();
 
-    if (currentProfile?.role !== "admin") {
+    if (profileError || !currentProfile) {
+      return { error: "Forbidden - Admin access required" };
+    }
+
+    if ((currentProfile as any).role !== "admin") {
       return { error: "Forbidden - Admin access required" };
     }
 
@@ -63,7 +67,7 @@ export async function createUser(formData: {
         email: formData.email,
         full_name: formData.fullName,
         role: formData.role,
-      });
+      } as any);
 
       if (profileError) {
         console.error("Error creating user profile:", profileError);
@@ -103,19 +107,23 @@ export async function updateUser(
 
     // Use admin client to check role (bypasses RLS)
     const adminClient = createAdminClient();
-    const { data: currentProfile } = await adminClient
+    const { data: currentProfile, error: profileError } = await adminClient
       .from("users")
       .select("role")
       .eq("id", currentUser.id)
       .single();
 
-    if (currentProfile?.role !== "admin") {
+    if (profileError || !currentProfile) {
+      return { error: "Admin access required" };
+    }
+
+    if ((currentProfile as any).role !== "admin") {
       return { error: "Admin access required" };
     }
 
     // Update user profile
     if (formData.fullName || formData.role || formData.isBlocked !== undefined) {
-      const { error: profileError } = await adminClient
+      const { error: profileError } = await (adminClient as any)
         .from("users")
         .update({
           ...(formData.fullName && { full_name: formData.fullName }),
@@ -138,7 +146,7 @@ export async function updateUser(
       }
 
       // Get user email for better error handling
-      const { data: userData } = await adminClient
+      const { data: userData } = await (adminClient as any)
         .from("users")
         .select("email")
         .eq("id", userId)
@@ -158,7 +166,7 @@ export async function updateUser(
       }
 
       // Log success for debugging
-      console.log(`Password updated for user: ${userData?.email}`);
+      console.log(`Password updated for user: ${(userData as any)?.email}`);
     }
 
     revalidatePath("/admin/users");
@@ -182,13 +190,17 @@ export async function deleteUser(userId: string) {
 
     // Use admin client to check role (bypasses RLS)
     const adminClient = createAdminClient();
-    const { data: currentProfile } = await adminClient
+    const { data: currentProfile, error: profileError } = await adminClient
       .from("users")
       .select("role")
       .eq("id", currentUser.id)
       .single();
 
-    if (currentProfile?.role !== "admin") {
+    if (profileError || !currentProfile) {
+      return { error: "Admin access required" };
+    }
+
+    if ((currentProfile as any).role !== "admin") {
       return { error: "Admin access required" };
     }
 

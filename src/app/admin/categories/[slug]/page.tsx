@@ -58,12 +58,14 @@ export default function CategoryDetailPage() {
   const category = allCategories.find((c) => c.slug === slug);
   const categoryId = category?.id;
 
-  const filteredKtvs = categoryId
-    ? ktvs.filter(
-        (ktv) =>
-          Array.isArray(ktv.categoryIds) && ktv.categoryIds.includes(categoryId)
-      )
-    : [];
+  // TODO: Update to use useKtvs hook with Supabase for category filtering
+  // const filteredKtvs = categoryId
+  //   ? ktvs.filter(
+  //       (ktv) =>
+  //         Array.isArray(ktv.categories) && ktv.categories.some(c => c.id === categoryId)
+  //     )
+  //   : [];
+  const filteredKtvs: any[] = []; // Placeholder until Supabase integration
 
   const handleKtvClick = (ktvId: string) => {
     router.push(`/admin/ktvs/${ktvId}`);
@@ -125,7 +127,7 @@ export default function CategoryDetailPage() {
                   >
                     <TableCell className="align-middle">
                       <Image
-                        src={ktv.mainImageUrl || "https://placehold.co/100x75"}
+                        src={ktv.main_image_url || ktv.mainImageUrl || "https://placehold.co/100x75"}
                         alt={ktv.name}
                         width={100}
                         height={75}

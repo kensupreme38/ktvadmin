@@ -20,6 +20,7 @@ export interface Ktv {
   name: string;
   slug: string;
   main_image_url?: string;
+  mainImageUrl?: string; // Legacy support
   address: string;
   city: string;
   country: string;
@@ -27,15 +28,17 @@ export interface Ktv {
   price: string;
   hours: string;
   contact?: string;
-  description?: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
+  description?: string | { summary?: string; features?: string[] }; // Support both string and object
+  is_active?: boolean;
+  isActive?: boolean; // Legacy support
+  created_at?: string;
+  updated_at?: string;
+  user_id?: string;
+  categoryIds?: string[]; // Legacy support
 }
 
 export interface KtvWithImages extends Ktv {
-  images: KtvImage[];
+  images: KtvImage[] | string[]; // Support both types
 }
 
 export interface KtvWithCategories extends Ktv {

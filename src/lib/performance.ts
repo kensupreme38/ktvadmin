@@ -236,7 +236,9 @@ export function memoize<T extends (...args: any[]) => any>(
     // Implement LRU by removing oldest entry if cache is full
     if (cache.size > cacheSize) {
       const firstKey = cache.keys().next().value;
-      cache.delete(firstKey);
+      if (firstKey !== undefined) {
+        cache.delete(firstKey);
+      }
     }
 
     return result;

@@ -1,6 +1,4 @@
-import type { Ktv } from "@/types";
-
-export const initialKtvs: Ktv[] = [
+export const initialKtvs: any[] = [
   {
     id: "kingdom-ktv",
     slug: "kingdom-ktv",
@@ -19,11 +17,8 @@ export const initialKtvs: Ktv[] = [
     price: "VND 2,000,000 - 5,000,000",
     hours: "2:00 PM - 2:00 AM",
     contact: "contact@kingdom.com",
-    description: {
-      summary:
-        "A luxurious KTV experience with state-of-the-art sound systems.",
-      features: ["Luxury Rooms", "Premium Sound", "Bar"],
-    },
+    description:
+        "A luxurious KTV experience with state-of-the-art sound systems. Features: Luxury Rooms, Premium Sound, Bar.",
     isActive: true,
   },
   {

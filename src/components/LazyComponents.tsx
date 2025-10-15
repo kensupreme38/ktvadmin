@@ -92,13 +92,14 @@ export const LazyCalendar = dynamic(
   }
 );
 
-export const LazyChart = dynamic(
-  () => import('recharts').then((mod) => mod),
-  {
-    loading: () => <Skeleton className="h-64 w-full" />,
-    ssr: false,
-  }
-);
+// Recharts components should be imported directly when needed
+// export const LazyChart = dynamic(
+//   () => import('recharts').then((mod) => mod),
+//   {
+//     loading: () => <Skeleton className="h-64 w-full" />,
+//     ssr: false,
+//   }
+// );
 
 // Create a higher-order component for lazy loading
 export function withLazyLoad<P extends object>(

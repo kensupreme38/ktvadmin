@@ -1,1 +1,9 @@
-// This file is intentionally left blank. It will be removed in a future step.
+export function Header() {
+  return (
+    <header className="border-b">
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold">KTV Admin</h1>
+      </div>
+    </header>
+  );
+}
