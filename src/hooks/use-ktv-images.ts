@@ -28,12 +28,15 @@ export function useKtvImages() {
       }
 
       // Prepare the relations data
-      const relations: Omit<KtvImageRelation, 'created_at'>[] = imageIds.map((imageId, index) => ({
-        ktv_id: ktvId,
-        image_id: imageId,
-        is_main: options?.mainImageId === imageId,
-        order_index: options?.orderIndices?.[index] ?? index
-      }));
+      const relations: Omit<KtvImageRelation, 'created_at'>[] = imageIds.map((imageId, index) => {
+        const isMain = options?.mainImageId !== undefined && options?.mainImageId === imageId;
+        return {
+          ktv_id: ktvId,
+          image_id: imageId,
+          is_main: isMain,
+          order_index: options?.orderIndices?.[index] ?? index
+        };
+      });
 
       // Insert all relations
       const { error } = await supabase

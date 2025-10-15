@@ -49,7 +49,7 @@ export default function EditKtvPage() {
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
-  const { ktvs, updateKtv, isLoading } = useKtvs();
+  const { ktvs, updateKtv, isLoading, refreshKtvs } = useKtvs();
   const { updateKtvImages } = useKtvImages();
   const { updateKtvCategories } = useKtvCategories();
   const formRef = useRef<{ submit: () => void }>(null);
@@ -59,30 +59,40 @@ export default function EditKtvPage() {
 
   const handleSave = async (formData: any) => {
     try {
-      const { selectedImageIds, selectedCategoryIds, ...ktvData } = formData;
+      const { selectedImageIds, selectedCategoryIds, mainImageId, ...ktvData } = formData;
       
-      // Update KTV basic info
+      
+      // Update KTV basic info (without mainImageId)
       await updateKtv(ktvId, ktvData, false); // Don't reload data
 
-      // Update images if provided
-      if (selectedImageIds !== undefined) {
-        try {
-          await updateKtvImages(
-            ktvId,
-            selectedImageIds,
-            {
-              mainImageId: selectedImageIds[0], // First image as main
-              orderIndices: selectedImageIds.map((_: string, index: number) => index)
-            }
-          );
-        } catch (imageError) {
-          console.warn('Could not update KTV images:', imageError);
-          // Don't fail the entire operation if images fail
-        }
+      // Update images - always include main image if it exists
+      const allImageIds = [];
+      if (mainImageId) {
+        allImageIds.push(mainImageId); // Main image first
+      }
+      if (selectedImageIds && selectedImageIds.length > 0) {
+        // Add gallery images, excluding main image if it's already in gallery
+        const galleryImages = selectedImageIds.filter((id: string) => id !== mainImageId);
+        allImageIds.push(...galleryImages);
+      }
+
+      // Update ktv_images relationship
+      try {
+        await updateKtvImages(
+          ktvId,
+          allImageIds,
+          {
+            mainImageId: mainImageId, // Main image ID
+            orderIndices: allImageIds.map((_: string, index: number) => index)
+          }
+        );
+      } catch (imageError) {
+        console.warn('Could not update KTV images:', imageError);
+        // Don't fail the entire operation if images fail
       }
 
       // Update categories if provided
-      if (selectedCategoryIds !== undefined) {
+      if (selectedCategoryIds && selectedCategoryIds.length > 0) {
         try {
           await updateKtvCategories(ktvId, selectedCategoryIds);
         } catch (categoryError) {
@@ -90,6 +100,9 @@ export default function EditKtvPage() {
           // Don't fail the entire operation if categories fail
         }
       }
+
+      // Reload data to show updated KTV
+      await refreshKtvs();
 
       toast({
         title: 'KTV Updated!',

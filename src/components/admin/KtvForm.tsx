@@ -72,7 +72,7 @@ const formSchema = z.object({
       'Slug must be in kebab-case format (e.g., "my-cool-ktv").'
     ),
   is_active: z.boolean(),
-  main_image_url: z.string().optional(),
+  mainImageId: z.string().optional(),
   imageIds: z.array(z.string()).optional(),
   address: z.string().optional(),
   city: z.string().optional(),
@@ -115,8 +115,8 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(
       name: ktv?.name ?? "",
       slug: ktv?.slug ?? "",
       is_active: ktv?.is_active ?? true,
-      main_image_url: ktv?.main_image_url ?? "",
-      imageIds: ktv?.images?.map((img: any) => img.image_id) ?? [],
+      mainImageId: ktv?.images?.find((img: any) => img.is_main)?.image_id ?? undefined,
+      imageIds: ktv?.images?.filter((img: any) => !img.is_main).map((img: any) => img.image_id) ?? [],
       address: ktv?.address ?? "",
       city: ktv?.city ?? "Ho Chi Minh City",
       country: ktv?.country ?? "Vietnam",
@@ -258,39 +258,46 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(
 
     const handleImageSelect = (imageIds: string[]) => {
       if (galleryTarget === "main") {
-        const selectedImage = availableImages.find(
-          (img) => img.id === imageIds[0]
-        );
-
-        if (selectedImage?.imageUrl) {
-          form.setValue("main_image_url", selectedImage.imageUrl);
-        } else {
-          // Fallback: try to use the imageId as URL if it looks like a URL
-          if (
-            imageIds[0] &&
-            (imageIds[0].startsWith("http") || imageIds[0].startsWith("/"))
-          ) {
-            form.setValue("main_image_url", imageIds[0]);
-          }
+        // For main image, set mainImageId and handle remaining images
+        const selectedMainImageId = imageIds[0];
+        form.setValue("mainImageId", selectedMainImageId);
+        
+        // If multiple images were selected, add the rest to gallery
+        if (imageIds.length > 1) {
+          const remainingImages = imageIds.slice(1); // All images except the first one
+          const currentImageIds = form.getValues("imageIds") || [];
+          const newImageIds = [...currentImageIds, ...remainingImages];
+          form.setValue("imageIds", newImageIds);
         }
+        
+        // Remove main image from gallery if it was there
+        const currentImageIds = form.getValues("imageIds") || [];
+        const filteredImageIds = currentImageIds.filter((id: string) => id !== selectedMainImageId);
+        form.setValue("imageIds", filteredImageIds);
+        
       } else if (galleryTarget === "multi") {
         const currentImageIds = form.getValues("imageIds") || [];
-        const newImageIds = [...currentImageIds, ...imageIds];
+        const mainImageId = form.getValues("mainImageId");
+        // Filter out main image from gallery selection
+        const filteredImageIds = imageIds.filter(id => id !== mainImageId);
+        const newImageIds = [...currentImageIds, ...filteredImageIds];
         form.setValue("imageIds", newImageIds);
       }
+      
       setIsGalleryOpen(false);
     };
 
     function onSubmit(data: KtvFormValues) {
-      const { imageIds, categoryIds, ...rest } = data;
+      const { imageIds, categoryIds, mainImageId, ...rest } = data;
 
       const processedData = {
         ...rest,
         // Pass image and category data separately for handling in the parent component
         selectedImageIds: imageIds || [],
         selectedCategoryIds: categoryIds || [],
+        mainImageId: mainImageId,
       };
-
+      
       onSave(processedData);
     }
 
@@ -353,65 +360,71 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="main_image_url"
-                render={({ field }) => (
-                  <FormItem className="mt-4">
-                    <FormLabel>Main Image URL</FormLabel>
-                    <FormControl>
-                      <div className="w-full">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            setGalleryTarget("main");
-                            setIsGalleryOpen(true);
-                          }}
-                        >
-                          <ImagePlus className="mr-2 h-4 w-4" />
-                          Select Main Image
-                        </Button>
-                        <Input
-                          placeholder="Enter image URL or select from gallery"
-                          {...field}
-                          className="mt-2"
-                        />
-                        {field.value && (
-                          <div className="mt-2 relative w-48 h-32">
-                            <div className="relative w-full h-full border rounded-md overflow-hidden">
-                              <Image
-                                src={field.value}
-                                alt="Main image preview"
-                                fill
-                                className="object-cover"
-                              />
+              <div className="mt-4">
+                <FormLabel>Main Image</FormLabel>
+                <div className="w-full">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setGalleryTarget("main");
+                      setIsGalleryOpen(true);
+                    }}
+                  >
+                    <ImagePlus className="mr-2 h-4 w-4" />
+                    Select Main Image
+                  </Button>
+                    <p className="text-sm text-muted-foreground mt-2 mb-4">
+                      Select the main image for this KTV. This will be the primary image displayed for the KTV.
+                    </p>
+                    
+                    {/* Main Image Preview */}
+                    {(() => {
+                      const mainImageId = form.getValues("mainImageId");
+                    const mainImage = availableImages.find(img => img.id === mainImageId);
+                    
+                    if (mainImage) {
+                      return (
+                        <div className="mt-3 relative w-48 h-32">
+                          <div className="relative w-full h-full border rounded-md overflow-hidden">
+                            <Image
+                              src={mainImage.imageUrl}
+                              alt="Main image preview"
+                              fill
+                              className="object-cover"
+                            />
+                            <div className="absolute top-1 left-1 bg-green-500 text-white text-xs px-1 py-0.5 rounded">
+                              Main
                             </div>
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="destructive"
-                              className="absolute -top-2 -right-2 h-6 w-6 rounded-full z-10"
-                              onClick={() => field.onChange("")}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
                           </div>
-                        )}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full z-10"
+                            onClick={() => {
+                              form.setValue("mainImageId", "");
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
+              </div>
 
               <Controller
                 control={form.control}
                 name="imageIds"
                 render={({ field }) => {
+                  const mainImageId = form.getValues("mainImageId");
                   const selectedImages = (field.value || [])
                     .map((id) => availableImages.find((img) => img.id === id))
-                    .filter(Boolean);
+                    .filter(Boolean)
+                    .filter(img => img.id !== mainImageId); // Exclude main image from gallery
                   return (
                     <FormItem className="mt-4">
                       <FormLabel>Image Gallery</FormLabel>
@@ -463,6 +476,11 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(
                               </div>
                             ))}
                           </div>
+                          {selectedImages.length > 0 && (
+                            <p className="text-sm text-muted-foreground mt-2">
+                              These are additional gallery images for the KTV.
+                            </p>
+                          )}
                         </div>
                       </FormControl>
                       <FormMessage />

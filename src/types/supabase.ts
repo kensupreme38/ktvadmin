@@ -28,7 +28,6 @@ export interface Database {
           id: string;
           name: string;
           slug: string;
-          main_image_url?: string;
           address: string;
           city: string;
           country: string;
@@ -46,7 +45,6 @@ export interface Database {
           id?: string;
           name: string;
           slug: string;
-          main_image_url?: string;
           address: string;
           city: string;
           country: string;
@@ -64,7 +62,6 @@ export interface Database {
           id?: string;
           name?: string;
           slug?: string;
-          main_image_url?: string;
           address?: string;
           city?: string;
           country?: string;

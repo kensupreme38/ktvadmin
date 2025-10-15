@@ -21,14 +21,15 @@ const KtvForm = dynamic(() => import('@/components/admin/KtvForm').then(mod => (
 export default function NewKtvPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { createKtv } = useKtvs();
+  const { createKtv, refreshKtvs } = useKtvs();
   const { addImagesToKtv } = useKtvImages();
   const { addCategoriesToKtv } = useKtvCategories();
   const formRef = useRef<{ submit: () => void }>(null);
 
   const handleSave = async (formData: any) => {
     try {
-      const { selectedImageIds, selectedCategoryIds, ...ktvData } = formData;
+      const { selectedImageIds, selectedCategoryIds, mainImageId, ...ktvData } = formData;
+      
       
       // Create KTV first
       const newKtv = await createKtv({
@@ -36,14 +37,27 @@ export default function NewKtvPage() {
         slug: ktvData.slug || ktvData.name.toLowerCase().replace(/\s+/g, '-'),
       });
 
-      // Add images to KTV if any were selected
-      if (selectedImageIds && selectedImageIds.length > 0) {
+      // Create all image relationships at once
+      const allImageIds = [...(selectedImageIds || [])];
+      if (mainImageId && mainImageId.trim() !== '') {
+        // Add main image to the beginning if it's not already in the list
+        if (!allImageIds.includes(mainImageId)) {
+          allImageIds.unshift(mainImageId);
+        }
+      }
+
+      if (allImageIds.length > 0) {
+        // Create order indices: main image = 0, others = 1, 2, 3...
+        const orderIndices = allImageIds.map((id, index) => 
+          id === mainImageId ? 0 : index
+        );
+
         await addImagesToKtv(
           newKtv.id,
-          selectedImageIds,
+          allImageIds,
           {
-            mainImageId: selectedImageIds[0], // First image as main
-            orderIndices: selectedImageIds.map((_: string, index: number) => index)
+            mainImageId: mainImageId,
+            orderIndices: orderIndices
           }
         );
       }
@@ -57,6 +71,9 @@ export default function NewKtvPage() {
           // Don't fail the entire operation if categories fail
         }
       }
+
+      // Reload data to show new KTV with images and categories
+      await refreshKtvs();
 
       toast({
         title: 'New KTV Created!',

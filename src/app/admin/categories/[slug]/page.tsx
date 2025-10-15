@@ -127,7 +127,7 @@ export default function CategoryDetailPage() {
                   >
                     <TableCell className="align-middle">
                       <Image
-                        src={ktv.main_image_url || ktv.mainImageUrl || "https://placehold.co/100x75"}
+                        src={ktv.main_image_url || "https://placehold.co/100x75"}
                         alt={ktv.name}
                         width={100}
                         height={75}

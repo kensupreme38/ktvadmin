@@ -19,8 +19,6 @@ export interface Ktv {
   id: string;
   name: string;
   slug: string;
-  main_image_url?: string;
-  mainImageUrl?: string; // Legacy support
   address: string;
   city: string;
   country: string;
@@ -39,6 +37,7 @@ export interface Ktv {
 
 export interface KtvWithImages extends Ktv {
   images: KtvImage[] | string[]; // Support both types
+  main_image_url?: string; // Computed field, not stored in database
 }
 
 export interface KtvWithCategories extends Ktv {
