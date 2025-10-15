@@ -11,6 +11,7 @@ import { useRef } from 'react';
 import { useKtvs } from '@/hooks/use-ktvs';
 import { useKtvImages } from '@/hooks/use-ktv-images';
 import { useKtvCategories } from '@/hooks/use-ktv-categories';
+import { createClient } from '@/lib/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const EditPageSkeleton = () => (
@@ -43,8 +44,9 @@ export default function EditKtvPage() {
   const params = useParams();
   const { toast } = useToast();
   const { ktvs, updateKtv, isLoading } = useKtvs();
-  const { updateKtvImages } = useKtvImages();
+  const { updateKtvImages, addImagesToKtv } = useKtvImages();
   const { updateKtvCategories } = useKtvCategories();
+  const supabase = createClient();
   const formRef = useRef<{ submit: () => void }>(null);
 
   const ktvId = typeof params.id === 'string' ? params.id : '';
@@ -52,26 +54,49 @@ export default function EditKtvPage() {
 
   const handleSave = async (formData: any) => {
     try {
-      const { selectedImageIds, selectedCategoryIds, ...ktvData } = formData;
+      const { selectedImageIds, selectedCategoryIds, mainImageId, ...ktvData } = formData;
       
       // Update KTV basic info
       await updateKtv(ktvId, ktvData, false); // Don't reload data
 
-      // Update images if provided
-      if (selectedImageIds !== undefined) {
-        try {
-          await updateKtvImages(
+      // Handle main image and gallery images separately
+      try {
+        // First, remove all existing images
+        const { error: deleteError } = await supabase
+          .from('ktv_images')
+          .delete()
+          .eq('ktv_id', ktvId);
+
+        if (deleteError) {
+          throw deleteError;
+        }
+
+        // Add main image if provided
+        if (mainImageId) {
+          await addImagesToKtv(
+            ktvId,
+            [mainImageId],
+            {
+              mainImageId: mainImageId,
+              orderIndices: [0]
+            }
+          );
+        }
+
+        // Add gallery images if provided
+        if (selectedImageIds && selectedImageIds.length > 0) {
+          await addImagesToKtv(
             ktvId,
             selectedImageIds,
             {
-              mainImageId: selectedImageIds[0], // First image as main
-              orderIndices: selectedImageIds.map((_: string, index: number) => index)
+              mainImageId: undefined, // No main image for gallery
+              orderIndices: selectedImageIds.map((_: string, index: number) => index + (mainImageId ? 1 : 0))
             }
           );
-        } catch (imageError) {
-          console.warn('Could not update KTV images:', imageError);
-          // Don't fail the entire operation if images fail
         }
+      } catch (imageError) {
+        console.warn('Could not update KTV images:', imageError);
+        // Don't fail the entire operation if images fail
       }
 
       // Update categories if provided
@@ -118,6 +143,7 @@ export default function EditKtvPage() {
         </div>
     );
   }
+
 
   return (
     <Card className="flex flex-col">

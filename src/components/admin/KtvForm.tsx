@@ -31,7 +31,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import Image from 'next/image';
 import { ImagePlus, X, Check, ChevronsUpDown } from 'lucide-react';
 import { countries, citiesByCountry } from '@/data/locations';
-import { Switch } from '@/components/ui/switch';
 import {
   Popover,
   PopoverContent,
@@ -54,8 +53,7 @@ import { allCategories } from '@/data/categories';
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   slug: z.string().min(2, { message: 'Slug must be at least 2 characters.' }).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be in kebab-case format (e.g., "my-cool-ktv").'),
-  is_active: z.boolean(),
-  main_image_url: z.string().optional(),
+  mainImageId: z.string().optional(),
   imageIds: z.array(z.string()).optional(),
   address: z.string().optional(),
   city: z.string().optional(),
@@ -94,9 +92,8 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
   const defaultValues: KtvFormValues = {
     name: ktv?.name ?? '',
     slug: ktv?.slug ?? '',
-    is_active: ktv?.is_active ?? true,
-    main_image_url: ktv?.main_image_url ?? '',
-    imageIds: ktv?.images?.map((img: any) => img.image_id) ?? [],
+    mainImageId: ktv?.images?.find((img: any) => img.is_main)?.image_id ?? '',
+    imageIds: ktv?.images?.filter((img: any) => !img.is_main).map((img: any) => img.image_id) ?? [],
     address: ktv?.address ?? '',
     city: ktv?.city ?? 'Ho Chi Minh City',
     country: ktv?.country ?? 'Vietnam',
@@ -225,17 +222,10 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
 
   const handleImageSelect = (imageIds: string[]) => {
     if (galleryTarget === 'main') {
-      const selectedImage = availableImages.find(img => img.id === imageIds[0]);
-      
-      if (selectedImage?.imageUrl) {
-        form.setValue('main_image_url', selectedImage.imageUrl);
-      } else {
-        // Fallback: try to use the imageId as URL if it looks like a URL
-        if (imageIds[0] && (imageIds[0].startsWith('http') || imageIds[0].startsWith('/'))) {
-          form.setValue('main_image_url', imageIds[0]);
-        }
-      }
+      // For main image, set it as mainImageId
+      form.setValue('mainImageId', imageIds[0]);
     } else if (galleryTarget === 'multi') {
+      // For gallery images, add to imageIds
       const currentImageIds = form.getValues('imageIds') || [];
       const newImageIds = [...currentImageIds, ...imageIds];
       form.setValue('imageIds', newImageIds);
@@ -244,11 +234,12 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
   }
 
   function onSubmit(data: KtvFormValues) {
-    const { imageIds, categoryIds, ...rest } = data;
+    const { imageIds, categoryIds, mainImageId, ...rest } = data;
 
     const processedData = {
       ...rest,
       // Pass image and category data separately for handling in the parent component
+      mainImageId: mainImageId || '',
       selectedImageIds: imageIds || [],
       selectedCategoryIds: categoryIds || [],
     };
@@ -291,62 +282,41 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                 />
              </div>
             
-            <FormField
-                control={form.control}
-                name="is_active"
-                render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-4">
-                    <div className="space-y-0.5">
-                        <FormLabel>Active</FormLabel>
-                        <FormDescription>
-                        Is this KTV currently active and displayed to users?
-                        </FormDescription>
-                    </div>
-                    <FormControl>
-                        <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        />
-                    </FormControl>
-                    </FormItem>
-                )}
-            />
 
-            <FormField
+            <Controller
                 control={form.control}
-                name="main_image_url"
-                render={({ field }) => (
-                <FormItem className="mt-4">
-                        <FormLabel>Main Image URL</FormLabel>
-                    <FormControl>
-                    <div className="w-full">
-                        <Button type="button" variant="outline" onClick={() => { setGalleryTarget('main'); setIsGalleryOpen(true); }}>
-                        <ImagePlus className="mr-2 h-4 w-4" />
-                        Select Main Image
-                        </Button>
-                            <Input 
-                                placeholder="Enter image URL or select from gallery" 
-                                {...field} 
-                                className="mt-2"
-                            />
-                        {field.value && (
-                        <div className="mt-2 relative w-48 h-32 border rounded-md overflow-hidden">
-                            <Image 
-                                src={field.value} 
-                                alt="Main image preview" 
-                                fill
-                                className="object-cover" 
-                            />
-                            <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => field.onChange('')}>
-                            <X className="h-4 w-4" />
+                name="mainImageId"
+                render={({ field }) => {
+                  const mainImage = availableImages.find(img => img.id === field.value);
+                  
+                  return (
+                    <FormItem className="mt-4">
+                        <FormLabel>Main Image</FormLabel>
+                        <FormControl>
+                        <div className="w-full">
+                            <Button type="button" variant="outline" onClick={() => { setGalleryTarget('main'); setIsGalleryOpen(true); }}>
+                            <ImagePlus className="mr-2 h-4 w-4" />
+                            Select Main Image
                             </Button>
+                            {mainImage && (
+                            <div className="mt-2 relative w-48 h-32 border rounded-md overflow-hidden">
+                                <Image 
+                                    src={mainImage.imageUrl} 
+                                    alt="Main image preview" 
+                                    fill
+                                    className="object-cover" 
+                                />
+                                <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => field.onChange('')}>
+                                <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            )}
                         </div>
-                        )}
-                    </div>
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                  );
+                }}
             />
 
             <Controller
@@ -356,37 +326,38 @@ export const KtvForm = forwardRef<KtvFormRef, KtvFormProps>(({ ktv, onSave }, re
                   const selectedImages = (field.value || [])
                     .map(id => availableImages.find(img => img.id === id))
                     .filter(Boolean);
+                  
                   return (
-                <FormItem className="mt-4">
-                    <FormLabel>Image Gallery</FormLabel>
-                    <FormControl>
-                    <div>
-                        <Button type="button" variant="outline" onClick={() => { setGalleryTarget('multi'); setIsGalleryOpen(true); }}>
-                        <ImagePlus className="mr-2 h-4 w-4" />
-                        Add to Gallery
-                        </Button>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                            {selectedImages.map((image, index) => (
-                                <div key={image.id} className="relative w-32 h-24 border rounded-md overflow-hidden">
-                                <Image 
-                                    src={image.imageUrl} 
-                                    alt={`Gallery image ${index + 1}`} 
-                                    fill
-                                    className="object-cover" 
-                                />
-                            <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => {
-                                    const newImageIds = field.value?.filter(id => id !== image.id) || [];
-                                    field.onChange(newImageIds);
-                            }}>
-                                <X className="h-4 w-4" />
+                    <FormItem className="mt-4">
+                        <FormLabel>Image Gallery</FormLabel>
+                        <FormControl>
+                        <div>
+                            <Button type="button" variant="outline" onClick={() => { setGalleryTarget('multi'); setIsGalleryOpen(true); }}>
+                            <ImagePlus className="mr-2 h-4 w-4" />
+                            Add to Gallery
                             </Button>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                                {selectedImages.map((image, index) => (
+                                    <div key={image.id} className="relative w-32 h-24 border rounded-md overflow-hidden">
+                                    <Image 
+                                        src={image.imageUrl} 
+                                        alt={`Gallery image ${index + 1}`} 
+                                        fill
+                                        className="object-cover" 
+                                    />
+                                <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => {
+                                        const newImageIds = field.value?.filter(id => id !== image.id) || [];
+                                        field.onChange(newImageIds);
+                                }}>
+                                    <X className="h-4 w-4" />
+                                </Button>
+                                </div>
+                                ))}
                             </div>
-                        ))}
                         </div>
-                    </div>
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
                   );
                 }}
             />

@@ -19,7 +19,6 @@ export interface Ktv {
   id: string;
   name: string;
   slug: string;
-  main_image_url?: string;
   address: string;
   city: string;
   country: string;

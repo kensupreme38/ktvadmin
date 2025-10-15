@@ -21,7 +21,7 @@ export default function NewKtvPage() {
 
   const handleSave = async (formData: any) => {
     try {
-      const { selectedImageIds, selectedCategoryIds, ...ktvData } = formData;
+      const { selectedImageIds, selectedCategoryIds, mainImageId, ...ktvData } = formData;
       
       // Create KTV first
       const newKtv = await createKtv({
@@ -29,14 +29,26 @@ export default function NewKtvPage() {
         slug: ktvData.slug || ktvData.name.toLowerCase().replace(/\s+/g, '-'),
       });
 
-      // Add images to KTV if any were selected
+      // Handle main image - create ktv_images entry with is_main = true
+      if (mainImageId) {
+        await addImagesToKtv(
+          newKtv.id,
+          [mainImageId],
+          {
+            mainImageId: mainImageId,
+            orderIndices: [0]
+          }
+        );
+      }
+
+      // Handle gallery images - create ktv_images entries with is_main = false
       if (selectedImageIds && selectedImageIds.length > 0) {
         await addImagesToKtv(
           newKtv.id,
           selectedImageIds,
           {
-            mainImageId: selectedImageIds[0], // First image as main
-            orderIndices: selectedImageIds.map((_: string, index: number) => index)
+            mainImageId: undefined, // No main image for gallery
+            orderIndices: selectedImageIds.map((_: string, index: number) => index + (mainImageId ? 1 : 0))
           }
         );
       }

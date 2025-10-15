@@ -130,13 +130,6 @@ function AdminKtvsPageContent() {
     );
   }, 300);
 
-  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const page = value ? Number(value) : 1;
-    if (page > 0 && page <= totalPages) {
-      handlePageChange(page);
-    }
-  };
 
   const handlePageInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const page = Number(e.target.value);
@@ -146,6 +139,8 @@ function AdminKtvsPageContent() {
       handlePageChange(totalPages);
     }
   };
+
+  console.log({ktvs})
 
   return (
     <>

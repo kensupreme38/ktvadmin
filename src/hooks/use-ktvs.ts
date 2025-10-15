@@ -46,12 +46,12 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
   const loadKtvs = useCallback(async () => {
     try {
       setIsLoading(true);
-      
-      // Get current user
+
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
         throw new Error('No authenticated user');
       }
+    
       
       // Build query with search and pagination
       let query = supabase
@@ -102,14 +102,22 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
       }
 
       // Transform data to include images and categories arrays
-      const ktvsWithImages: KtvWithImages[] = (ktvsData || []).map((ktv: any) => ({
-        ...ktv,
-        images: ktv.ktv_images?.map((ki: any) => ({
+      const ktvsWithImages: KtvWithImages[] = (ktvsData || []).map((ktv: any) => {
+        const images = ktv.ktv_images?.map((ki: any) => ({
           ...ki,
           imageUrl: ki.images?.image_url
-        })).filter((img: any) => img.imageUrl) || [],
-        categories: ktv.ktv_categories?.map((kc: any) => kc.categories).filter(Boolean) || []
-      }));
+        })).filter((img: any) => img.imageUrl) || [];
+        
+        // Find main image
+        const mainImage = images.find((img: any) => img.is_main);
+        
+        return {
+          ...ktv,
+          images,
+          categories: ktv.ktv_categories?.map((kc: any) => kc.categories).filter(Boolean) || [],
+          main_image_url: mainImage?.imageUrl
+        };
+      });
 
       setKtvs(ktvsWithImages);
       setTotalCount(count || 0);
@@ -139,10 +147,16 @@ export function useKtvs(searchTerm?: string, page?: number, pageSize?: number) {
         throw new Error('No authenticated user');
       }
 
-      // Create KTV with user_id
+      // Prepare KTV data with required fields for RLS compliance
+      const ktvInsertData = {
+        ...ktvData,
+        user_id: user.id,
+      };
+
+      // Create KTV with all required fields
       const { data: newKtv, error: ktvError } = await supabase
         .from('ktvs')
-        .insert([{ ...ktvData, user_id: user.id }])
+        .insert([ktvInsertData])
         .select()
         .single();
 
